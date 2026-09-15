@@ -23,6 +23,7 @@ A voice active-recall prototype: mocked recall, dark mode only, 390px iOS-style 
 ## Never
 
 - Never edit `AGENTS.md`. `next dev` regenerates it.
+- Never edit `build/css/tokens.css`. It's generated: edit `tokens/tokens.json` and run `npm run tokens`.
 - Never write a bare hex, a loose px value, or a CSS fallback (`var(--token, #333)`).
 - Never add light mode, a transcript anywhere in the recording flow, or anything listed under `docs/sprint-context.md` → Not building.
 - Never invent a component or a token to fill a gap. The known gaps are enumerated in `docs/design-system.md` → Known gaps; report, don't work around.
