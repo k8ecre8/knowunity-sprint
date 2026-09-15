@@ -1,3 +1,13 @@
+import StyleDictionary from 'style-dictionary';
+
+// Read from the installed Greed Standard font files.
+const fontWeights = {
+  Regular: 400,
+  SemiBold: 600,
+  Bold: 700,
+  Heavy: 900,
+};
+
 const config = {
   source: ['tokens/**/*.json'],
   hooks: {
@@ -11,6 +21,34 @@ const config = {
         filter: (token) => token.$type === 'duration',
         transform: (token) => `${token.$value.value}${token.$value.unit}`,
       },
+      'fontWeight/number': {
+        type: 'value',
+        filter: (token) => token.$type === 'fontWeight',
+        transform: (token) => {
+          const weight = fontWeights[token.$value];
+          if (weight === undefined) {
+            throw new Error(`No number for font weight "${token.$value}" in ${token.name}`);
+          }
+          return weight;
+        },
+      },
+      'percent/em': {
+        type: 'value',
+        filter: (token) => token.original.$value?.unit === 'percent',
+        transform: (token) => `${token.original.$value.value / 100}em`,
+      },
+    },
+    formats: {
+      'css/variables-reduced-motion': async (args) => {
+        const variables = await StyleDictionary.hooks.formats['css/variables'](args);
+        const reduced = args.dictionary.allTokens
+          .filter((token) => token.$extensions?.['com.knowunity.mode']?.reduced)
+          .map((token) => {
+            const { value, unit } = token.$extensions['com.knowunity.mode'].reduced;
+            return `    --${token.name}: ${value}${unit};`;
+          });
+        return `${variables}\n@media (prefers-reduced-motion: reduce) {\n  :root {\n${reduced.join('\n')}\n  }\n}\n`;
+      },
     },
     fileHeaders: {
       generated: () => [
@@ -21,13 +59,17 @@ const config = {
   },
   platforms: {
     css: {
+      expand: {
+        include: ['typography'],
+        typesMap: { typography: { lineHeight: 'dimension' } },
+      },
       transformGroup: 'css',
-      transforms: ['name/path', 'duration/css'],
+      transforms: ['name/path', 'duration/css', 'fontWeight/number', 'percent/em'],
       buildPath: 'build/css/',
       files: [
         {
           destination: 'tokens.css',
-          format: 'css/variables',
+          format: 'css/variables-reduced-motion',
           options: {
             fileHeader: 'generated',
           },

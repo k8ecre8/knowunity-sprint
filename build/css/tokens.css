@@ -135,15 +135,15 @@
   --primitive-font-lineheight-3xl: 60px;
   --primitive-font-lineheight-4xl: 76px;
   --primitive-font-lineheight-5xl: 104px;
-  --primitive-font-tracking-tight: -1percent;
-  --primitive-font-tracking-none: 0percent;
-  --primitive-font-tracking-loose: 1percent;
+  --primitive-font-tracking-tight: -0.01em;
+  --primitive-font-tracking-none: 0em;
+  --primitive-font-tracking-loose: 0.01em;
   --primitive-font-family-display: 'Greed Standard-TRIAL';
   --primitive-font-family-default: 'Greed Standard-TRIAL';
-  --primitive-font-weight-regular: Regular;
-  --primitive-font-weight-semibold: SemiBold;
-  --primitive-font-weight-bold: Bold;
-  --primitive-font-weight-heavy: Heavy;
+  --primitive-font-weight-regular: 400;
+  --primitive-font-weight-semibold: 600;
+  --primitive-font-weight-bold: 700;
+  --primitive-font-weight-heavy: 900;
   --semantic-background-page: #090c18; /** The root canvas of every screen. */
   --semantic-background-surface: #22242f; /** The fill of anything raised off the page: cards, sheets, modals, bubbles. */
   --semantic-background-input: #1a1c26; /** The fill of an editable field at rest. */
@@ -250,25 +250,120 @@
   --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1); /** Accelerates; for anything leaving. */
   --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1); /** Decelerates and accelerates; for anything moving in place. */
   --motion-easing-linear: cubic-bezier(0, 0, 1, 1); /** No easing; for spinners and progress bars only. */
-  --typeScale-display-l: Heavy 103px/104px 'Greed Standard-TRIAL'; /** Celebration numbers only; too wide for a 390px screen. */
-  --typeScale-display-m: Bold 76px/76px 'Greed Standard-TRIAL'; /** Celebration numbers only; too wide for a 390px screen. */
-  --typeScale-display-s: Bold 59px/60px 'Greed Standard-TRIAL'; /** The only Display step that fits a short word at 390px. */
-  --typeScale-headline-xl: Bold 44px/44px 'Greed Standard-TRIAL'; /** The largest page title. */
-  --typeScale-headline-l: Bold 33px/36px 'Greed Standard-TRIAL'; /** A screen title. */
-  --typeScale-headline-m: Bold 28px/28px 'Greed Standard-TRIAL'; /** A section title. */
-  --typeScale-headline-s: Bold 21px/24px 'Greed Standard-TRIAL'; /** A subsection title. */
-  --typeScale-headline-xs-bold: SemiBold 18px/20px 'Greed Standard-TRIAL'; /** A small emphasised heading. */
-  --typeScale-headline-xs-regular: Regular 18px/20px 'Greed Standard-TRIAL'; /** A small heading that should sit quietly. */
-  --typeScale-headline-xxs-bold: SemiBold 15px/16px 'Greed Standard-TRIAL'; /** The smallest emphasised heading. */
-  --typeScale-headline-xxs-regular: Regular 15px/16px 'Greed Standard-TRIAL'; /** The smallest quiet heading. */
-  --typeScale-body-l-regular: Regular 21px/28px 'Greed Standard-TRIAL'; /** The longest and most important body string on a screen. */
-  --typeScale-body-l-bold: SemiBold 21px/28px 'Greed Standard-TRIAL'; /** Emphasis inside Body L copy. */
-  --typeScale-body-m-regular: Regular 18px/24px 'Greed Standard-TRIAL'; /** Default running text. */
-  --typeScale-body-m-bold: SemiBold 18px/24px 'Greed Standard-TRIAL'; /** Emphasis inside Body M copy. */
-  --typeScale-body-s-regular: Regular 15px/20px 'Greed Standard-TRIAL'; /** Compact running text. */
-  --typeScale-body-s-bold: SemiBold 15px/20px 'Greed Standard-TRIAL'; /** Emphasis inside Body S copy. */
-  --typeScale-caption-m-regular: Regular 12px/16px 'Greed Standard-TRIAL'; /** Metadata beside something else. */
-  --typeScale-caption-m-bold: SemiBold 12px/16px 'Greed Standard-TRIAL'; /** Emphasised metadata. */
-  --typeScale-caption-s-regular: Regular 9px/12px 'Greed Standard-TRIAL'; /** Decorative only; below the 14px readable minimum. */
-  --typeScale-caption-s-bold: SemiBold 9px/12px 'Greed Standard-TRIAL'; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-display-l-fontFamily: 'Greed Standard-TRIAL'; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-l-fontWeight: 900; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-l-fontSize: 103px; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-l-lineHeight: 104px; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-l-letterSpacing: -0.01em; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-m-fontFamily: 'Greed Standard-TRIAL'; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-m-fontWeight: 700; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-m-fontSize: 76px; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-m-lineHeight: 76px; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-m-letterSpacing: -0.01em; /** Celebration numbers only; too wide for a 390px screen. */
+  --typeScale-display-s-fontFamily: 'Greed Standard-TRIAL'; /** The only Display step that fits a short word at 390px. */
+  --typeScale-display-s-fontWeight: 700; /** The only Display step that fits a short word at 390px. */
+  --typeScale-display-s-fontSize: 59px; /** The only Display step that fits a short word at 390px. */
+  --typeScale-display-s-lineHeight: 60px; /** The only Display step that fits a short word at 390px. */
+  --typeScale-display-s-letterSpacing: -0.01em; /** The only Display step that fits a short word at 390px. */
+  --typeScale-headline-xl-fontFamily: 'Greed Standard-TRIAL'; /** The largest page title. */
+  --typeScale-headline-xl-fontWeight: 700; /** The largest page title. */
+  --typeScale-headline-xl-fontSize: 44px; /** The largest page title. */
+  --typeScale-headline-xl-lineHeight: 44px; /** The largest page title. */
+  --typeScale-headline-xl-letterSpacing: -0.01em; /** The largest page title. */
+  --typeScale-headline-l-fontFamily: 'Greed Standard-TRIAL'; /** A screen title. */
+  --typeScale-headline-l-fontWeight: 700; /** A screen title. */
+  --typeScale-headline-l-fontSize: 33px; /** A screen title. */
+  --typeScale-headline-l-lineHeight: 36px; /** A screen title. */
+  --typeScale-headline-l-letterSpacing: -0.01em; /** A screen title. */
+  --typeScale-headline-m-fontFamily: 'Greed Standard-TRIAL'; /** A section title. */
+  --typeScale-headline-m-fontWeight: 700; /** A section title. */
+  --typeScale-headline-m-fontSize: 28px; /** A section title. */
+  --typeScale-headline-m-lineHeight: 28px; /** A section title. */
+  --typeScale-headline-m-letterSpacing: -0.01em; /** A section title. */
+  --typeScale-headline-s-fontFamily: 'Greed Standard-TRIAL'; /** A subsection title. */
+  --typeScale-headline-s-fontWeight: 700; /** A subsection title. */
+  --typeScale-headline-s-fontSize: 21px; /** A subsection title. */
+  --typeScale-headline-s-lineHeight: 24px; /** A subsection title. */
+  --typeScale-headline-s-letterSpacing: 0em; /** A subsection title. */
+  --typeScale-headline-xs-bold-fontFamily: 'Greed Standard-TRIAL'; /** A small emphasised heading. */
+  --typeScale-headline-xs-bold-fontWeight: 600; /** A small emphasised heading. */
+  --typeScale-headline-xs-bold-fontSize: 18px; /** A small emphasised heading. */
+  --typeScale-headline-xs-bold-lineHeight: 20px; /** A small emphasised heading. */
+  --typeScale-headline-xs-bold-letterSpacing: 0.01em; /** A small emphasised heading. */
+  --typeScale-headline-xs-regular-fontFamily: 'Greed Standard-TRIAL'; /** A small heading that should sit quietly. */
+  --typeScale-headline-xs-regular-fontWeight: 400; /** A small heading that should sit quietly. */
+  --typeScale-headline-xs-regular-fontSize: 18px; /** A small heading that should sit quietly. */
+  --typeScale-headline-xs-regular-lineHeight: 20px; /** A small heading that should sit quietly. */
+  --typeScale-headline-xs-regular-letterSpacing: 0.01em; /** A small heading that should sit quietly. */
+  --typeScale-headline-xxs-bold-fontFamily: 'Greed Standard-TRIAL'; /** The smallest emphasised heading. */
+  --typeScale-headline-xxs-bold-fontWeight: 600; /** The smallest emphasised heading. */
+  --typeScale-headline-xxs-bold-fontSize: 15px; /** The smallest emphasised heading. */
+  --typeScale-headline-xxs-bold-lineHeight: 16px; /** The smallest emphasised heading. */
+  --typeScale-headline-xxs-bold-letterSpacing: 0.01em; /** The smallest emphasised heading. */
+  --typeScale-headline-xxs-regular-fontFamily: 'Greed Standard-TRIAL'; /** The smallest quiet heading. */
+  --typeScale-headline-xxs-regular-fontWeight: 400; /** The smallest quiet heading. */
+  --typeScale-headline-xxs-regular-fontSize: 15px; /** The smallest quiet heading. */
+  --typeScale-headline-xxs-regular-lineHeight: 16px; /** The smallest quiet heading. */
+  --typeScale-headline-xxs-regular-letterSpacing: 0.01em; /** The smallest quiet heading. */
+  --typeScale-body-l-regular-fontFamily: 'Greed Standard-TRIAL'; /** The longest and most important body string on a screen. */
+  --typeScale-body-l-regular-fontWeight: 400; /** The longest and most important body string on a screen. */
+  --typeScale-body-l-regular-fontSize: 21px; /** The longest and most important body string on a screen. */
+  --typeScale-body-l-regular-lineHeight: 28px; /** The longest and most important body string on a screen. */
+  --typeScale-body-l-regular-letterSpacing: 0em; /** The longest and most important body string on a screen. */
+  --typeScale-body-l-bold-fontFamily: 'Greed Standard-TRIAL'; /** Emphasis inside Body L copy. */
+  --typeScale-body-l-bold-fontWeight: 600; /** Emphasis inside Body L copy. */
+  --typeScale-body-l-bold-fontSize: 21px; /** Emphasis inside Body L copy. */
+  --typeScale-body-l-bold-lineHeight: 28px; /** Emphasis inside Body L copy. */
+  --typeScale-body-l-bold-letterSpacing: 0em; /** Emphasis inside Body L copy. */
+  --typeScale-body-m-regular-fontFamily: 'Greed Standard-TRIAL'; /** Default running text. */
+  --typeScale-body-m-regular-fontWeight: 400; /** Default running text. */
+  --typeScale-body-m-regular-fontSize: 18px; /** Default running text. */
+  --typeScale-body-m-regular-lineHeight: 24px; /** Default running text. */
+  --typeScale-body-m-regular-letterSpacing: 0.01em; /** Default running text. */
+  --typeScale-body-m-bold-fontFamily: 'Greed Standard-TRIAL'; /** Emphasis inside Body M copy. */
+  --typeScale-body-m-bold-fontWeight: 600; /** Emphasis inside Body M copy. */
+  --typeScale-body-m-bold-fontSize: 18px; /** Emphasis inside Body M copy. */
+  --typeScale-body-m-bold-lineHeight: 24px; /** Emphasis inside Body M copy. */
+  --typeScale-body-m-bold-letterSpacing: 0.01em; /** Emphasis inside Body M copy. */
+  --typeScale-body-s-regular-fontFamily: 'Greed Standard-TRIAL'; /** Compact running text. */
+  --typeScale-body-s-regular-fontWeight: 400; /** Compact running text. */
+  --typeScale-body-s-regular-fontSize: 15px; /** Compact running text. */
+  --typeScale-body-s-regular-lineHeight: 20px; /** Compact running text. */
+  --typeScale-body-s-regular-letterSpacing: 0.01em; /** Compact running text. */
+  --typeScale-body-s-bold-fontFamily: 'Greed Standard-TRIAL'; /** Emphasis inside Body S copy. */
+  --typeScale-body-s-bold-fontWeight: 600; /** Emphasis inside Body S copy. */
+  --typeScale-body-s-bold-fontSize: 15px; /** Emphasis inside Body S copy. */
+  --typeScale-body-s-bold-lineHeight: 20px; /** Emphasis inside Body S copy. */
+  --typeScale-body-s-bold-letterSpacing: 0.01em; /** Emphasis inside Body S copy. */
+  --typeScale-caption-m-regular-fontFamily: 'Greed Standard-TRIAL'; /** Metadata beside something else. */
+  --typeScale-caption-m-regular-fontWeight: 400; /** Metadata beside something else. */
+  --typeScale-caption-m-regular-fontSize: 12px; /** Metadata beside something else. */
+  --typeScale-caption-m-regular-lineHeight: 16px; /** Metadata beside something else. */
+  --typeScale-caption-m-regular-letterSpacing: 0.01em; /** Metadata beside something else. */
+  --typeScale-caption-m-bold-fontFamily: 'Greed Standard-TRIAL'; /** Emphasised metadata. */
+  --typeScale-caption-m-bold-fontWeight: 600; /** Emphasised metadata. */
+  --typeScale-caption-m-bold-fontSize: 12px; /** Emphasised metadata. */
+  --typeScale-caption-m-bold-lineHeight: 16px; /** Emphasised metadata. */
+  --typeScale-caption-m-bold-letterSpacing: 0.01em; /** Emphasised metadata. */
+  --typeScale-caption-s-regular-fontFamily: 'Greed Standard-TRIAL'; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-regular-fontWeight: 400; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-regular-fontSize: 9px; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-regular-lineHeight: 12px; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-regular-letterSpacing: 0.01em; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-bold-fontFamily: 'Greed Standard-TRIAL'; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-bold-fontWeight: 600; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-bold-fontSize: 9px; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-bold-lineHeight: 12px; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-caption-s-bold-letterSpacing: 0.01em; /** Decorative only; below the 14px readable minimum. */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration-instant: 1ms;
+    --motion-duration-fast: 1ms;
+    --motion-duration-base: 1ms;
+    --motion-duration-slow: 1ms;
+    --motion-duration-exit: 1ms;
+    --motion-duration-breathing: 0ms;
+  }
 }
