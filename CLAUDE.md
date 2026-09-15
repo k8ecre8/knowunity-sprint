@@ -30,6 +30,10 @@ A voice active-recall prototype: mocked recall, dark mode only, 390px iOS-style 
 - Never design from the reference screenshots alone — they are the existing app, not the target.
 - The full never list is `docs/design-system.md` → Never. It governs code as much as Figma.
 
+## Component library
+
+When working on UI, use the storybook tools to read the component library before answering or writing anything. Never assume a component prop exists. Query the documentation, and use only props that are documented or shown in a story. If a prop isn't there, stop and ask me.
+
 ## File map
 
 **Scope and intent**
