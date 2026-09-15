@@ -1,8 +1,8 @@
 # Knowie design system
 
-Rules for building with this system. Every value lives in `tokens.json` — this file never repeats one.
+Rules for building with this system. Every value lives in `tokens/tokens.json` — this file never repeats one.
 
-If you need a number, a colour, a duration or a type step, read `tokens.json`. If it isn't there, see **Never** below.
+If you need a number, a colour, a duration or a type step, read `tokens/tokens.json`. If it isn't there, see **Never** below.
 
 ---
 
@@ -53,7 +53,7 @@ If you need a number, a colour, a duration or a type step, read `tokens.json`. I
 
 **`iconSlot`** wherever an icon sits inside another component. Never place an icon directly.
 
-Its variants are **sizes**, not icons: 8, 12, 16, 20, 24, 32 and 40px, matching the `Icon` ramp in `tokens.json`. The default glyph is `check`. The icon itself is an instance-swap property, which appears on an instance rather than on the component set. Pick the size from the variant dropdown and the glyph from the swap dropdown.
+Its variants are **sizes**, not icons: 8, 12, 16, 20, 24, 32 and 40px, matching the `Icon` ramp in `tokens/tokens.json`. The default glyph is `check`. The icon itself is an instance-swap property, which appears on an instance rather than on the component set. Pick the size from the variant dropdown and the glyph from the swap dropdown.
 
 **`mascotSlot`** wherever Knowie appears.
 
@@ -101,7 +101,7 @@ bottomSheetOnly   home indicator area
 
 **Exits run faster than entrances.** About a third faster. Someone dismissing a thing has already decided.
 
-**Reduced motion is a mode, not a second set of tokens.** See the `$extensions` block on each duration in `tokens.json`.
+**Reduced motion is a mode, not a second set of tokens.** See the `$extensions` block on each duration in `tokens/tokens.json`.
 
 **Dark only.** There is one mode. Adding light later means restructuring, not adding a mode.
 
@@ -144,7 +144,7 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 
 ## Never
 
-**Never invent a value that isn't in `tokens.json`.** If you need a spacing step, a colour or a duration that doesn't exist, say what's missing and what you'd call it. Do not pick something close.
+**Never invent a value that isn't in `tokens/tokens.json`.** If you need a spacing step, a colour or a duration that doesn't exist, say what's missing and what you'd call it. Do not pick something close.
 
 **Never write a CSS fallback.** No `var(--token, #333)`. A token that resolves to nothing is a bug to fix at the source, and a fallback hides it until it ships.
 
@@ -168,7 +168,7 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 
 ## Components built this sprint
 
-Each entry names the component, its axes and properties, when to reach for it, what each state means, and what not to do. The block quote under each is the description as written in Figma; the Figma description is the source of truth and this file repeats it rather than paraphrasing. Every value named below lives in `tokens.json`.
+Each entry names the component, its axes and properties, when to reach for it, what each state means, and what not to do. The block quote under each is the description as written in Figma; the Figma description is the source of truth and this file repeats it rather than paraphrasing. Every value named below lives in `tokens/tokens.json`.
 
 ### `planNode`
 
@@ -265,13 +265,13 @@ These are the rules the components above follow. Anything reading this file and 
 
 **One axis ignores another when it should.** `planNode` `todo` ignores `tone`. Say so in the description rather than building tone into a state where it would compete for attention.
 
-**Every size is a token.** Width and height on a fixed-size component are bound to an `Icon` or `Illustration` step. If the size you want is not a step, add the step to `tokens.json` and name it on the existing scale (`Illustration/600` = 48, `Illustration/1000` = 80) rather than snapping to the nearest one or leaving the number loose.
+**Every size is a token.** Width and height on a fixed-size component are bound to an `Icon` or `Illustration` step. If the size you want is not a step, add the step to `tokens/tokens.json` and name it on the existing scale (`Illustration/600` = 48, `Illustration/1000` = 80) rather than snapping to the nearest one or leaving the number loose.
 
 **Rows and cards fill; icons and nodes are fixed.** A component that holds copy has no width of its own: its instance is set to fill and the parent's padding token decides the margin. A component that is a shape has its width bound to a token and never fills.
 
 **Colour is bound on the thing that is coloured.** Fills and strokes bind to semantic tokens on the frame. Icon colour binds on the glyph vector inside the slot, and is rebound after every swap. Text binds to a text style and a `text/*` token. Nothing carries a hex.
 
-**No effects without an effect token.** There are none in `tokens.json`, so there are no shadows, glows or inner shadows on components. The `planNode` gloss is a filled vector inside a round clip frame, not an effect, and its colour is a token (`highlight/gloss`).
+**No effects without an effect token.** There are none in `tokens/tokens.json`, so there are no shadows, glows or inner shadows on components. The `planNode` gloss is a filled vector inside a round clip frame, not an effect, and its colour is a token (`highlight/gloss`).
 
 **An old element becomes a component by cloning it, not redrawing it.** `createComponentFromNode` on a clone of the hand-built frame, then bind what the frame left unbound, then `combineAsVariants`. This keeps the geometry the screens were tuned to.
 
@@ -279,7 +279,7 @@ These are the rules the components above follow. Anything reading this file and 
 
 **The description is written before the instances are swapped.** It says what the component is for, what each axis value means, which tokens it uses, what was dropped from the hand-built version and why, and what it replaced. Dated additions are prefixed with what they are and when (`OUTLINED (added Sep 2026)`). Rules that the screen owns rather than the component (how many rows to show, which tab is active) are stated as the screen's job.
 
-**Swap, then delete.** When a component replaces hand-built frames, every instance is placed and its properties set from the old frame before the old frame is removed. Then the old master, if there was one, is deleted, and this file and `tokens.json` are updated in the same pass.
+**Swap, then delete.** When a component replaces hand-built frames, every instance is placed and its properties set from the old frame before the old frame is removed. Then the old master, if there was one, is deleted, and this file and `tokens/tokens.json` are updated in the same pass.
 
 ---
 
@@ -313,4 +313,4 @@ Say these are missing rather than working around them.
 
 Without these the lowercase `l` loses its tail and the question mark takes an angular form, neither of which matches the product. `frac` is deliberately excluded: in Greed it superscripts every standalone digit, so `48 XP` renders as `⁴⁸ XP`.
 
-The same list is in `tokens.json` under `typeScale.$extensions`.
+The same list is in `tokens/tokens.json` under `typeScale.$extensions`.

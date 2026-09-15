@@ -16,7 +16,7 @@ Prototype is a web app that looks like iOS, 390px, dark mode only, recall mocked
 - What a summary may claim depends on the per-term gap since the student last saw it, so the mock data carries a timestamp per term.
 - The typing route runs inside the session with the same questions and verdicts, because the student must never be routed back to the plan home to get out.
 - The mock returns a good, a partial and a miss answer on a real delay of a few seconds, because the wait is the hardest state in the feature.
-- All colour, type, spacing and radius come from `tokens.json` and `design-system.md`, no bare hex.
+- All colour, type, spacing and radius come from `tokens/tokens.json` and `design-system.md`, no bare hex.
 - Build inside the 390px scaffold: safe areas, 44x44 minimum, no hover, thumb-zone primary actions, reduced-motion fallback on every animated state, layouts holding 30 to 40% string expansion.
 
 ## Not building

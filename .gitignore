@@ -18,7 +18,9 @@
 /out/
 
 # production
-/build
+# build/css holds generated tokens and is tracked
+/build/*
+!/build/css/
 
 # misc
 .DS_Store
