@@ -46,6 +46,7 @@ import {
   Microphone01,
   MicrophoneOff01,
   PauseCircle,
+  Plus,
   RefreshCw01,
   Send01,
   Send02,
@@ -69,11 +70,14 @@ import styles from './IconSlot.module.css';
 export type IconSlotSize = '100' | '150' | '200' | '250' | '300' | '400' | '500';
 
 /**
- * The 59 glyphs offered on the Figma slot's instance-swap property, in the
+ * The 60 glyphs offered on the Figma slot's instance-swap property, in the
  * system's lower-kebab naming. Every one resolves to an export in
  * `@untitled-ui/icons-react`, so the Figma glyph and the built glyph are the
  * same drawing. A glyph that is not in this list is a gap to report, not a
- * thing to source elsewhere.
+ * thing to source elsewhere. `plus` was added Sep 2026 for summaryCard's
+ * overflow row: it is in the package, but the `plus` the Figma masters use is
+ * an unpublished orphan, so it could not be added to the Figma swap list. The
+ * code list is 60; the Figma list is 59 until a published `plus` is imported.
  */
 export const icons = {
   'arrow-left': ArrowLeft,
@@ -123,6 +127,7 @@ export const icons = {
   'microphone-01': Microphone01,
   'microphone-off-01': MicrophoneOff01,
   'pause-circle': PauseCircle,
+  plus: Plus,
   'refresh-cw-01': RefreshCw01,
   'send-01': Send01,
   'send-02': Send02,

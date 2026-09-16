@@ -1,0 +1,219 @@
+/* listItem — see docs/design-system.md → Components built this sprint →
+   `listItem`. Every value is a token from build/css/tokens.css. No bare hex,
+   no loose px, no fallbacks. */
+
+/* Rows fill their parent and are fixed height with clipping on, as the file
+   draws them — a Compact row cuts a subtitle, and the doc says so. */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--primitive-space-300);
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  border: none;
+  font: inherit;
+  text-align: left;
+  color: var(--semantic-text-primary);
+  background: none;
+  transition:
+    background-color var(--motion-duration-instant) var(--motion-easing-standard),
+    border-bottom-width var(--motion-duration-instant) var(--motion-easing-standard),
+    padding var(--motion-duration-instant) var(--motion-easing-standard);
+}
+
+button.row {
+  cursor: pointer;
+}
+
+.leading {
+  display: flex;
+  align-items: center;
+  gap: var(--primitive-space-300);
+  flex: 1;
+  min-width: var(--primitive-space-0);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-050);
+  flex: 1;
+  min-width: var(--primitive-space-0);
+}
+
+.title {
+  margin: var(--primitive-space-0);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+}
+
+.subtitle {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+}
+
+.trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--primitive-space-100);
+  flex: none;
+  color: var(--semantic-text-secondary);
+}
+
+.trailingText {
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  white-space: nowrap;
+}
+
+/* Emoji and image sit in a box the size of the leading icon slot. The image
+   box in the file carries a placeholder fill bound to feedback/info, which is
+   not a token; with no image the box is simply empty. */
+.emoji,
+.image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  overflow: hidden;
+}
+
+.image {
+  border-radius: var(--primitive-radius-200);
+}
+
+.image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- variant: leading size, height, padding, radius --------------------- */
+
+.variantTransparent {
+  height: var(--primitive-control-1400);
+  padding: var(--primitive-space-100) var(--primitive-space-400);
+  border-radius: var(--primitive-radius-200);
+}
+.variantTransparent.trailingNone {
+  padding-block: var(--primitive-space-0);
+}
+.variantTransparent .emoji,
+.variantTransparent .image {
+  width: var(--primitive-icon-300);
+  height: var(--primitive-icon-300);
+  font-size: var(--primitive-icon-300);
+}
+
+.variantFilled,
+.variantOutlined {
+  height: var(--primitive-control-1800);
+  padding: var(--primitive-space-400);
+  border-radius: var(--primitive-radius-600);
+}
+.variantFilled .emoji,
+.variantFilled .image,
+.variantOutlined .emoji,
+.variantOutlined .image {
+  width: var(--primitive-icon-500);
+  height: var(--primitive-icon-500);
+  font-size: var(--primitive-icon-500);
+}
+
+.variantFilledCompact,
+.variantOutlinedCompact {
+  height: var(--primitive-control-1500);
+  padding: var(--primitive-space-300) var(--primitive-space-400);
+  border-radius: var(--primitive-radius-600);
+}
+.variantFilledCompact .emoji,
+.variantFilledCompact .image,
+.variantOutlinedCompact .emoji,
+.variantOutlinedCompact .image {
+  width: var(--primitive-icon-400);
+  height: var(--primitive-icon-400);
+  font-size: var(--primitive-icon-400);
+}
+
+/* --- variant: fill and lip ---------------------------------------------- */
+
+/* Filled carries a lip like a filled button: inner shadow at the lip depth. */
+.variantFilled {
+  background-color: var(--semantic-background-surface);
+  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--primitive-color-alpha-dark-15);
+}
+.variantFilledCompact {
+  background-color: var(--semantic-background-surface);
+  box-shadow: inset 0 var(--primitive-elevation-lip-sm) 0 0 var(--primitive-color-alpha-dark-15);
+}
+
+/* Outlined: no fill, border/strong, heavier bottom border as the lip. */
+.variantOutlined,
+.variantOutlinedCompact {
+  border-style: solid;
+  border-color: var(--semantic-border-strong);
+  border-width: var(--primitive-stroke-border);
+  border-bottom-width: var(--primitive-elevation-lip-outlined-lg);
+}
+
+/* --- state ------------------------------------------------------------- */
+
+/* Transparent: press fills with surface and rounds to Radius/600, as drawn.
+   Selected is identical to Default in the file. */
+.variantTransparent.statePressed,
+.variantTransparent:not(:disabled):active {
+  background-color: var(--semantic-background-surface);
+  border-radius: var(--primitive-radius-600);
+}
+
+/* Filled and Filled Compact: Pressed is identical to Default in the file.
+   Selected flips to background/inverse only with trailing None — the file is
+   literal about that, and so is this. Text goes to the inverse pair to stay
+   readable; the file does not say what it does. */
+.variantFilled.stateSelected.trailingNone,
+.variantFilledCompact.stateSelected.trailingNone {
+  background-color: var(--semantic-background-inverse);
+  color: var(--semantic-text-inverse);
+}
+.variantFilled.stateSelected.trailingNone .subtitle,
+.variantFilledCompact.stateSelected.trailingNone .subtitle {
+  color: var(--semantic-text-inverse);
+}
+
+/* Outlined: the lip collapses to 1px and the content sinks 2px — paddingTop
+   +2, paddingBottom −2 — the same rule as button Tertiary. */
+.variantOutlined.statePressed,
+.variantOutlined:not(:disabled):active {
+  border-bottom-width: var(--primitive-stroke-border);
+  padding-top: calc(var(--primitive-space-400) + var(--primitive-space-050));
+  padding-bottom: calc(var(--primitive-space-400) - var(--primitive-space-050));
+}
+.variantOutlinedCompact.statePressed,
+.variantOutlinedCompact:not(:disabled):active {
+  border-bottom-width: var(--primitive-stroke-border);
+  padding-top: calc(var(--primitive-space-300) + var(--primitive-space-050));
+  padding-bottom: calc(var(--primitive-space-300) - var(--primitive-space-050));
+}
+
+/* Outlined Selected: surface fill, no stroke, no lip. The file keeps an inner
+   shadow on this variant; the description says no lip, and the description
+   wins. In the app this is a moment, not a resting state. */
+.variantOutlined.stateSelected,
+.variantOutlinedCompact.stateSelected {
+  background-color: var(--semantic-background-surface);
+  border-width: var(--primitive-space-0);
+}

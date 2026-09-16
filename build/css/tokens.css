@@ -109,10 +109,14 @@
   --primitive-illustration-1500: 120px;
   --primitive-illustration-2500: 200px;
   --primitive-illustration-4000: 320px;
+  --primitive-control-500: 20px; /** Height of the smallest control: chips at size XXS. Below the 44px tap minimum, so only for things that are not tapped on their own. */
+  --primitive-control-600: 24px; /** Height of a very small control: chips at size XS. */
   --primitive-control-800: 32px; /** Height of a small control: the button pill at size S. Numbers at 25x the pixel value, like Space and Radius, not 12.5x like Icon. */
   --primitive-control-1000: 40px; /** Height of a medium control: the button pill at size M. */
   --primitive-control-1200: 48px; /** Height of the tap target wrapped around a small or medium control. Clears the 44px minimum, so button sizes S and M stay tappable while their pills stay 32 and 40. */
   --primitive-control-1400: 56px; /** Height of a large control: the button pill at size L, which is tall enough to be its own tap target. */
+  --primitive-control-1500: 60px; /** Height of a compact list row: listItem Filled Compact and Outlined Compact. Fixed, with clipping, so a subtitle does not fit. */
+  --primitive-control-1800: 72px; /** Height of a full list row: listItem Filled and Outlined. Fixed, with clipping. */
   --primitive-elevation-lip-sm: -2px;
   --primitive-elevation-lip-lg: -4px;
   --primitive-elevation-lip-outlined-sm: 2px; /** The lip on an outlined control at sizes S and M, built as a heavier bottom border because there is no fill to darken. Positive because it is a border weight, not an offset. Roughly half elevation.lip.sm and tuned by eye: a solid stroke at border/strong reads far heavier than a 15% inner shadow, so matching the numbers would over-weight it. */

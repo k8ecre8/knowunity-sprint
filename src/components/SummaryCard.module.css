@@ -1,0 +1,123 @@
+/* summaryCard — see docs/design-system.md → Components built this sprint →
+   `summaryCard`. Every value is a token from build/css/tokens.css. No bare
+   hex, no loose px, no fallbacks. */
+
+/* The card fills its parent; the screen's padding decides the margin. */
+.card {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-100);
+  border-radius: var(--primitive-radius-600);
+}
+
+/* Header: Headline XXS Bold, centred, in the tone's onBold. The masters set
+   the string in capitals; that is a recorded exception to the sentence-case
+   rule, decided Sep 2026, and the strings are stored that way rather than
+   transformed so the DOM says what the student sees. */
+.header {
+  margin: var(--primitive-space-0);
+  padding-block: var(--primitive-space-300);
+  text-align: center;
+  font-family: var(--typeScale-headline-xxs-bold-fontFamily);
+  font-weight: var(--typeScale-headline-xxs-bold-fontWeight);
+  font-size: var(--typeScale-headline-xxs-bold-fontSize);
+  line-height: var(--typeScale-headline-xxs-bold-lineHeight);
+  letter-spacing: var(--typeScale-headline-xxs-bold-letterSpacing);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-100);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  list-style: none;
+}
+
+/* A row is a label, not a tappable item. Rows hug, so a long term wraps to
+   two lines without breaking the card. `color` on the row is the icon's;
+   the term text sets its own. */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--primitive-space-300);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-400);
+  border-radius: var(--primitive-radius-600);
+}
+
+.term {
+  flex: 1;
+  min-width: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/* The overflow row is the collapse affordance, so it is a button: same
+   geometry as a row, with the plus in the icon position and a chevron
+   trailing. It inherits the row's font so the label matches a term. */
+.overflow {
+  composes: row;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* --- tone ------------------------------------------------------------- */
+/* feedback/<tone>/bold is the card, /onBold is the header text and the row
+   background, /onSubtle is the icon. Skipped uses the inverse pair, because
+   a skip is not a judgement, and text/tertiary for its icon. */
+
+.toneGood {
+  background-color: var(--semantic-feedback-success-bold);
+}
+.toneGood .header {
+  color: var(--semantic-feedback-success-onbold);
+}
+.toneGood .row {
+  background-color: var(--semantic-feedback-success-onbold);
+  color: var(--semantic-feedback-success-onsubtle);
+}
+
+.tonePartial {
+  background-color: var(--semantic-feedback-partial-bold);
+}
+.tonePartial .header {
+  color: var(--semantic-feedback-partial-onbold);
+}
+.tonePartial .row {
+  background-color: var(--semantic-feedback-partial-onbold);
+  color: var(--semantic-feedback-partial-onsubtle);
+}
+
+.toneNeedsPractice {
+  background-color: var(--semantic-feedback-error-bold);
+}
+.toneNeedsPractice .header {
+  color: var(--semantic-feedback-error-onbold);
+}
+.toneNeedsPractice .row {
+  background-color: var(--semantic-feedback-error-onbold);
+  color: var(--semantic-feedback-error-onsubtle);
+}
+
+.toneSkipped {
+  background-color: var(--semantic-background-inverse);
+}
+.toneSkipped .header {
+  color: var(--semantic-text-inverse);
+}
+.toneSkipped .row {
+  background-color: var(--semantic-text-inverse);
+  color: var(--semantic-text-tertiary);
+}

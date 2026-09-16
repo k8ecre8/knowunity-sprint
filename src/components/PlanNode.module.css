@@ -1,0 +1,123 @@
+/* planNode — see docs/design-system.md → Components built this sprint → `planNode`.
+   Every value is a token from build/css/tokens.css. No bare hex, no loose px,
+   no fallbacks, and no effects: the gloss is a clipped shape, not a shadow. */
+
+.node {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex: none;
+  border-radius: var(--primitive-radius-full);
+  overflow: hidden;
+}
+
+/* --- size ------------------------------------------------------------- */
+
+.sizeM {
+  width: var(--primitive-illustration-1000);
+  height: var(--primitive-illustration-1000);
+}
+
+.sizeS {
+  width: var(--primitive-illustration-600);
+  height: var(--primitive-illustration-600);
+}
+
+/* The nested iconSlot inherits its colour from the node (currentColor) and
+   paints above the absolutely-positioned gloss. */
+.icon {
+  position: relative;
+}
+
+/* --- state: done ------------------------------------------------------ */
+/* tone/bold fill, gloss band, icon in tone/onBold. */
+
+.stateDone.toneBlue {
+  background-color: var(--semantic-accent-blue-bold);
+  color: var(--semantic-accent-blue-onbold);
+}
+
+.stateDone.toneCoral {
+  background-color: var(--semantic-accent-coral-bold);
+  color: var(--semantic-accent-coral-onbold);
+}
+
+.stateDone.toneMagenta {
+  background-color: var(--semantic-accent-magenta-bold);
+  color: var(--semantic-accent-magenta-onbold);
+}
+
+.stateDone.toneGreen {
+  background-color: var(--semantic-accent-green-bold);
+  color: var(--semantic-accent-green-onbold);
+}
+
+/* The gloss sits in a round clip inset from the edge, so the base colour shows
+   as a ring all the way round and reads as a border without a stroke token.
+   The clip has to be circular: a square inset does nothing, because the circle
+   edge is well inside the square corners. */
+.glossClip {
+  position: absolute;
+  inset: var(--primitive-space-150);
+  border-radius: var(--primitive-radius-full);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sizeS .glossClip {
+  inset: var(--primitive-space-100);
+}
+
+/* The band is the Figma vector's own geometry: a 45° stripe through the centre
+   with corners at 44/68 and 24/68 of the clip at M (64.7% / 35.3%) and 26/40
+   and 14/40 at S (65% / 35%). One polygon serves both; the difference is under
+   a third of a percent. These are shape coordinates, like an SVG path, not
+   sizes — nothing here is a pixel value. */
+.gloss {
+  position: absolute;
+  inset: var(--primitive-space-0);
+  background-color: var(--semantic-highlight-gloss);
+  clip-path: polygon(65% 0, 100% 0, 100% 35%, 35% 100%, 0 100%, 0 65%);
+}
+
+/* --- state: next ------------------------------------------------------ */
+/* surface fill, tone/onSubtle ring, icon in tone/onSubtle. The ring is a
+   border rather than a shadow: Figma's stroke is INSIDE, and border-box keeps
+   the icon centred in what is left. */
+
+.stateNext {
+  background-color: var(--semantic-background-surface);
+  border-style: solid;
+  border-width: var(--primitive-stroke-heavy-border);
+}
+
+.stateNext.toneBlue {
+  border-color: var(--semantic-accent-blue-onsubtle);
+  color: var(--semantic-accent-blue-onsubtle);
+}
+
+.stateNext.toneCoral {
+  border-color: var(--semantic-accent-coral-onsubtle);
+  color: var(--semantic-accent-coral-onsubtle);
+}
+
+.stateNext.toneMagenta {
+  border-color: var(--semantic-accent-magenta-onsubtle);
+  color: var(--semantic-accent-magenta-onsubtle);
+}
+
+.stateNext.toneGreen {
+  border-color: var(--semantic-accent-green-onsubtle);
+  color: var(--semantic-accent-green-onsubtle);
+}
+
+/* --- state: todo ------------------------------------------------------ */
+/* surface fill, icon in text/tertiary. Ignores tone on purpose, so the eye
+   goes to done and next — no tone class is applied for this state. */
+
+.stateTodo {
+  background-color: var(--semantic-background-surface);
+  color: var(--semantic-text-tertiary);
+}

@@ -136,7 +136,7 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 - Icons inherit their colour from the token on the surrounding text or the component's `on*` token. Do not give an icon its own colour token.
 - In Figma the colour binding lives on the glyph's vector inside the slot. Swapping the glyph drops that binding and the icon renders dark until it is rebound. After every swap, select the vector and bind its stroke to the token again. `iconSlot` has no colour property on purpose: 325 instances carry 16 different bindings, and a tone axis would multiply the set by that.
 - One stroke weight across the system. Untitled UI ships several styles; mixing them is visible.
-- In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 59 glyphs on `iconSlot`'s swap property resolve to an export in it. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
+- In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 59 glyphs on `iconSlot`'s swap property resolve to an export in it, and `IconSlot` carries one more (`plus`) that the file cannot yet. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
 - The npm packages are MIT, so the code path does not inherit the free-tier limit below. The Figma file still does.
 
 **Licence.** The free tier covers one user, and that includes anyone accessing a published Figma library built on it. If this file goes to Knowunity or to other people, that is a paid tier.
@@ -213,6 +213,10 @@ Each entry names the component, its axes and properties, when to reach for it, w
 > Inner shadow from the hand-built version dropped: no effect token exists. The gloss band sits inside a 68px round clip frame inset 6px (glossClip), so the base colour shows as a ring all the way round; this reads as a border without a stroke token. The clip has to be circular: a square inset does nothing because the circle edge is well inside the square corners. Done nodes look the same regardless of activity type; the glyph carries the type.
 > size: M (80, Illustration/1000, icon 32) | S (48, Illustration/600, icon 20; used as the badge in noteCard).
 
+**Built in code this sprint** as `src/components/PlanNode.tsx`, composed on `IconSlot` (400 at M, 250 at S) exactly as the masters nest `iconSlot`. No new tokens: every colour, size and the ring all resolve to existing steps, and the gloss inset is `Space/150` at M and `Space/100` at S. The node sets `color` and the slot inherits it. A `name` prop is the glyph swap, defaulting to each master's glyph (`star-01`, `microphone-01`, `file-question-02`).
+
+**Where the file and the description disagree.** The `next` masters at size S draw the ring at 1.5px, unbound; no such stroke step exists. The description says "2px tone/onSubtle ring" with no size qualifier and M is bound to `Stroke/Heavy Border`, so the code uses that token at both sizes. The gloss is the vector's own geometry as a `clip-path` polygon — a 45° band with corners at 64.7%/35.3% of the clip at M and 65%/35% at S, served by one polygon at 65%/35%.
+
 ### `noteCard`
 
 **Axes:** `tone` (neutral, highlight, outlined, plain), `leading` (icon, badge, none). 12 variants. **Properties:** `showTitle`, `title`, `body`, `showChevron`. Height hugs the copy; width fills the parent.
@@ -262,6 +266,12 @@ Each entry names the component, its axes and properties, when to reach for it, w
 >
 > OUTLINED COMPACT (added Sep 2026): Outlined at the Filled Compact size (60 tall, 12/16 padding, 32px leading icon). Same Default / Pressed / Selected rules as Outlined. Intended for the plan-home section row and any dense outlined list.
 
+**Built in code this sprint** as `src/components/ListItem.tsx`, on `IconSlot` (300 / 400 / 500 by variant), for 48 of the 63 variants: `trailing` offers Icon, Icon & Text and None. Switch, Checkbox and the illustration leading slot nest components that do not exist in code and are in Known gaps. Row heights are `Control/1400`, `/1500`, `/1800` — the last two added Sep 2026 because 60 and 72 were loose. Rows are fixed height with clipping, as drawn. Filled carries an inner-shadow lip at `Elevation/Lip/lg` (`/sm` for Compact) like a filled button; Outlined carries the outlined lip tokens.
+
+**Knowunity's states, followed literally.** The description covers only Outlined. For the original three, geometry is the only source and it is uneven: Transparent Pressed fills with surface and rounds to `Radius/600`; Transparent Selected is identical to Default; Filled Pressed is identical to Default; Filled Selected flips to `background/inverse` only with trailing None (and Checkbox, not built) — Icon and Icon & Text stay surface. Text on the inverse rows uses `text/inverse`, which the file does not specify. Outlined Selected keeps an inner-shadow effect in the file that would draw a lip on the surface fill; the description says no lip and wins.
+
+**Also noted.** The leading placeholder glyph `graduation-hat-02` is not on the `iconSlot` swap list, so the code defaults both slots to `check`. The image slot's placeholder fill binds to `feedback/info`, a variable with no leaf token; with no image the box is empty.
+
 ### `summaryCard`, overflow row
 
 Three properties were added to the existing set: `showRow1`, `showOverflowRow` and `overflowText`. Nothing else about the card changed.
@@ -276,15 +286,70 @@ Three properties were added to the existing set: `showRow1`, `showOverflowRow` a
 > - Repeat summary: two groups only, right and wrong. Wrong is always fully open (that is the work). Right shows up to 3 then "N more", or collapses to header + "N terms" when the list is long. No grouping by history or by how the term was tested.
 > Expanded is the same card with rows on and the overflow row off; build it as a second frame for the prototype.
 
+**Built in code this sprint** as `src/components/SummaryCard.tsx`, composed on `IconSlot` at 250 for the row, plus and chevron icons. No new tokens. Props are the Figma properties by name — `tone`, `showRow1`–`3`, `term1`–`3`, `showOverflowRow`, `overflowText` — plus a code-only `onOverflowPress`, because the overflow row is an affordance and so is a `<button>`; the other rows are list items, as the DON'T says. The card fills its parent.
+
+**Exception to the sentence-case rule, decided Sep 2026.** The four headers render in capitals as the masters draw them — `GOOD EXPLANATIONS`, `NEEDED A HINT`, `NEEDS PRACTICE`, `SKIPPED`. This is the one place in the system that does, and it was chosen over the Never rule deliberately. The strings are stored in capitals, not transformed, so the DOM matches the screen.
+
+**Where the file and the description disagree.** The description says "header … swap the text", but the set has no `header` property; each tone bakes its string in, and so does the code. The masters place their icons as raw instances rather than through `iconSlot`, against the icon rule — the code goes through `IconSlot`. Skipped's row icon is `text/tertiary`, which the description omits. The overflow `plus` and `chevron` are drawn filled at 0.75 stroke where the row icons are 2px line; `IconSlot` renders all at one weight. The OUTSTANDING note about placeholder squares is stale: the masters now carry the glyphs it asked for.
+
+### `verdictChip`
+
+**Axes:** `tone` (Correct, Partial, Incorrect, Skipped). 4 variants. No other properties: the label and glyph are baked into each variant.
+
+**Reach for it** directly above Knowie's response text in the turn loop, reporting how the last answer was judged. Not for filtering or tagging — that is `chips`.
+
+> The per-turn verdict pill. Four tones, one per outcome of an answer.
+> USE: directly above Knowie's response text in the turn loop, reporting how the last answer was judged.
+> DON'T: use it as a filter or a tag — that is what chips is for. A verdict pill says something was assessed.
+> TOKENS: each tone pairs feedback/<tone>/bold as the fill with feedback/<tone>/onBold as the label and icon. Skipped uses background/inverse and text/inverse, because a skip is not a judgement.
+> BUILT FROM: a detached chips size=S, so the geometry is Knowunity's — 32 tall, 12px side padding, 4px gap, a 16px leading icon slot.
+> OUTSTANDING: the leading icons are placeholders inherited from chips. Correct wants a check, Partial and Incorrect a circular arrow, Skipped a skip glyph. Swap them via the icon slot.
+
+**Built in code this sprint** as `src/components/VerdictChip.tsx` on `IconSlot` at 200. Height is `Control/800` (a loose 32 in the file). Labels: Correct, Almost there, Try again, Skipped.
+
+**Fixed in the Figma master, Sep 2026.** Every master's icon stroke was a raw black paint, unbound — the dropped-binding problem above — while the description said onBold. All eight strokes (leading and hidden trailing, four tones) are now bound to `feedback/<tone>/onBold`, `text/inverse` for Skipped, and the bubble's nested chip followed. The stale OUTSTANDING note was replaced with the glyphs the masters actually carry; Incorrect uses a cross, not the arrow first proposed. A hidden trailing icon slot inherited from chips has no property and is not built.
+
+### `responseBubble`
+
+A single component, not a set. **Properties:** `showVerdict`, `showAction`, `body`, `body2`.
+
+**Reach for it** as the one container for everything Knowie says in the turn loop, from the first prompt to the reveal. Never a student's words.
+
+> Knowie's response card. Carries the prompt on an idle turn, and the verdict plus feedback after an answer is judged.
+> USE: the single container for everything Knowie says in the turn loop. It appears in every state from the first prompt through to the reveal.
+> DON'T: put a student's own words in it. This is Knowie speaking; a transcript of the answer would need its own treatment.
+> PROPERTIES: showVerdict toggles the verdict pill, off for a plain prompt and on after judging. showAction toggles the inline button, used for "Explain more" on an incorrect verdict. body swaps the text.
+> TOKENS: background/surface fill, Radius/600 corners, Space/400 padding and gap, Body M Regular in text/primary.
+> OUTSTANDING: the body is one text node, so the term cannot be bolded inside the prompt the way the app does it. Doing that needs either rich text or a separate term slot — worth deciding before the prompt states are built.
+
+**Built in code this sprint** as `src/components/ResponseBubble.tsx`, composing `VerdictChip` and `Button` (Secondary, M). Three code-only props: `verdictTone` (in Figma you select the nested chip), `actionLabel` (defaults to "Explain more") and `onActionPress`. The card fills its parent.
+
+**Where the file and the description disagreed, and what changed Sep 2026.** The file has a second text node, `body2`, in Body M Bold, which the description never mentioned and no property toggles; the description now records it, and the code renders it only when given. The action button read "1/2 words"; it now carries "Explain more" per the description. Its instance is stretched to the bubble's width with the pill centred inside; the code centres a hug-width pill in a full-width row instead. The stale OUTSTANDING note on `summaryCard` was replaced in the same pass.
+
+### `chips`
+
+**Axes:** `size` (XXS, XS, S, M), `color` (Primary, pro), `active` (False, True). 16 variants. **Properties:** `showLeftIcon`, `showRightIcon`, `Text`, and a swap on each nested `iconSlot`.
+
+**Reach for it** for topic tags, filters and counts — in `chipsGroup` rows and the top navigation. Never for a verdict; that is `verdictChip`.
+
+> A small pill carrying a short label, with optional icons either side. Sizes XXS through M, in Primary or pro, with an active state. Each icon sits in an iconSlot.
+> USE: topic tags, filters and counts. In the example screens it appears in horizontal chipsGroup rows and inside the top navigation.
+> DON'T: use it for verdicts. The color property offers only Primary and pro, so there is no success, error, warning, info or partial tone, and recolouring an instance breaks the link to the system.
+> NOTE: the property named color mixes a role (Primary) with a product tier (pro). It is closer to a tone property than a colour one.
+
+**Built in code this sprint** as `src/components/Chips.tsx` on `IconSlot` (150 / 150 / 200 / 250 by size). Heights: `Control/500` (20), `Control/600` (24), `Control/800` (32), `Control/1000` (40) — the first two added Sep 2026, since XXS and XS were loose numbers on no scale. `active` keeps the file's string values. A code-only `onClick` makes a chip a pressable filter with `aria-pressed`; without it a chip is a plain span, as tags and counts are.
+
+**Where the file and the description disagree.** Every master's icon stroke is raw black, unbound; the code inherits the label colour, the only reading that works on both active fills. The M-size icon is a 16px glyph scaled to 20, giving a 2.5px stroke — the same fault the 32px `iconSlot` had; `IconSlot` renders one weight. Caption S Bold at XXS and XS is 12px, which the type token itself flags as below the readable minimum; the code follows the file.
+
 ### `iconSlot`
 
-**Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 59 icons.
+**Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 59 icons. `IconSlot` in code offers 60: `plus` was added Sep 2026 for `summaryCard`'s overflow row, but the `plus` the masters use is an unpublished orphan and cannot go on the swap list — see Known gaps.
 
 **Reach for it** wherever an icon sits inside another component. Never place an icon directly.
 
 **What the axis means.** Size is the box, bound to an `Icon` step. The glyph fills it. The slot carries no colour: it inherits from whatever it sits inside.
 
-**Don't** give the slot a colour, and don't use a glyph outside the 59 on the swap property — that is a gap to report.
+**Don't** give the slot a colour, and don't use a glyph outside `IconSlot`'s list — that is a gap to report, and when one is added it goes on the Figma swap list and in `IconSlot`'s map in the same pass, which needs a *published* source component.
 
 > A fixed-size box holding one swappable icon. Six sizes from 8 to 32px, matching the Icon ramp.
 > USE: anywhere an icon sits inside another component. This is the most-used component in the file at 165 instances, most of them nested inside chips.
@@ -349,6 +414,11 @@ Say these are missing rather than working around them.
 - **`button`'s Loading state is not built in code,** and neither are its `showLeftIcon` and `showRightIcon` properties. The blocker is gone — `IconSlot` now exists and `@untitled-ui/icons-react` is installed — so what remains is wiring `Button` to it. Two things to settle when someone does: `Button` sets its label colour on the label, and it has to move up to the pill so the label and both icons inherit from one place; and Loading still needs a rotation duration, since `motion.duration` has instant, fast, base, slow, exit and breathing, none of which is a spinner cycle. `motion.duration.spin` is the name to add.
 - **`iconSlot`'s 400 variant is missing its height binding.** Its nested instance binds width to `Icon/400`, but the height is a loose 32. Setting one dimension through the plugin API clears the other, so this one has to be bound by hand in Figma. Siblings 300, 200, 150 and 100 bind both dimensions, so the file supports it.
 - **`iconSlot` sizes 150 and 100 have no instances.** 12px and 8px are unused across all 350 iconSlot instances in the file. Either they are for something not built yet, or they can go.
+- **`plus` is an orphan in the file.** `summaryCard`'s overflow row uses a `plus` whose component key is not published anywhere importable — the same problem as `dots-vertical`. It cannot be added to `iconSlot`'s swap list (an attempt was made and reverted, Sep 2026), so the Figma slot offers 59 glyphs while `IconSlot` in code offers 60. Fix: import `plus` from the published Untitled UI library, re-point the four summaryCard masters at it, and add that key to the swap list.
+- **`listItem` is missing three nested components in code:** `switch` (trailing Switch, 3 variants), `Checkbox` (trailing Checkbox, 12 variants) and `illustrationSlot` (the `showIllustration` leading slot, every variant). None exist as React components; `switch` is not editable in the file either. Until they are built, `ListItem` offers trailing Icon / Icon & Text / None and no illustration slot.
+- **`feedback/info` is bound but not a token.** `listItem`'s image-slot placeholder fill points at a colour variable with that bare name; `tokens.json` has only `feedback/info/bold|onBold|subtle|onSubtle`. Either add a leaf or rebind the slot to one of the four.
+- **`graduation-hat-02` is not on the `iconSlot` swap list** but is `listItem`'s leading placeholder glyph (the restore notes say `-01` was unreachable). Add it to the swap list and to `IconSlot`, or swap the masters to a listed glyph.
+- **`planNode`'s size-S `next` ring is 1.5px in Figma, unbound.** `Stroke/Border` is 1 and `Stroke/Heavy Border` is 2; nothing is 1.5. The code follows the description (2px) at both sizes. If 1.5 is the intent, add a stroke step for it and bind the four S masters to it.
 ---
 
 ## Two things that will break the build if missed

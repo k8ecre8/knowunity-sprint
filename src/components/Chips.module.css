@@ -1,0 +1,80 @@
+/* chips — see docs/design-system.md → Components built this sprint → `chips`.
+   Every value is a token from build/css/tokens.css. No bare hex, no loose px,
+   no fallbacks. The icons inherit `color`, which is the label colour. */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: none;
+  border-radius: var(--primitive-radius-full);
+  white-space: nowrap;
+  font: inherit;
+  background-color: var(--semantic-background-surface);
+  color: var(--semantic-text-primary);
+}
+
+button.chip {
+  cursor: pointer;
+}
+
+/* --- size ------------------------------------------------------------- */
+
+.sizeXXS {
+  height: var(--primitive-control-500);
+  padding-inline: var(--primitive-space-150);
+  gap: var(--primitive-space-050);
+  font-family: var(--typeScale-caption-s-bold-fontFamily);
+  font-weight: var(--typeScale-caption-s-bold-fontWeight);
+  font-size: var(--typeScale-caption-s-bold-fontSize);
+  line-height: var(--typeScale-caption-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-caption-s-bold-letterSpacing);
+}
+
+.sizeXS {
+  height: var(--primitive-control-600);
+  padding-inline: var(--primitive-space-200);
+  gap: var(--primitive-space-100);
+  font-family: var(--typeScale-caption-s-bold-fontFamily);
+  font-weight: var(--typeScale-caption-s-bold-fontWeight);
+  font-size: var(--typeScale-caption-s-bold-fontSize);
+  line-height: var(--typeScale-caption-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-caption-s-bold-letterSpacing);
+}
+
+.sizeS {
+  height: var(--primitive-control-800);
+  padding-inline: var(--primitive-space-300);
+  gap: var(--primitive-space-100);
+  font-family: var(--typeScale-caption-m-bold-fontFamily);
+  font-weight: var(--typeScale-caption-m-bold-fontWeight);
+  font-size: var(--typeScale-caption-m-bold-fontSize);
+  line-height: var(--typeScale-caption-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-caption-m-bold-letterSpacing);
+}
+
+.sizeM {
+  height: var(--primitive-control-1000);
+  padding-inline: var(--primitive-space-400);
+  gap: var(--primitive-space-150);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+/* --- active ------------------------------------------------------------ */
+/* Inactive is background/surface in both colours. Active takes the colour:
+   interactive/primary + onPrimary, or pro/bold + pro/onBold. */
+
+.activeTrue.colorPrimary {
+  background-color: var(--semantic-interactive-primary);
+  color: var(--semantic-interactive-onprimary);
+}
+
+.activeTrue.colorpro {
+  background-color: var(--semantic-pro-bold);
+  color: var(--semantic-pro-onbold);
+}

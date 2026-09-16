@@ -1,0 +1,45 @@
+/* verdictChip — see docs/design-system.md → Components built this sprint →
+   `verdictChip`. Every value is a token from build/css/tokens.css. */
+
+/* Detached from chips size=S, so the geometry is Knowunity's: 32 tall, 12px
+   side padding, 4px gap, a 16px leading icon. Hug width. The icon inherits
+   `color`, which is the label colour, as the description asks. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--primitive-space-100);
+  box-sizing: border-box;
+  height: var(--primitive-control-800);
+  padding-inline: var(--primitive-space-300);
+  border-radius: var(--primitive-radius-full);
+  white-space: nowrap;
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+/* --- tone ------------------------------------------------------------- */
+/* feedback/<tone>/bold fill, /onBold label and icon. Skipped uses the inverse
+   pair, because a skip is not a judgement. */
+
+.toneCorrect {
+  background-color: var(--semantic-feedback-success-bold);
+  color: var(--semantic-feedback-success-onbold);
+}
+
+.tonePartial {
+  background-color: var(--semantic-feedback-partial-bold);
+  color: var(--semantic-feedback-partial-onbold);
+}
+
+.toneIncorrect {
+  background-color: var(--semantic-feedback-error-bold);
+  color: var(--semantic-feedback-error-onbold);
+}
+
+.toneSkipped {
+  background-color: var(--semantic-background-inverse);
+  color: var(--semantic-text-inverse);
+}

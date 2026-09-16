@@ -1,0 +1,49 @@
+/* responseBubble — see docs/design-system.md → Components built this sprint →
+   `responseBubble`. Every value is a token from build/css/tokens.css. */
+
+/* background/surface, Radius/600, Space/400 padding and gap. Fills its parent
+   and hugs its content. */
+.bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--primitive-space-400);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-400);
+  border-radius: var(--primitive-radius-600);
+  background-color: var(--semantic-background-surface);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  width: 100%;
+}
+
+.body {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+/* The second paragraph is Body M Bold in the file. */
+.body2 {
+  composes: body;
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+}
+
+/* The action is a Secondary M button. In the file its instance is stretched to
+   the bubble's width with the pill centred inside; here the pill keeps its own
+   hug width and a full-width row centres it. */
+.action {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
