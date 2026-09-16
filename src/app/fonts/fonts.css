@@ -1,0 +1,58 @@
+/* Greed Standard — the one typeface in the system.
+   See docs/design-system.md → Two things that will break the build if missed.
+
+   The family name below must stay exactly `Greed Standard-TRIAL`. That is the
+   literal string every typeScale step carries in tokens/tokens.json, so if one
+   changes the other stops resolving and every label silently falls back.
+
+   Declared as plain @font-face rather than through next/font/local on purpose:
+   next/font generates its own hashed family name, which a token cannot name,
+   and Storybook does not go through next/font at all. One file, imported by
+   both the app and Storybook.
+
+   Only the four weights the type scale uses are declared, matching the
+   fontWeights map in style-dictionary.config.mjs. Light (300), Medium (500)
+   and every italic are on disk in this folder but no token references them;
+   add a face here if a token ever does. */
+
+@font-face {
+  font-family: 'Greed Standard-TRIAL';
+  src: url('./GreedStandard-TRIAL-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greed Standard-TRIAL';
+  src: url('./GreedStandard-TRIAL-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greed Standard-TRIAL';
+  src: url('./GreedStandard-TRIAL-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greed Standard-TRIAL';
+  src: url('./GreedStandard-TRIAL-Heavy.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Greed needs these features on or every string renders wrong: without them
+   the lowercase `l` loses its tail and the question mark takes an angular
+   form, neither of which matches the product. `frac` is deliberately excluded
+   — in Greed it superscripts every standalone digit, so `48 XP` renders with
+   the 48 raised. The same list lives in tokens/tokens.json under
+   typeScale.$extensions. */
+:root {
+  font-feature-settings: 'ss02', 'ss03', 'ss06', 'ss07', 'lnum', 'pnum';
+}

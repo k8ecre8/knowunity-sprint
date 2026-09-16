@@ -1,5 +1,16 @@
-/* Paint the page token behind every story, including test runs where the
-   backgrounds global isn't applied, so a11y checks measure real contrast. */
+/* Greed and its OpenType features. The same file the app imports, so a story
+   and a screen render the same strings. */
+@import '../src/app/fonts/fonts.css';
+
+/* Paint the page and text tokens behind every story, including test runs where
+   the backgrounds global isn't applied, so a11y checks measure real contrast.
+
+   The colour matters as much as the background. Anything that inherits it —
+   an iconSlot glyph draws in currentColor by design — otherwise falls back to
+   the browser's default black and disappears against the near-black page
+   token. The app sets a colour on body; Storybook has to match it or stories
+   lie about what a screen looks like. */
 body {
   background: var(--semantic-background-page);
+  color: var(--semantic-text-primary);
 }

@@ -97,7 +97,7 @@ bottomSheetOnly   home indicator area
 
 **Press is geometry, not colour.** Anything with a lip presses by the lip collapsing to zero and the control sinking by the lip depth. The fill does not change. `Text`, which has no lip, presses by filling with `background/surface` instead. Transition at `motion.duration.instant`.
 
-**The lip is built two ways.** On a filled control it is an inner shadow. On an outlined control there is no fill to darken, so it is a heavier bottom border instead. Same idea, different mechanism, and the outlined depth is tuned by eye rather than matched to the number.
+**The lip is built two ways.** On a filled control it is an inner shadow at `Elevation/Lip/sm` or `/lg`, in `color/alpha/dark-15`. On an outlined control there is no fill to darken, so it is a heavier bottom border instead, at `Elevation/Lip/outlined/sm` or `/lg`. Same idea, different mechanism, and the outlined depth is tuned by eye rather than matched to the number — which is why it has its own pair of tokens rather than reusing the stroke scale.
 
 **Exits run faster than entrances.** About a third faster. Someone dismissing a thing has already decided.
 
@@ -113,7 +113,7 @@ bottomSheetOnly   home indicator area
 
 **Primitives read category, concept, step.** `color/violet/500`.
 
-**Two numbering systems live in one collection, and this is the easiest mistake to make.** `Space` and `Radius` number at 25× the pixel value. `Icon` and `Illustration` number at 12.5×. So `Radius/400` and `Icon/400` are different sizes. Read the group before the number.
+**Two numbering systems live in one collection, and this is the easiest mistake to make.** `Space`, `Radius` and `Control` number at 25× the pixel value. `Icon` and `Illustration` number at 12.5×. So `Radius/400` and `Icon/400` are different sizes. Read the group before the number.
 
 **Components are camelCase.** `verdictChip`, `planNode`, `noteCard`, `bottomNav`, `buttonGroup`.
 
@@ -136,7 +136,8 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 - Icons inherit their colour from the token on the surrounding text or the component's `on*` token. Do not give an icon its own colour token.
 - In Figma the colour binding lives on the glyph's vector inside the slot. Swapping the glyph drops that binding and the icon renders dark until it is rebound. After every swap, select the vector and bind its stroke to the token again. `iconSlot` has no colour property on purpose: 325 instances carry 16 different bindings, and a tone axis would multiply the set by that.
 - One stroke weight across the system. Untitled UI ships several styles; mixing them is visible.
-- In code, `untitledui-js` exposes the same set, so the Figma glyph and the built glyph are the same drawing.
+- In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 59 glyphs on `iconSlot`'s swap property resolve to an export in it. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
+- The npm packages are MIT, so the code path does not inherit the free-tier limit below. The Figma file still does.
 
 **Licence.** The free tier covers one user, and that includes anyone accessing a published Figma library built on it. If this file goes to Knowunity or to other people, that is a paid tier.
 
@@ -169,6 +170,32 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 ## Components built this sprint
 
 Each entry names the component, its axes and properties, when to reach for it, what each state means, and what not to do. The block quote under each is the description as written in Figma; the Figma description is the source of truth and this file repeats it rather than paraphrasing. Every value named below lives in `tokens/tokens.json`.
+
+### `button`
+
+**Axes:** `variant` (Primary, Secondary, Tertiary, Text), `size` (S, M, L), `state` (Default, Pressed, Disabled, Loading), `tone` (Default, Success, Error). 60 variants — `tone` is Primary only and Default/Pressed only, which is why it is 60 and not 144. **Properties:** `showLeftIcon`, `showRightIcon`, `CTA`.
+
+**Reach for it** for anything that takes an action and carries a label. Which treatment is the "Which component to reach for" table at the top of this file.
+
+**Structure.** A fixed-height wrapper holding a hug-width pill. The wrapper is the tap target, not the drawn control: at S and M the pill is 32 and 40 tall, so the wrapper carries `Control/1200` to clear the 44px minimum. At L the pill is already 56, so wrapper and pill match.
+
+**What each state means.** `Default` is resting. `Pressed` is the finger down: the lip collapses and the control sinks by the lip depth, except on Text, which has no lip and fills with `background/surface` instead without moving. `Disabled` drops the label to `text/disabled` and, on Primary only, the fill to `background/surface`; every variant keeps its lip. `Loading` hides the label and shows `loading-01` in the centre slot.
+
+**Don't** put two Primaries on one screen. Don't recolour an instance for a destructive or verdict button — there is no destructive variant in this product, and a verdict uses `tone`. Don't remove the lip to look flatter.
+
+**Built in code this sprint** as `src/components/Button.tsx`, with `Loading`, `showLeftIcon` and `showRightIcon` left out; those three are in **Known gaps**. Two token pairs were added for values the Figma set drew loose: `Control/800|1000|1200|1400` (32/40/48/56 — 56 existed on no scale at all) and `Elevation/Lip/outlined/sm|lg` (2px/3px).
+
+> button: four treatments. Text does not exist yet.
+> Primary: interactive/primary fill, no stroke, lip. Secondary: interactive/secondary fill (translucent, so it takes on the colour of a tinted sheet), no stroke, lip. Tertiary: no fill, border/strong stroke, lip; the outlined variant, as shipped on the home screen. Text: no fill, no stroke, no lip. TO BUILD.
+> THE LIP. A bottom edge that makes the button read as pressable. Depth follows control height: Elevation/Lip/sm on 48px (sizes S and M), Elevation/Lip/lg on 56px (size L). Built two different ways, because a transparent button has no fill to darken. Filled variants (Primary, Secondary): an INNER_SHADOW at the lip depth, applied to the component wrapper; Figma masks it to the child's shape, so the child must have a fill or nothing renders. Outlined variant (Tertiary): a heavier bottom border, strokeBottomWeight 2px at S and M, 3px at L, against a 1px border on the other three sides. This is roughly half the lip depth, not the full depth: a solid stroke at border/strong reads far heavier than a 15% inner shadow, so matching the numbers would over-weight it. Tuned by eye, not derived.
+> PRESS. Anything with a lip: the lip goes to zero and the button sinks by the lip depth, achieved by moving the depth from paddingBottom to paddingTop on the wrapper. No colour change. Text, which has no lip, presses by filling with background/surface, no sink. Transition: motion/duration/instant.
+> FOCUS — OUTSTANDING. There is no Focus state on any variant. This is a WCAG 2.2 gap, not a design choice: anyone using a Bluetooth keyboard, Switch Control or Voice Control on iOS needs a visible indicator of where they are. The tokens exist and are ready: border/focus for the colour, Focus/Width (2px, aliases Stroke/Heavy Border) for the ring, Focus/Offset (2px) for the gap. Two things to resolve when building it. The ring must wrap the lip as well as the pill, or it reads as floating off the bottom edge. And on Tertiary, which already carries a border/strong stroke, the ring becomes a second concentric outline — decide whether it replaces that stroke or sits outside it. Deferred deliberately during the design system pass, not overlooked.
+> DON'T: use more than one Primary on a screen. It is the single action you want taken, and a second one makes neither read as the answer.
+> TONE. Primary only, Default and Pressed states only. Success and Error are the action on the practice round's feedback sheet: "Continue" after a correct answer, "Got it" after an incorrect one. Fill feedback/{tone}/bold, label feedback/{tone}/onBold, lip unchanged. Measured from the shipped app. Whether the recall loop uses tone is not decided.
+> DON'T: recolour an instance to make a destructive or a verdict button. For a verdict, use tone. There is no destructive variant in this product.
+> DON'T: remove the lip to make a button look flatter. It is the only affordance telling a student the thing is pressable, and it is what moves when they press it.
+
+**Where the file and the description disagree.** The description says Text is "TO BUILD" and presses with no sink; the 12 built Text variants shift by the lip depth as well as filling. The description wins, and the code follows it. The description also says the filled press moves the depth "from paddingBottom to paddingTop", which would sink by exactly the lip depth, but the built Default variants have paddingBottom 0, so they sink by half that. The code follows the description here too.
 
 ### `planNode`
 
@@ -249,9 +276,30 @@ Three properties were added to the existing set: `showRow1`, `showOverflowRow` a
 > - Repeat summary: two groups only, right and wrong. Wrong is always fully open (that is the work). Right shows up to 3 then "N more", or collapses to header + "N terms" when the list is long. No grouping by history or by how the term was tested.
 > Expanded is the same card with rows on and the overflow row off; build it as a second frame for the prototype.
 
-### `iconSlot`, size 500
+### `iconSlot`
 
-One variant was added, `Size (IGNORE)=500` at 40px, for the leading icon in `listItem` Filled. The 250 (20px) variant was also repaired: it had collapsed to 1px in the master, which is why every 20px icon in the file rendered as a dot. The default glyph on all sizes is now `check`; the previous placeholder, `square`, had no source component and showed "restore component" on every unswapped slot.
+**Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 59 icons.
+
+**Reach for it** wherever an icon sits inside another component. Never place an icon directly.
+
+**What the axis means.** Size is the box, bound to an `Icon` step. The glyph fills it. The slot carries no colour: it inherits from whatever it sits inside.
+
+**Don't** give the slot a colour, and don't use a glyph outside the 59 on the swap property — that is a gap to report.
+
+> A fixed-size box holding one swappable icon. Six sizes from 8 to 32px, matching the Icon ramp.
+> USE: anywhere an icon sits inside another component. This is the most-used component in the file at 165 instances, most of them nested inside chips.
+> DON'T: set the size on the slot itself — the parent is meant to drive it.
+> GUESS: the DON'T follows from the property being named "Size (IGNORE)". The property works and its options map exactly to the Icon tokens, so I do not know what the IGNORE is protecting against.
+
+**Size 500 and the 250 repair.** One variant was added, `Size (IGNORE)=500` at 40px, for the leading icon in `listItem` Filled. The 250 (20px) variant was also repaired: it had collapsed to 1px in the master, which is why every 20px icon in the file rendered as a dot. The default glyph on all sizes is now `check`; the previous placeholder, `square`, had no source component and showed "restore component" on every unswapped slot.
+
+**Built in code this sprint** as `src/components/IconSlot.tsx`, needing no new tokens — all seven `Icon` steps already existed.
+
+**Two faults fixed in the Figma master, Sep 2026.** The 400 variant's glyph rendered a 2.667px stroke where every other size renders 2, because its nested icon had been *scaled* to 32 rather than resized — scaling multiplies stroke weight, resizing does not. The wrong `Icon/300` binding was a separate fault and repointing it fixed nothing on its own; resetting the vector's `strokeWeight` to 2 is what corrected it. Separately, the component set's width was pinned at 216 with `clipsContent` on, while its horizontal auto-layout needs 272 — so the 500 variant, last in the flow, fell outside and rendered nothing at all: null render bounds, blank export. The set is now set to hug, so adding a variant cannot reintroduce it. Only the master was affected; all 38 instances of the 500 rendered correctly throughout.
+
+**Where the file and the description disagree.** The description says six sizes ending at 32px; there are seven ending at 40, because it predates the 500 above. On instance counts all three numbers differ: the Figma description says 165, this file said 325, and the measured count in Sep 2026 is **350** — 135 at size 300, 95 at 400, 60 at 250, 38 at 500, 22 at 200, none at 150 or 100. Counted with `getInstancesAsync` per variant; the figures above it are historical and were not re-measured.
+
+**Deviations in code.** `Size (IGNORE)` becomes a `size` prop, keeping Figma's option values — the Figma name is not a valid identifier, and a prop is exactly the "parent drives it" the description asks for. The swap property becomes a `name` prop typed to the 59 glyphs, with no `children` escape hatch, so a caller cannot place an icon directly. Colour is `currentColor` rather than a per-vector binding, which removes the Figma problem where swapping a glyph drops its colour. A `label` prop was added for assistive tech, with no Figma counterpart: slots are `aria-hidden` unless labelled.
 
 ---
 
@@ -265,7 +313,7 @@ These are the rules the components above follow. Anything reading this file and 
 
 **One axis ignores another when it should.** `planNode` `todo` ignores `tone`. Say so in the description rather than building tone into a state where it would compete for attention.
 
-**Every size is a token.** Width and height on a fixed-size component are bound to an `Icon` or `Illustration` step. If the size you want is not a step, add the step to `tokens/tokens.json` and name it on the existing scale (`Illustration/600` = 48, `Illustration/1000` = 80) rather than snapping to the nearest one or leaving the number loose.
+**Every size is a token.** Width and height on a fixed-size component are bound to a `Control`, `Icon` or `Illustration` step — `Control` for the height of something a finger presses, the other two for artwork. If the size you want is not a step, add the step to `tokens/tokens.json` and name it on the existing scale (`Illustration/600` = 48, `Illustration/1000` = 80, `Control/1400` = 56) rather than snapping to the nearest one or leaving the number loose.
 
 **Rows and cards fill; icons and nodes are fixed.** A component that holds copy has no width of its own: its instance is set to fill and the parent's padding token decides the margin. A component that is a shape has its width bound to a token and never fills.
 
@@ -298,12 +346,14 @@ Say these are missing rather than working around them.
 - **No confidence slider.**
 - **`appBar` has no variant for either `topBar`.** The app home bar (menu, three counters, timer) and the plan home bar (chip left, kebab right) do not fit any of its six variants.
 - **`progressIndicator` instances come in 28px tall on a 16px bar.** The wrapper does not hug. Set the instance to a fixed 16 until the master is fixed.
-
+- **`button`'s Loading state is not built in code,** and neither are its `showLeftIcon` and `showRightIcon` properties. The blocker is gone — `IconSlot` now exists and `@untitled-ui/icons-react` is installed — so what remains is wiring `Button` to it. Two things to settle when someone does: `Button` sets its label colour on the label, and it has to move up to the pill so the label and both icons inherit from one place; and Loading still needs a rotation duration, since `motion.duration` has instant, fast, base, slow, exit and breathing, none of which is a spinner cycle. `motion.duration.spin` is the name to add.
+- **`iconSlot`'s 400 variant is missing its height binding.** Its nested instance binds width to `Icon/400`, but the height is a loose 32. Setting one dimension through the plugin API clears the other, so this one has to be bound by hand in Figma. Siblings 300, 200, 150 and 100 bind both dimensions, so the file supports it.
+- **`iconSlot` sizes 150 and 100 have no instances.** 12px and 8px are unused across all 350 iconSlot instances in the file. Either they are for something not built yet, or they can go.
 ---
 
 ## Two things that will break the build if missed
 
-**The typeface is a trial licence.** Storybook and the app both need the licensed Greed files. Nothing renders correctly without them.
+**The typeface is a trial licence.** Storybook and the app both need the licensed Greed files. Nothing renders correctly without them. The licence has still not been checked for web use, so raise it before any hosted build, deployed app or published Storybook.
 
 **Greed needs OpenType features on or every string looks wrong.** Set them once at the root:
 
@@ -314,3 +364,11 @@ Say these are missing rather than working around them.
 Without these the lowercase `l` loses its tail and the question mark takes an angular form, neither of which matches the product. `frac` is deliberately excluded: in Greed it superscripts every standalone digit, so `48 XP` renders as `⁴⁸ XP`.
 
 The same list is in `tokens/tokens.json` under `typeScale.$extensions`.
+
+### Where both are wired
+
+`src/app/fonts/fonts.css`, imported by `src/app/globals.css` and `.storybook/preview.css`, so a story and a screen render the same strings. Four faces are declared — 400 Regular, 600 SemiBold, 700 Bold, 900 Heavy — matching the weights the type scale uses and the `fontWeights` map in `style-dictionary.config.mjs`. Light, Medium and the italics are on disk but no token names them.
+
+It is plain `@font-face` rather than `next/font/local` on purpose: `next/font` generates its own hashed family name, which a token cannot name, and Storybook never goes through `next/font` at all. The family string in that file has to stay exactly `Greed Standard-TRIAL`, because that is the literal every `typeScale` step carries; change one without the other and every label falls back silently.
+
+`Foundations/Type` → `Scale` guards both, asserting that Greed is really loaded at 400 and 700 and that all six features are on with `frac` off. Without that guard both failures are invisible in CI: the type scale still resolves and the layout still looks plausible while every string renders in the wrong face.

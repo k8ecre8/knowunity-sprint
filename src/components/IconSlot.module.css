@@ -1,0 +1,68 @@
+/* iconSlot — see docs/design-system.md → Components built this sprint → `iconSlot`.
+   Every value is a token from build/css/tokens.css. No bare hex, no loose px,
+   no fallbacks. There is deliberately no colour rule here: the slot has no
+   colour of its own and inherits it from whatever it sits inside. */
+
+.slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* A slot is a shape, not a row: it never flexes to fill its parent. */
+  flex: none;
+}
+
+/* The glyph fills the box, as the nested icon instance does in Figma. CSS beats
+   the width/height presentation attributes the package sets on the svg. */
+.slot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Figma renders a constant 2px stroke at every size on the ramp. An svg scaled
+   up from a 24-unit viewBox would scale its stroke with the box — 3.33px at
+   40px, 0.67px at 8px. non-scaling-stroke holds the package's own strokeWidth
+   at a constant device width instead, so one stroke weight carries across the
+   whole ramp and no number is written here. */
+.slot svg :is(path, circle, ellipse, line, polyline, polygon, rect) {
+  vector-effect: non-scaling-stroke;
+}
+
+/* --- size ------------------------------------------------------------- */
+/* Figma's `Size (IGNORE)` axis. Values are the Icon ramp, which numbers at
+   12.5x the pixel value — read the group before the number. */
+
+.size100 {
+  width: var(--primitive-icon-100);
+  height: var(--primitive-icon-100);
+}
+
+.size150 {
+  width: var(--primitive-icon-150);
+  height: var(--primitive-icon-150);
+}
+
+.size200 {
+  width: var(--primitive-icon-200);
+  height: var(--primitive-icon-200);
+}
+
+.size250 {
+  width: var(--primitive-icon-250);
+  height: var(--primitive-icon-250);
+}
+
+.size300 {
+  width: var(--primitive-icon-300);
+  height: var(--primitive-icon-300);
+}
+
+.size400 {
+  width: var(--primitive-icon-400);
+  height: var(--primitive-icon-400);
+}
+
+.size500 {
+  width: var(--primitive-icon-500);
+  height: var(--primitive-icon-500);
+}

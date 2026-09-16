@@ -1,0 +1,192 @@
+/* button — see docs/design-system.md → Components built this sprint → `button`.
+   Every value is a token from build/css/tokens.css. No bare hex, no loose px,
+   no fallbacks. */
+
+/* The wrapper is the tap target, not the drawn control: at S and M the pill is
+   32 and 40 tall, so the wrapper carries the 48 that clears the 44px minimum. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--primitive-control-1200);
+  padding: var(--primitive-space-0);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+/* The pill is the control the student sees. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: none;
+  border-radius: var(--primitive-radius-full);
+  transition:
+    transform var(--motion-duration-instant) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-instant) var(--motion-easing-standard),
+    border-bottom-width var(--motion-duration-instant) var(--motion-easing-standard),
+    background-color var(--motion-duration-instant) var(--motion-easing-standard);
+}
+
+/* Hug width, like the Figma frame: a longer string widens the button rather
+   than wrapping into a fixed height it cannot grow out of. */
+.label {
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* --- size ------------------------------------------------------------ */
+
+.sizeS .pill {
+  height: var(--primitive-control-800);
+  padding-inline: var(--primitive-space-300);
+  gap: var(--primitive-space-150);
+}
+
+.sizeM .pill {
+  height: var(--primitive-control-1000);
+  padding-inline: var(--primitive-space-400);
+  gap: var(--primitive-space-150);
+}
+
+/* L is tall enough to be its own tap target, so wrapper and pill match. */
+.sizeL {
+  height: var(--primitive-control-1400);
+}
+
+.sizeL .pill {
+  height: var(--primitive-control-1400);
+  padding-inline: var(--primitive-space-600);
+  gap: var(--primitive-space-200);
+}
+
+.sizeS .label,
+.sizeM .label {
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+.sizeL .label {
+  font-family: var(--typeScale-headline-s-fontFamily);
+  font-weight: var(--typeScale-headline-s-fontWeight);
+  font-size: var(--typeScale-headline-s-fontSize);
+  line-height: var(--typeScale-headline-s-lineHeight);
+  letter-spacing: var(--typeScale-headline-s-letterSpacing);
+}
+
+/* --- variant --------------------------------------------------------- */
+
+/* The lip on a filled control is an inner shadow: there is a fill to darken. */
+.variantPrimary .pill,
+.variantSecondary .pill {
+  box-shadow: inset 0 var(--primitive-elevation-lip-sm) 0 0 var(--primitive-color-alpha-dark-15);
+}
+
+.sizeL.variantPrimary .pill,
+.sizeL.variantSecondary .pill {
+  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--primitive-color-alpha-dark-15);
+}
+
+.variantPrimary .pill {
+  background-color: var(--semantic-interactive-primary);
+}
+
+.variantPrimary .label {
+  color: var(--semantic-interactive-onprimary);
+}
+
+.variantSecondary .pill {
+  background-color: var(--semantic-interactive-secondary);
+}
+
+.variantSecondary .label {
+  color: var(--semantic-text-primary);
+}
+
+/* The lip on an outlined control is a heavier bottom border: no fill to darken. */
+.variantTertiary .pill {
+  border-style: solid;
+  border-color: var(--semantic-border-strong);
+  border-width: var(--primitive-stroke-border);
+  border-bottom-width: var(--primitive-elevation-lip-outlined-sm);
+}
+
+.sizeL.variantTertiary .pill {
+  border-bottom-width: var(--primitive-elevation-lip-outlined-lg);
+}
+
+.variantTertiary .label {
+  color: var(--semantic-text-primary);
+}
+
+.variantText .label {
+  color: var(--semantic-text-primary);
+}
+
+/* --- tone (Primary only) --------------------------------------------- */
+
+.variantPrimary.toneSuccess .pill {
+  background-color: var(--semantic-feedback-success-bold);
+}
+
+.variantPrimary.toneSuccess .label {
+  color: var(--semantic-feedback-success-onbold);
+}
+
+.variantPrimary.toneError .pill {
+  background-color: var(--semantic-feedback-error-bold);
+}
+
+.variantPrimary.toneError .label {
+  color: var(--semantic-feedback-error-onbold);
+}
+
+/* --- state: Pressed --------------------------------------------------- */
+
+/* Press is geometry, not colour: the lip collapses to zero and the control
+   sinks by the lip depth. The fill does not change. `data-state="Pressed"`
+   forces the state for a story; `:active` is the real finger down. */
+.button:not(:disabled):active .pill,
+.button[data-state='Pressed'] .pill {
+  box-shadow: none;
+  transform: translateY(calc(var(--primitive-elevation-lip-sm) * -1));
+}
+
+.sizeL.button:not(:disabled):active .pill,
+.sizeL.button[data-state='Pressed'] .pill {
+  transform: translateY(calc(var(--primitive-elevation-lip-lg) * -1));
+}
+
+.variantTertiary.button:not(:disabled):active .pill,
+.variantTertiary.button[data-state='Pressed'] .pill {
+  border-bottom-width: var(--primitive-stroke-border);
+}
+
+/* Text has no lip, so it presses by filling instead, and does not sink.
+   Ordered last so it overrides the sink above at equal specificity. */
+.variantText.button:not(:disabled):active .pill,
+.variantText.button[data-state='Pressed'] .pill {
+  background-color: var(--semantic-background-surface);
+  transform: none;
+}
+
+/* --- state: Disabled -------------------------------------------------- */
+
+.button:disabled .label {
+  color: var(--semantic-text-disabled);
+}
+
+/* Primary is the only variant that loses its fill; the rest keep theirs and
+   only the label drops to text/disabled. The lip stays on all of them. */
+.button:disabled.variantPrimary .pill {
+  background-color: var(--semantic-background-surface);
+}
