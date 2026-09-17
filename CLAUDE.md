@@ -44,6 +44,7 @@ When working on UI, use the storybook tools to read the component library before
 **Design system**
 - `tokens/tokens.json` — every time you need a number, colour, duration or type step. Never edit without updating `docs/design-system.md` in the same pass.
 - `docs/design-system.md` — before creating or modifying any component; for naming, scaffold slots, press behaviour, icons, and known gaps.
+- `docs/component-gaps.md` — running list of things built inline during a screen build. Read it before building a new screen.
 - `docs/reference/` — 33 screenshots of the existing app and beta, for visual context only. 
 
 **Code**
