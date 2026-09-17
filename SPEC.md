@@ -32,19 +32,17 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **Components**
 - `Scaffold`, with `showTopNavSlot` as Figma has it (off).
-- `AppBar` with `variant="leftIconButtonOnly"`, `leftIcon="x-close"` and `leftLabel`.
 - `SummaryCard` with `tone` `Good`, `Partial` and `NeedsPractice`, using `showRow1`–`3` and `term1`–`3`. There's no overflow row, because the section summary shows everything.
 - `Button` in `variant` Primary and Secondary, `size="L"`.
 
 **Not in the library**
-- `noteCard` (tone `outlined`, leading icon), used twice.
+- `noteCard` (tone `outlined`, leading icon), used twice. This gets recreated in each screen's CSS.
 - The `clipboard-check` glyph is not in `IconSlot`.
 - The headline ("Here's how it went", "1 of 3 without help") has no `textBlock` in code.
 
 **Actions**
 - Continue → `/plan`, with the Plate Tectonics voice node marked `done` whatever the outcome.
 - Try the ones you missed → see Open.
-- X → `/plan`.
 
 ### 2. Exam-eve repeat summary
 
@@ -56,7 +54,6 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **Components**
 - `Scaffold`.
-- `AppBar` with `variant="leftIconButtonOnly"` and `leftIcon="x-close"`.
 - `SummaryCard`. `NeedsPractice` is always fully open. `Good` and `Partial` show up to 3 rows and then `showOverflowRow` with `overflowText` ("9 more"). The screen owns `onOverflowPress`, which expands the card.
 - `Button`: Primary L, plus Text L in the misses state.
 
@@ -65,8 +62,8 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - The "How you felt" block has no component.
 
 **Actions**
-- Finish → `/plan` in complete mode.
 - One more try at the misses → see Open.
+- Finish → `/plan` in complete mode.
 - Expanding an overflow row changes nothing but the view.
 
 ### 3. Review summary
@@ -82,20 +79,18 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **Components**
 - `Scaffold`.
-- `AppBar` with `variant="leftIconButtonOnly"` and `leftIcon="x-close"`.
 - `SummaryCard` for the three tones, with overflow on `Good`.
 - `MascotSlot`, underconfidence only.
 - `IconSlot` at `size="250"`.
 - `Button`: Primary L and Secondary L.
 
 **Not in the library**
-- `noteCard` (tone `highlight`, leading icon) for the come-back line.
+- `noteCard` (tone `highlight`, leading icon) for the come-back line. This gets recreated in each screen's CSS.
 - "How you felt": the before-plan and today ratings side by side, which has no component.
 
 **Actions**
 - Continue → `/plan` in complete mode.
 - Try the ones you missed → see Open.
-- X → `/plan`.
 
 ### 4. Mic denied
 
@@ -490,12 +485,12 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 9. **Glyphs missing from `IconSlot`:** `zap` (turn app bar, right) and `clipboard-check` (summary note).
 
 **Conflicts between Figma, docs and code**
-10. **Typed turn input:** Figma uses `Text Field` with a Send `Button`, while `docs/design-system.md` says `ChatInput`. Does the typed screen also have "I don't know the answer"? Figma doesn't show one.
-11. **`bottomNav` on turn screens:** it appears on idle, recording and processing, but not on verdict, hints or answer shown. Keep it throughout or remove it?
-12. **The `zap` icon** on the turn app bar's right: what it does, given that XP is out of scope.
-13. **`SummaryCard` `Good` header:** the code says "GOOD EXPLANATIONS", while Figma's section and review summaries say "CORRECT WITHOUT HELP".
-14. **Row limit:** `SummaryCard` shows at most three rows plus overflow. A 5-term section round with everything open doesn't fit.
-15. **Mic prompt timing:** on tray Start (Figma note) or on the first tap of the control?
+10. **Typed turn input:** Figma uses `Text Field` with a Send `Button`, while `docs/design-system.md` says `ChatInput` They are the same component, just named differently. The typed screen should not have "I don't know the answer".
+11. **`bottomNav` on turn screens:** it appears on idle, recording and processing, but not on verdict, hints or answer shown. It should be removed.
+12. **The `zap` icon** on the turn app bar's right: XP is out of scope, so this icon is decoration.
+13. **`SummaryCard` `Good` header:** the code says "GOOD EXPLANATIONS" and is incorrect, this should match Figma's section and review summaries say "CORRECT WITHOUT HELP".
+14. **Row limit:** `SummaryCard` shows at most three rows plus overflow. A 5-term section round with everything open doesn't fit. The screen can scroll when expanded.
+15. **Mic prompt timing:** triggered when "I can't talk right now" is tapped on the intro tray, not on tray Start 
 
 **Flow**
 16. **Practice retries:** where "Try the ones you missed" and "One more try at the misses" go, which ladder they run, and where they end.
@@ -512,5 +507,5 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 25. The format of the entry links (`?day=review`, `?day=eve`).
 
 **Before hosting**
-26. The Greed trial licence hasn't been checked for web use. Nothing is hosted or deployed until it is.
+26. The Greed trial licence hasn't been checked for web use. Deploy anyway.
 27. No component has a focus state (a WCAG 2.2 gap).
