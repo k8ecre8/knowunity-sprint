@@ -1,0 +1,34 @@
+/* Section summary — every value is a token from build/css/tokens.css.
+   Matches "Section summary / Mixed": middleContentContent pads Space/400
+   top and bottom with a Space/400 gap; cards sit Space/300 apart. */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  padding-block: var(--primitive-space-400);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-300);
+}
+
+/* Two buttons acting as one unit, Space/200 apart as the frame's `actions`
+   frame draws them. `buttonGroup` cannot do two labelled buttons. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-200);
+}
+
+/* The frame stretches each button to the content width. `button` hugs, so
+   both the wrapper and its pill are stretched here. */
+.action {
+  width: 100%;
+}
+
+.action > * {
+  width: 100%;
+}

@@ -42,6 +42,8 @@ const description = `
 
 **The overflow row is a \`<button>\`.** The description calls it the collapse affordance, so it is pressable; \`onOverflowPress\` is a code-only prop for what pressing does. The other rows are \`<li>\` labels, as the DON'T says.
 
+**\`terms\` is code-only (added Sep 2026).** The repeat summary expands a card to every row when its overflow row is pressed, and three named term slots cannot hold twelve terms. Given \`terms\`, the card lists them all and ignores \`showRow1\`–\`3\` and \`term1\`–\`3\`. The screen still decides: it passes \`terms\` only for the expanded state, with \`showOverflowRow\` off.
+
 **Skipped's icon is \`text/tertiary\`,** which the description leaves out — it names only the inverse pair. The overflow glyphs are drawn filled at 0.75 stroke in the file; \`IconSlot\` renders them at the system's one stroke weight.
 `;
 
@@ -67,7 +69,7 @@ export const Good: Story = {
   name: 'tone=Good',
   args: { tone: 'Good' },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('heading', { name: 'GOOD EXPLANATIONS' })).toBeVisible();
+    await expect(canvas.getByRole('heading', { name: 'CORRECT WITHOUT HELP' })).toBeVisible();
     await expect(canvas.getAllByRole('listitem')).toHaveLength(1);
     await expect(canvas.queryByRole('button')).toBeNull();
   },
@@ -139,6 +141,29 @@ export const Collapsed: Story = {
     // Only the overflow row remains, and it is the button.
     await expect(canvas.getAllByRole('listitem')).toHaveLength(1);
     await expect(canvas.getByRole('button', { name: '8 terms' })).toBeVisible();
+  },
+};
+
+/** Expanded: the screen passes every term after the overflow row is pressed. */
+export const Expanded: Story = {
+  name: 'tone=Good, terms (expanded)',
+  args: {
+    tone: 'Good',
+    terms: [
+      'Divergent boundaries',
+      'Convergent boundaries',
+      'Rock layers',
+      'Subduction zones',
+      'Earthquake waves',
+      'Continental drift evidence',
+      'The rock cycle',
+      'Types of volcano',
+    ],
+    showOverflowRow: false,
+  },
+  play: async ({ canvas }) => {
+    await expect(canvas.getAllByRole('listitem')).toHaveLength(8);
+    await expect(canvas.queryByRole('button')).toBeNull();
   },
 };
 

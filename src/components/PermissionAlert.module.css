@@ -1,0 +1,82 @@
+/* permissionAlert — the mocked iOS mic prompt. See docs/design-system.md →
+   Components built this sprint → `permissionAlert`. Every value is a token
+   from build/css/tokens.css. Centred over the scrim: background/surface on a
+   border/default edge at Radius/400; the OS blur has no token. The two
+   actions split the width, Control/1200 tall, in text/link, with Allow in
+   bold as iOS draws the preferred choice. */
+
+.layer {
+  position: fixed;
+  inset: var(--primitive-space-0);
+  display: grid;
+  place-items: center;
+  padding: var(--primitive-space-1200);
+}
+
+.alert {
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+  border: var(--primitive-stroke-border) solid var(--semantic-border-default);
+  border-radius: var(--primitive-radius-400);
+  background-color: var(--semantic-background-surface);
+  text-align: center;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-100);
+  padding: var(--primitive-space-400);
+}
+
+.title {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.body {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  border-top: var(--primitive-stroke-border) solid var(--semantic-border-default);
+}
+
+.actions > button {
+  flex: 1;
+  min-height: var(--primitive-control-1200);
+  padding: var(--primitive-space-200);
+  border: none;
+  background: none;
+  color: var(--semantic-text-link);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  cursor: pointer;
+}
+
+.actions > button + button {
+  border-left: var(--primitive-stroke-border) solid var(--semantic-border-default);
+}
+
+.actions > .preferred {
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+}

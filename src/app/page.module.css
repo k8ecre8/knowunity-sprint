@@ -1,0 +1,234 @@
+/* App home — every value is a token from build/css/tokens.css.
+   Matches "App home / Default (study reminder)" and "App home / Reminder
+   state". */
+
+/* --- topBar ----------------------------------------------------------- */
+/* Space/200 vertical and Space/400 horizontal padding, the menu and focus
+   icons at the ends and the counters between. The icon boxes are Control/1000
+   (40) as the frame draws them: both are inert decoration here, not targets,
+   and the three pills need the width. */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--primitive-space-200) var(--primitive-space-400);
+}
+
+.barIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1000);
+  height: var(--primitive-control-1000);
+  color: var(--semantic-text-primary);
+}
+
+/* counters: three pills Space/200 apart, each Space/300 by Space/400 padding
+   at Radius/full, Body S Bold, Space/150 before the art. The row may scroll
+   if strings grow. */
+.counters {
+  display: flex;
+  flex-shrink: 1;
+  align-items: center;
+  gap: var(--primitive-space-200);
+  min-width: var(--primitive-space-0);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.counter {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--primitive-space-150);
+  padding: var(--primitive-space-300) var(--primitive-space-400);
+  border-radius: var(--primitive-radius-full);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+.counterPro {
+  background-color: var(--semantic-pro-subtle);
+  color: var(--semantic-pro-onsubtle);
+}
+
+.counterInfo {
+  background-color: var(--semantic-feedback-info-subtle);
+  color: var(--semantic-feedback-info-onsubtle);
+}
+
+.counterCoral {
+  background-color: var(--semantic-accent-coral-subtle);
+  color: var(--semantic-accent-coral-onsubtle);
+}
+
+/* The art assets are exported on a 140-square canvas with the glyph drawn at
+   its natural size (about 18 by 22) in the centre. `object-fit: none` keeps
+   that size and the Icon/250 box clips the empty canvas around it, so the
+   art matches the frame without a loose width. */
+.counterArt {
+  display: block;
+  width: var(--primitive-icon-250);
+  height: var(--primitive-icon-250);
+  object-fit: none;
+  object-position: center;
+}
+
+/* The Pro badge is a wordmark, 39 wide in the frame: Icon/500 (40) here. */
+.counterArtWide {
+  width: var(--primitive-icon-500);
+}
+
+/* --- middleContent ---------------------------------------------------- */
+/* The frame stacks the middle content to its bottom edge (hero, Dream
+   College, quick actions, Ask Knowie). Here the stack takes the spare height
+   and sits at the bottom, and scrolls once it is taller than the slot. */
+.content {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* hero: Knowie, the headline and the action, centred, Space/300 apart, with
+   Space/400 vertical and Space/600 horizontal padding. The eve frame gives
+   the hero Space/1200 above and below instead. */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-300);
+  padding: var(--primitive-space-400) var(--primitive-space-600);
+  text-align: center;
+}
+
+.heroEve {
+  padding-block: var(--primitive-space-1200);
+}
+
+.headlineS {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-headline-s-fontFamily);
+  font-weight: var(--typeScale-headline-s-fontWeight);
+  font-size: var(--typeScale-headline-s-fontSize);
+  line-height: var(--typeScale-headline-s-lineHeight);
+  letter-spacing: var(--typeScale-headline-s-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.headlineM {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-headline-m-fontFamily);
+  font-weight: var(--typeScale-headline-m-fontWeight);
+  font-size: var(--typeScale-headline-m-fontSize);
+  line-height: var(--typeScale-headline-m-lineHeight);
+  letter-spacing: var(--typeScale-headline-m-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.body {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+/* The action keeps Space/300 above and below, as the frame's cta wrapper. */
+.cta {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--primitive-space-300);
+}
+
+/* marginWrap: Space/1600 above Dream College on the default frame, nothing
+   on the eve frame. */
+.collegeWrap {
+  padding-top: var(--primitive-space-1600);
+}
+
+.collegeWrapEve {
+  padding-top: var(--primitive-space-0);
+}
+
+.college {
+  display: block;
+}
+
+/* quickActions: chips Space/200 apart with Space/300 above and below. The
+   row scrolls sideways rather than wrapping, as the eve frame shows the
+   third chip running off the edge. */
+.quickActions {
+  display: flex;
+  align-items: center;
+  gap: var(--primitive-space-200);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-300) var(--primitive-space-0);
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.quickAction {
+  display: flex;
+  flex-shrink: 0;
+}
+
+/* askRow: a round plus and the Ask Knowie bar Space/200 apart. The bar hugs
+   its Body M placeholder with Space/300 by Space/400 padding; the plus keeps
+   the bar's height so the two read as one control. The frame draws both at
+   52, a step Control has no token for. */
+.askRow {
+  display: flex;
+  align-items: stretch;
+  gap: var(--primitive-space-200);
+}
+
+.plus {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-background-surface);
+  color: var(--semantic-text-primary);
+}
+
+.askKnowie {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--primitive-space-300);
+  min-width: var(--primitive-space-0);
+  padding: var(--primitive-space-300) var(--primitive-space-400);
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-background-surface);
+  color: var(--semantic-text-primary);
+}
+
+.askPlaceholder {
+  flex: 1;
+  min-width: var(--primitive-space-0);
+  overflow: hidden;
+  color: var(--semantic-text-placeholder);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

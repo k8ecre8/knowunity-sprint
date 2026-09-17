@@ -10,7 +10,7 @@ export type SummaryCardTone = 'Good' | 'Partial' | 'NeedsPractice' | 'Skipped';
  * glyph is what the master shows: a check, a circular arrow, a cross, a skip.
  */
 const toneSpec: Record<SummaryCardTone, { header: string; glyph: IconName }> = {
-  Good: { header: 'GOOD EXPLANATIONS', glyph: 'check' },
+  Good: { header: 'CORRECT WITHOUT HELP', glyph: 'check' },
   Partial: { header: 'NEEDED A HINT', glyph: 'refresh-cw-01' },
   NeedsPractice: { header: 'NEEDS PRACTICE', glyph: 'x-close' },
   Skipped: { header: 'SKIPPED', glyph: 'skip-forward' },
@@ -35,6 +35,13 @@ export type SummaryCardProps = {
    * the screen does, so the screen owns this too.
    */
   onOverflowPress?: () => void;
+  /**
+   * Code-only (added Sep 2026 for the repeat summary's expanded state). The
+   * whole list, when the screen has decided to show every row: it replaces
+   * `showRow1`–`3` and `term1`–`3`, because three named slots cannot hold
+   * twelve terms. Pair it with `showOverflowRow` off.
+   */
+  terms?: string[];
   className?: string;
 };
 
@@ -49,14 +56,17 @@ export function SummaryCard({
   showOverflowRow = false,
   overflowText = '3 more',
   onOverflowPress,
+  terms,
   className,
 }: SummaryCardProps) {
   const { header, glyph } = toneSpec[tone];
-  const rows = [
-    [showRow1, term1],
-    [showRow2, term2],
-    [showRow3, term3],
-  ].filter(([show]) => show) as [boolean, string][];
+  const rows: [boolean, string][] = terms
+    ? terms.map((t) => [true, t])
+    : ([
+        [showRow1, term1],
+        [showRow2, term2],
+        [showRow3, term3],
+      ].filter(([show]) => show) as [boolean, string][]);
 
   return (
     <section

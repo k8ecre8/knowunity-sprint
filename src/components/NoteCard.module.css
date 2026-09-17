@@ -1,0 +1,97 @@
+/* noteCard — see docs/design-system.md → Components built this sprint →
+   `noteCard`. Every value is a token from build/css/tokens.css.
+   Radius/400, padding Space/400, gap Space/300; fills its parent; height
+   hugs the copy. The Figma masters align the row centre; the code aligns
+   the icon to the first line so a three-line body reads from the top. */
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--primitive-space-300);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-400);
+  border: var(--primitive-stroke-border) solid transparent;
+  border-radius: var(--primitive-radius-400);
+}
+
+/* neutral: a quiet aside on background/surface with secondary text. */
+.neutral {
+  background-color: var(--semantic-background-surface);
+}
+
+.neutral .body {
+  color: var(--semantic-text-secondary);
+}
+
+/* highlight: a note the student should act on, on the highlight pair. */
+.highlight {
+  border-color: var(--semantic-highlight-border);
+  background-color: var(--semantic-highlight-surface);
+}
+
+/* outlined: a standalone card on the input fill with a strong border. */
+.outlined {
+  border-color: var(--semantic-border-strong);
+  background-color: var(--semantic-background-input);
+}
+
+/* plain: the inline note with no container and no horizontal padding. */
+.plain {
+  padding-inline: var(--primitive-space-0);
+  border: none;
+  border-radius: var(--primitive-space-0);
+}
+
+/* leading=icon: iconSlot 400 in accent/brand/bold. */
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--semantic-accent-brand-bold);
+}
+
+/* leading=badge: a nested planNode at size S, centred on the row as the
+   masters draw it (the badge is as tall as a title-and-body pair). */
+.badge {
+  display: flex;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--primitive-space-100);
+  min-width: var(--primitive-space-0);
+}
+
+.title {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.body {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+/* showChevron: iconSlot 250 in text/tertiary, centred on the row. */
+.chevron {
+  display: flex;
+  flex-shrink: 0;
+  align-self: center;
+  color: var(--semantic-text-tertiary);
+}

@@ -1,0 +1,30 @@
+/* bottomNav — every value is a token from build/css/tokens.css.
+   Four 44 tabs (Control/1200 here, to clear 44 by a token) spread across the
+   bar, Space/400 vertical and Space/600 horizontal padding, a border/default
+   hairline on top. Active is text/primary, the rest text/tertiary.
+
+   The scaffold's bottomContent already pads Space/400, so the bar pulls back
+   out to the edges and re-pads itself, keeping the home-indicator inset. */
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: var(--primitive-space-negative-400);
+  margin-bottom: calc(var(--primitive-space-negative-400) - env(safe-area-inset-bottom));
+  padding: var(--primitive-space-400) var(--primitive-space-600);
+  padding-bottom: calc(var(--primitive-space-400) + env(safe-area-inset-bottom));
+  border-top: var(--primitive-stroke-border) solid var(--semantic-border-default);
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1200);
+  height: var(--primitive-control-1200);
+  color: var(--semantic-text-tertiary);
+}
+
+.tab[data-active] {
+  color: var(--semantic-text-primary);
+}

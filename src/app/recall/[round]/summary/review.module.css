@@ -1,0 +1,125 @@
+/* Review summary — every value is a token from build/css/tokens.css.
+   Matches "Review summary / Days later claim": middleContentContent pads
+   Space/400 top and bottom with a Space/600 gap; inside a group the heading
+   and its content sit Space/300 apart; cards sit Space/300 apart. */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-600);
+  padding-block: var(--primitive-space-400);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-300);
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-300);
+}
+
+/* confidenceBlock: background/surface, Radius/400, padding Space/400. The
+   frame's gap between the reads and the verdict is a loose 21; Space/600 is
+   used here and reported. */
+.confidence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-600);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-400);
+  border-radius: var(--primitive-radius-400);
+  background-color: var(--semantic-background-surface);
+}
+
+/* confidenceReads — not in the library, built inline. Two reads fill
+   equally, Space/300 apart, with the arrow hugging its iconSlot 250 between
+   them. Each read: background/input, border/strong at Stroke/Border,
+   Radius/400, padding Space/400, Space/050 between label and value. */
+.reads {
+  display: flex;
+  align-items: stretch;
+  gap: var(--primitive-space-300);
+  width: 100%;
+}
+
+.read {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--primitive-space-050);
+  box-sizing: border-box;
+  min-width: var(--primitive-space-0);
+  padding: var(--primitive-space-400);
+  border: var(--primitive-stroke-border) solid var(--semantic-border-strong);
+  border-radius: var(--primitive-radius-400);
+  background-color: var(--semantic-background-input);
+}
+
+.readLabel {
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-caption-m-bold-fontFamily);
+  font-weight: var(--typeScale-caption-m-bold-fontWeight);
+  font-size: var(--typeScale-caption-m-bold-fontSize);
+  line-height: var(--typeScale-caption-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-caption-m-bold-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.readValue {
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.readArrow {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--semantic-text-tertiary);
+}
+
+/* The celebratory Knowie, underconfidence only: mascotSlot XL, centred. */
+.mascot {
+  display: flex;
+  justify-content: center;
+}
+
+/* The comparison copy: Headline S over Body M Regular, Space/050 apart,
+   both text/primary and centred. */
+.verdict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-050);
+  text-align: center;
+}
+
+.verdictHeadline {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-headline-s-fontFamily);
+  font-weight: var(--typeScale-headline-s-fontWeight);
+  font-size: var(--typeScale-headline-s-fontSize);
+  line-height: var(--typeScale-headline-s-lineHeight);
+  letter-spacing: var(--typeScale-headline-s-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.verdictBody {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}

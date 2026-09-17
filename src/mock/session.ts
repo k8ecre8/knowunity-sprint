@@ -1,0 +1,187 @@
+/* Session state for the mocked recall — see SPEC.md → How the mocked recall
+   behaves. Everything lives in `sessionStorage` under one key, so clearing
+   storage resets the prototype. Summaries count rows and nothing else. */
+
+import { useSyncExternalStore } from 'react';
+import { termsForRound, type Round, type ScriptStep, type Term } from './terms';
+
+export type Outcome = 'correct-without-help' | 'needed-a-hint' | 'needs-practice';
+
+export type InputMode = 'voice' | 'typed';
+
+export type OutcomeRow = {
+  termId: string;
+  round: Round;
+  outcome: Outcome;
+  /** Logged, never shown. */
+  mode: InputMode;
+  lastSeenAt: string;
+};
+
+/** Where a round was left after X → Leave, so re-entering resumes it. */
+export type Resume = {
+  round: Round;
+  /** 1-based, matching the `[term]` route segment. */
+  term: number;
+  /** 0 = prompt, 1 = hint 1, 2 = hint 2, 3 = answer shown. */
+  rung: number;
+};
+
+/** A practice pass writes no rows. Set by "Try the ones you missed". */
+export type Practice = {
+  round: Round;
+  termIds: string[];
+};
+
+export type Session = {
+  rows: OutcomeRow[];
+  inputMode: InputMode;
+  micPermission: 'unasked' | 'granted' | 'denied';
+  resume: Resume | null;
+  practice: Practice | null;
+  /** Plan nodes marked done, by section id. */
+  doneSections: string[];
+  /** The pre-review confidence rating, one of five positions. */
+  preReviewRating: number | null;
+};
+
+const KEY = 'knowie.session';
+
+export const emptySession: Session = {
+  rows: [],
+  inputMode: 'voice',
+  micPermission: 'unasked',
+  resume: null,
+  practice: null,
+  doneSections: [],
+  preReviewRating: null,
+};
+
+function storage(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.sessionStorage;
+  } catch {
+    return null;
+  }
+}
+
+export function readSession(): Session {
+  const store = storage();
+  if (!store) return emptySession;
+  try {
+    const raw = store.getItem(KEY);
+    if (!raw) return emptySession;
+    return { ...emptySession, ...(JSON.parse(raw) as Partial<Session>) };
+  } catch {
+    return emptySession;
+  }
+}
+
+export function writeSession(next: Session): void {
+  const store = storage();
+  if (!store) return;
+  store.setItem(KEY, JSON.stringify(next));
+}
+
+const listeners = new Set<() => void>();
+
+export function updateSession(patch: (s: Session) => Session): Session {
+  const next = patch(readSession());
+  writeSession(next);
+  listeners.forEach((l) => l());
+  return next;
+}
+
+/* --- reading from React ---------------------------------------------------- */
+
+let cachedRaw: string | null | undefined;
+let cachedSession: Session = emptySession;
+
+/** Snapshot for useSyncExternalStore: stable while the stored string is unchanged. */
+function snapshot(): Session {
+  const store = storage();
+  const raw = store ? store.getItem(KEY) : null;
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    cachedSession = readSession();
+  }
+  return cachedSession;
+}
+
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  if (typeof window !== 'undefined') window.addEventListener('storage', listener);
+  return () => {
+    listeners.delete(listener);
+    if (typeof window !== 'undefined') window.removeEventListener('storage', listener);
+  };
+}
+
+/**
+ * The session as a React store. Returns `null` on the server and on the first
+ * client render, so the markup matches; the screen renders once it has it.
+ */
+export function useSession(): Session | null {
+  return useSyncExternalStore(subscribe, snapshot, () => null);
+}
+
+/** Each term writes one row when it ends; a second pass replaces it. */
+export function recordOutcome(row: OutcomeRow): void {
+  updateSession((s) => ({
+    ...s,
+    rows: [...s.rows.filter((r) => !(r.termId === row.termId && r.round === row.round)), row],
+  }));
+}
+
+export function rowsForRound(session: Session, round: Round): OutcomeRow[] {
+  return session.rows.filter((r) => r.round === round);
+}
+
+/**
+ * The 1-based term a round is on right now: a left-off term if there is one,
+ * otherwise the first term without a row, otherwise the last term.
+ */
+export function currentTerm(session: Session, round: Round): number {
+  if (session.resume?.round === round) return session.resume.term;
+  const terms = termsForRound(round);
+  const done = new Set(rowsForRound(session, round).map((r) => r.termId));
+  const next = terms.findIndex((t) => !done.has(t.id));
+  return next === -1 ? Math.max(terms.length, 1) : next + 1;
+}
+
+/* --- outcomes from the script -------------------------------------------- */
+
+/** The outcome a term's script produces when walked with no discards. */
+export function scriptedOutcome(script: ScriptStep[]): Outcome {
+  let hints = 0;
+  for (const step of script) {
+    if (step.kind === 'correct') break;
+    if (step.kind === 'unclear') continue;
+    hints += 1;
+    if (hints >= 2) break;
+  }
+  if (hints === 0) return 'correct-without-help';
+  if (hints === 1) return 'needed-a-hint';
+  return 'needs-practice';
+}
+
+/**
+ * The rows a summary counts. Until the turn screens have written rows for
+ * this round, the summary falls back to what the script would have produced,
+ * so it renders the scripted state rather than an empty screen.
+ */
+export function summaryRows(session: Session, round: Round): { rows: OutcomeRow[]; fromScript: boolean } {
+  const real = rowsForRound(session, round);
+  if (real.length > 0) return { rows: real, fromScript: false };
+  const rows = termsForRound(round).map(
+    (t: Term): OutcomeRow => ({
+      termId: t.id,
+      round,
+      outcome: scriptedOutcome(t.script),
+      mode: 'voice',
+      lastSeenAt: t.lastSeenAt,
+    }),
+  );
+  return { rows, fromScript: true };
+}

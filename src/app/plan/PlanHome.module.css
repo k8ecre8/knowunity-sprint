@@ -1,0 +1,339 @@
+/* Exam plan home — every value is a token from build/css/tokens.css.
+   Matches "Exam plan home / Day 1" and "Exam plan home / Plan done, test
+   tomorrow". The frame's middleContent has no side padding (the tabs run
+   edge to edge) while the scaffold pads Space/400, so the content pulls
+   itself back out by that step and each block pads itself as the frame does. */
+
+/* --- topBar ----------------------------------------------------------- */
+/* Space/200 vertical and Space/400 horizontal padding around a 40 kebab in
+   the frame. The kebab box is Control/1200 here to clear 44, so the vertical
+   padding drops to Space/100 and the bar stays 56. */
+.topBar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: var(--primitive-space-100) var(--primitive-space-400);
+}
+
+.kebab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1200);
+  height: var(--primitive-control-1200);
+  color: var(--semantic-text-primary);
+}
+
+.glyph {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+/* --- middleContent ---------------------------------------------------- */
+.content {
+  display: flex;
+  flex-direction: column;
+  margin-inline: calc(var(--primitive-space-400) * -1);
+}
+
+/* planIdentity: Space/400 sides, Space/200 bottom, Space/200 gap, centred. */
+.identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-200);
+  padding: var(--primitive-space-0) var(--primitive-space-400) var(--primitive-space-200);
+}
+
+/* subjectIcon: a 56 square (Control/1400) in accent/blue/bold at Radius/400,
+   the glyph in accent/blue/onBold. */
+.subjectIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1400);
+  height: var(--primitive-control-1400);
+  border-radius: var(--primitive-radius-400);
+  background-color: var(--semantic-accent-blue-bold);
+  color: var(--semantic-accent-blue-onbold);
+}
+
+/* title: Headline S with the switcher chevron Space/150 after it, Space/100
+   above and below. The plan identity title keeps its capitals. */
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--primitive-space-150);
+  margin: var(--primitive-space-0);
+  padding-block: var(--primitive-space-100);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-headline-s-fontFamily);
+  font-weight: var(--typeScale-headline-s-fontWeight);
+  font-size: var(--typeScale-headline-s-fontSize);
+  line-height: var(--typeScale-headline-s-lineHeight);
+  letter-spacing: var(--typeScale-headline-s-letterSpacing);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.titleChevron {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+/* meta: two icon-and-label pairs Space/600 apart, Body S Bold in
+   text/secondary, icon Space/150 before the label. Wraps if strings grow. */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--primitive-space-200) var(--primitive-space-600);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  list-style: none;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--primitive-space-150);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+/* --- tabs ------------------------------------------------------------- */
+/* Two tabs filling the width. Active: text/primary over a Stroke/Heavy
+   Border line in accent/blue/bold. Inactive: text/disabled over a
+   Stroke/Border line in border/strong. Space/100 vertical, Space/300
+   horizontal padding. The label's text style is unbound in the file; Body M
+   Bold is the nearest step. */
+.tabs {
+  display: flex;
+  align-items: stretch;
+}
+
+.tab {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: var(--primitive-space-100) var(--primitive-space-300);
+  border-bottom: var(--primitive-stroke-border) solid var(--semantic-border-strong);
+  color: var(--semantic-text-disabled);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  text-align: center;
+}
+
+.tab[data-active] {
+  border-bottom-width: var(--primitive-stroke-heavy-border);
+  border-bottom-color: var(--semantic-accent-blue-bold);
+  color: var(--semantic-text-primary);
+}
+
+/* --- planBody --------------------------------------------------------- */
+/* Space/400 padding all round, Space/400 between blocks; Space/700 in
+   complete mode as the frame draws it. */
+.planBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  padding: var(--primitive-space-400);
+}
+
+.planBodyComplete {
+  gap: var(--primitive-space-700);
+}
+
+.path {
+  display: flex;
+  flex-direction: column;
+}
+
+/* sectionRow: background/input, border/strong at Stroke/Border, Radius/400.
+   The name cell pads Space/300 by Space/400 in Body M Bold; the book cell is
+   Control/1400 wide behind a border/strong divider. Neither half is a
+   control here: the materials tab is outside this flow. */
+.sectionRow {
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  border: var(--primitive-stroke-border) solid var(--semantic-border-strong);
+  border-radius: var(--primitive-radius-400);
+  background-color: var(--semantic-background-input);
+  /* Space/400 to the first step, which carries its own Space/200 above. */
+  margin-bottom: var(--primitive-space-200);
+}
+
+.sectionName {
+  flex: 1;
+  min-width: var(--primitive-space-0);
+  padding: var(--primitive-space-300) var(--primitive-space-400);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.sectionBook {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1400);
+  border-left: var(--primitive-stroke-border) solid var(--semantic-border-strong);
+  color: var(--semantic-text-primary);
+}
+
+/* phaseDivider: a border/strong hairline either side of a Body S Bold label
+   in text/secondary, Space/300 gaps and Space/300 above and below. */
+.phaseDivider {
+  display: flex;
+  align-items: center;
+  gap: var(--primitive-space-300);
+  padding-block: var(--primitive-space-300);
+}
+
+.phaseLine {
+  flex: 1;
+  height: var(--primitive-stroke-border);
+  background-color: var(--semantic-border-strong);
+}
+
+.phaseLabel {
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+  text-align: center;
+}
+
+/* --- the winding path ------------------------------------------------- */
+.steps {
+  display: flex;
+  flex-direction: column;
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  list-style: none;
+}
+
+.stepItem {
+  display: flex;
+}
+
+/* step: the node and its text, Space/400 apart, Space/200 above and below,
+   inset Space/1600 on odd rows and Space/800 on even rows so the path winds.
+   The whole row is the tap target when the node goes somewhere. */
+.step {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--primitive-space-400);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-200) var(--primitive-space-0);
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+button.step {
+  cursor: pointer;
+}
+
+.stepOut {
+  padding-left: var(--primitive-space-1600);
+}
+
+.stepIn {
+  padding-left: var(--primitive-space-800);
+}
+
+.stepText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--primitive-space-050);
+  min-width: var(--primitive-space-0);
+}
+
+/* Body M Bold: text/primary on done and next, text/secondary on todo. */
+.stepTitle {
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.step[data-state='todo'] .stepTitle {
+  color: var(--semantic-text-secondary);
+}
+
+.stepCaption {
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+/* --- complete mode ---------------------------------------------------- */
+/* testDayPanel: mascot, Headline S, Body M Regular in text/secondary and the
+   action, centred and Space/300 apart. The action keeps Space/300 above and
+   below as the frame's cta wrapper does. */
+.testDayPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-300);
+  text-align: center;
+}
+
+.panelHeadline {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-headline-s-fontFamily);
+  font-weight: var(--typeScale-headline-s-fontWeight);
+  font-size: var(--typeScale-headline-s-fontSize);
+  line-height: var(--typeScale-headline-s-lineHeight);
+  letter-spacing: var(--typeScale-headline-s-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.panelBody {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.panelCta {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--primitive-space-300);
+}

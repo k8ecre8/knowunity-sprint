@@ -1,0 +1,30 @@
+/* Mic denied — every value is a token from build/css/tokens.css. No Figma
+   frame; the stack borrows the intro tray's rhythm: mascot, then the
+   headline block, Space/400 apart, padded Space/400 top and bottom. */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  padding-block: var(--primitive-space-400);
+}
+
+/* Knowie sits centred; the text block and note fill the width. */
+.mascot {
+  align-self: center;
+}
+
+/* Two buttons acting as one unit, Space/200 apart, as the tray draws Start
+   over "I can't talk right now". `buttonGroup` cannot do two labelled buttons. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-200);
+}
+
+/* The tray stretches each button to the content width. `button` hugs, so
+   both the wrapper and its pill are stretched here. */
+.actions > *,
+.actions > * > * {
+  width: 100%;
+}

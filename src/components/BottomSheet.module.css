@@ -1,0 +1,48 @@
+/* bottomSheet — see docs/design-system.md → Components built this sprint →
+   `bottomSheet`. Every value is a token from build/css/tokens.css.
+   background/surface, Radius/600 on the top corners, Space/600 top padding,
+   Space/400 sides and bottom plus the home-indicator inset, Space/400 gap.
+   Enters from below at motion.duration.slow; reduced mode collapses it and
+   the media query removes it outright. */
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-600) var(--primitive-space-400);
+  padding-bottom: calc(var(--primitive-space-400) + env(safe-area-inset-bottom));
+  border-start-start-radius: var(--primitive-radius-600);
+  border-start-end-radius: var(--primitive-radius-600);
+  background-color: var(--semantic-background-surface);
+  animation: rise var(--motion-duration-slow) var(--motion-easing-enter);
+}
+
+@keyframes rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
+}
+
+/* Stacked actions, Space/200 apart, each stretched to the sheet's width.
+   `button` hugs, so the wrapper and its pill are both stretched. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-200);
+}
+
+.actions > *,
+.actions > * > * {
+  width: 100%;
+}

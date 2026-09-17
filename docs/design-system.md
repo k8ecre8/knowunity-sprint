@@ -33,6 +33,8 @@ If you need a number, a colour, a duration or a type step, read `tokens/tokens.j
 
 **`snackbar`** for a transient message that needs no decision.
 
+**`permissionAlert`** for the mocked iOS microphone prompt, once per session. It is the OS talking, not Knowie, so it is not a `bottomSheet` and not a `responseBubble`.
+
 **`responseBubble`** for anything Knowie says: the prompt on an idle turn, the verdict and feedback after judging. One container for the whole turn loop.
 
 **`summaryCard`** for the per-category breakdown at the end of a session. One card per outcome, up to three terms shown, with an overflow row that doubles as the collapse affordance. The screen decides how many rows show, not the card.
@@ -251,6 +253,8 @@ The Figma description is `button`'s description with the TONE paragraph left out
 > showTitle (Body M Bold), body (Body S Regular), showChevron (iconSlot 250, text/tertiary). Radius/400, padding Space/400, gap Space/300. Height hugs content.
 > Replaced the hand-built fluencyNote, comeBackNote, beforeYourTest, lastTime and planCompleteCard frames, Sep 2026.
 
+**Built in code, Sep 2026,** as `src/components/NoteCard.tsx`, promoted from the section summary's inline note when the review summary needed tone `highlight` for its come-back line. All four tones and all three leading values are built: `icon` (pass `icon`), `badge` (pass `badge` with the nested `planNode`'s tone; it renders state done at size S, added Sep 2026 for the exam plan home's plan-complete card, and takes precedence over `icon`) or none. The badge is centred on the row as the masters draw it. The body is `children`; `title`, `showTitle` and `showChevron` follow the Figma properties. No new tokens. One difference from the masters: the code aligns the icon to the first line of the body rather than the row centre, so a three-line note reads from the top.
+
 ### `bottomNav`
 
 **Axes:** `active` (chat, plans, trophy, profile). 4 variants. No other properties.
@@ -262,6 +266,8 @@ The Figma description is `button`'s description with the TONE paragraph left out
 **Don't** hide a tab or change its glyph per screen; the bar is app chrome and is the same everywhere. Don't recolour an inactive tab to hint at something; there is no such state.
 
 > bottomNav: the app tab bar. Four tabs (chat, plans, trophy, profile) as 44px iconSlots, 1px divider on top (border/default), 16px vertical padding. active: which tab is text/primary; the rest are text/tertiary. Existing app chrome, rebuilt as one component so the eight screens that carry it stay in sync. Built from the hand-built bottomNav frames, Sep 2026.
+
+**Built in code, Sep 2026,** as `src/components/BottomNav.tsx`, promoted from the exam plan home's inline bar when the app home needed the same bar with `chat` active. `active` follows the Figma axis. The tabs are `Control/1200` (48) rather than a loose 44, and the bar pulls itself out of the scaffold's `bottomContent` padding to reach the edges and the home-indicator inset. The tabs are inert: the bar is app chrome outside this flow. Three of its four glyphs (`myai-chat`, `target-04`, `trophy-02`) are not in `IconSlot`, so those tabs show placeholders marked `data-placeholder-glyph`; see Known gaps.
 
 ### `listItem`, Outlined and Outlined Compact
 
@@ -304,9 +310,9 @@ Three properties were added to the existing set: `showRow1`, `showOverflowRow` a
 > - Repeat summary: two groups only, right and wrong. Wrong is always fully open (that is the work). Right shows up to 3 then "N more", or collapses to header + "N terms" when the list is long. No grouping by history or by how the term was tested.
 > Expanded is the same card with rows on and the overflow row off; build it as a second frame for the prototype.
 
-**Built in code this sprint** as `src/components/SummaryCard.tsx`, composed on `IconSlot` at 250 for the row, plus and chevron icons. No new tokens. Props are the Figma properties by name — `tone`, `showRow1`–`3`, `term1`–`3`, `showOverflowRow`, `overflowText` — plus a code-only `onOverflowPress`, because the overflow row is an affordance and so is a `<button>`; the other rows are list items, as the DON'T says. The card fills its parent.
+**Built in code this sprint** as `src/components/SummaryCard.tsx`, composed on `IconSlot` at 250 for the row, plus and chevron icons. No new tokens. Props are the Figma properties by name — `tone`, `showRow1`–`3`, `term1`–`3`, `showOverflowRow`, `overflowText` — plus a code-only `onOverflowPress`, because the overflow row is an affordance and so is a `<button>`; the other rows are list items, as the DON'T says. The card fills its parent. A second code-only prop, `terms` (added Sep 2026 for the repeat summary), takes the whole list for the expanded and fully-open states, because three named slots cannot hold twelve terms; given `terms`, the card ignores `showRow1`–`3` and `term1`–`3`. The screen still decides when to pass it.
 
-**Exception to the sentence-case rule, decided Sep 2026.** The four headers render in capitals as the masters draw them — `GOOD EXPLANATIONS`, `NEEDED A HINT`, `NEEDS PRACTICE`, `SKIPPED`. This is the one place in the system that does, and it was chosen over the Never rule deliberately. The strings are stored in capitals, not transformed, so the DOM matches the screen.
+**Exception to the sentence-case rule, decided Sep 2026.** The four headers render in capitals as the masters draw them — `CORRECT WITHOUT HELP` (was `GOOD EXPLANATIONS` in code until the review summary build, Sep 2026; SPEC.md Open 13), `NEEDED A HINT`, `NEEDS PRACTICE`, `SKIPPED`. This is the one place in the system that does, and it was chosen over the Never rule deliberately. The strings are stored in capitals, not transformed, so the DOM matches the screen.
 
 **Where the file and the description disagree.** The description says "header … swap the text", but the set has no `header` property; each tone bakes its string in, and so does the code. The masters place their icons as raw instances rather than through `iconSlot`, against the icon rule — the code goes through `IconSlot`. Skipped's row icon is `text/tertiary`, which the description omits. The overflow `plus` and `chevron` are drawn filled at 0.75 stroke where the row icons are 2px line; `IconSlot` renders all at one weight. The OUTSTANDING note about placeholder squares is stale: the masters now carry the glyphs it asked for.
 
@@ -468,6 +474,30 @@ Added to the Figma set, Sep 2026.
 
 ---
 
+### `bottomSheet`
+
+**Properties:** `headline`, `caption`, `showCaption` (off by default); the actions are children. No axes.
+
+**Reach for it** for a decision or a tray that rises over the current screen: the confirm on tapping X during a round, and the section intro tray. It goes in the scaffold's `bottomSheetOnly` slot with `showBottomSheetBackground` on, and the slots behind it `inert`. It is a `dialog` named by its text.
+
+**Built in code, Sep 2026,** as `src/components/BottomSheet.tsx`, promoted from the typed turn's inline leave confirm when the voice turn needed the same sheet. The Figma `bottomSheet` is not editable (its source lives elsewhere), so the geometry is the one the typed turn tuned: `background/surface`, `Radius/600` top corners, `Space/600` top padding, `Space/400` sides and bottom plus the home-indicator inset, `Space/400` between a `textBlock` and the actions, actions `Space/200` apart and stretched. It enters from below at `motion.duration.slow`, which reduced mode collapses. Put the safe action first as Primary and the escape under it as Text. No new tokens.
+
+### `permissionAlert`
+
+**Properties:** `title`, `body`, `onDeny`, `onAllow`. No axes.
+
+**Reach for it** for the mocked iOS microphone prompt, once per browser session on the first mic use: on Start in the section intro tray, or on the first tap of the voice control when a round is entered without the tray. It reproduces the OS alert, so its two buttons keep iOS's own "Don't Allow" / "Allow", the one place the sentence-case rule is not applied. It goes in the scaffold's `bottomSheetOnly` slot with `showBottomSheetBackground` on and the slots behind it `inert`, and it is an `alertdialog` named by its title.
+
+**Built in code, Sep 2026,** as `src/components/PermissionAlert.tsx`, promoted from the voice turn's inline alert when the section intro tray needed the same prompt. There is no Figma component or frame (SPEC.md Open 6): `background/surface` on a `border/default` edge at `Radius/400`, Body M Bold title over Body S Regular body in `text/secondary`, `Space/400` padding, two `Control/1200` actions split by a `border/default` divider in `text/link`, Allow in bold as iOS marks the preferred choice, the whole thing centred inside `Space/1200`. The OS blur has no effect token, so it is not drawn. No new tokens.
+
+### `textBlock`
+
+**Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level. No axes.
+
+**Reach for it** for a screen or section heading with an optional line under it. Not for body copy, and not for a label with a trailing count (the summaries' group labels are still hand-built; see `docs/component-gaps.md`).
+
+**Built in code this sprint** as `src/components/TextBlock.tsx`, promoted Sep 2026 from the inline headline in the section summary when the exam-eve repeat summary needed the same block with its caption shown. There is no Figma component: the summary frames draw a `verdict` frame of two text nodes, Headline M over Body M Regular, both `text/primary`, centred, `Space/150` apart, and that is the geometry in code. The block fills its parent, per the rows-and-cards-fill convention.
+
 ## Conventions for new components
 
 These are the rules the components above follow. Anything reading this file and making a new component follows them.
@@ -501,8 +531,11 @@ These are the rules the components above follow. Anything reading this file and 
 Say these are missing rather than working around them.
 
 - **No push-to-talk control.** The most-tapped thing in the recall loop has no component. `buttonIcon` tops out well below the size needed. The name to add is **`voiceInput`**: the recording blob and its helper label ("Tap to answer", "Listening...", "Thinking...") as one unit, a sibling to `chatInput`. It carries idle, recording, transcribing, thinking, thinking past 4 seconds and error, each with a reduced-motion form where the label carries the state. It needs motion durations for the blob and the ring loop that `motion.duration` does not have.
-- **No transcript treatment.** The recall loop now shows the student's words, read-only, before judging. `responseBubble` must not carry them, so the transcript uses `noteCard` tone `neutral` — which is not built in code, and neither is the Figma frame for the transcript step.
-- **No confirm or tray sheet in code.** The section intro tray and the confirm on tapping X both need a bottom sheet. `bottomSheet` is not editable in the file and does not exist in code; the name to rebuild it under is `bottomSheet`, one component for both.
+- **No transcript treatment.** The recall loop now shows the student's words, read-only, before judging. `responseBubble` must not carry them, so the transcript uses `noteCard` tone `neutral` — built in code since Sep 2026, but the Figma frame for the transcript step still does not exist.
+- **No component for the review summary's "How you felt" reads.** The before-plan and today ratings side by side are hand-built in the screen as `confidenceReads`; see `docs/component-gaps.md`.
+- **`bottomSheet` is not editable in the file.** Its source lives elsewhere. In code it exists since Sep 2026 (see Components built this sprint), but only as headline, caption and actions: it has no `middleSection` slot for a mascot and rows, and no Bottom-sheet App Bar with the handle. The section intro tray is therefore built inline (`docs/component-gaps.md` → `introTray`). Adding those two to `BottomSheet` would let the tray use it.
+- **`thumbs-up` and `lock-01` are not on `iconSlot`'s swap list** or in `IconSlot`, though the intro tray frame uses both (swapped by hand inside slots still named `check-circle` and `pause-circle`). The tray shows those two named glyphs as placeholders, marked `data-placeholder-glyph`.
+- **The push-to-talk control is still built inline** in the voice turn (`docs/component-gaps.md` → `voiceInput`), because three values it needs are not tokens: an effect for the frame's glow, a gradient for the blob, and `motion.duration.spin` for the ring. Add those and it can become a component.
 - **No `answerOption`.** The five-position confidence check before the review round uses it to match the onboarding slider. It is not in the file's component list, in code, or in `tokens/tokens.json`.
 - **No denied-mic screen** in Figma. The flow needs one between a denied mic prompt and the typed route.
 - **No `buttonGroup` in code.** Transcript send with discard beside it is the pattern it describes.
@@ -513,10 +546,12 @@ Say these are missing rather than working around them.
 - **No `Revealed` category on `summaryCard`**, and the summary grades on final outcome rather than first attempt.
 - **Five components are not editable** in this file — `bottomSheet`, `Text Field`, `Tabs`, `switch`, `Screen`. Their sources live elsewhere. Detach a copy to change one. `listItem` was restored as a local set this sprint and is editable.
 - **`dots-vertical` and `share-02` are not on `iconSlot`'s swap list.** The kebab in `appBar`'s master and the plan-home `topBar` point at an orphaned `dots-vertical`; `appBar`'s share glyph is a local copy. Both are in `IconSlot` in code since Sep 2026. The Figma fix is the same as `plus`: import published copies and add their keys to the swap list.
-- **No `sectionRow` component.** The plan-home section row (no lip, no fill, a divided trailing cell that is its own tap target) is not a `listItem` and is still hand-built.
+- **No `sectionRow` component.** The plan-home section row (no lip, a divided trailing cell that is its own tap target) is not a `listItem` and is still hand-built, in Figma and in the exam plan home (`docs/component-gaps.md`). The same screen builds `Tabs`, the plan-home `topBar`, the winding path rows and the phase divider inline, because none exists in code.
 - **No confidence slider.**
 - **No `statusBar` component.** The scaffold's Panel Header nests `Status Bar / Mode=Night` from Knowunity's remote Bricks library. In code it is a static drawing inside `Scaffold` (09:41, full signal and battery), decided Sep 2026 as decoration; it never changes, and nothing else should use it.
-- **`appBar` has no variant for either `topBar`.** The app home bar (menu, three counters, timer) and the plan home bar (chip left, kebab right) do not fit any of its six variants.
+- **`appBar` has no variant for either `topBar`.** The app home bar (menu, three counters, timer) and the plan home bar (chip left, kebab right) do not fit any of its six variants. Both are built inline in their screens (`docs/component-gaps.md` → `topBar`).
+- **`bottomNav`'s glyphs are mostly missing from `IconSlot`.** `myai-chat`, `target-04` and `trophy-02` are not in the code set, so `BottomNav` shows `send-01`, `check-circle` and `star-01` in their place, marked `data-placeholder-glyph`. The app home also lacks `list` (menu), `graduation-hat-02` (Dream College), `ai-quiz`, `clipboard-check` and `upload-cloud-02` (quick actions).
+- **The `art/*` counter assets are exported on a page-colour canvas.** `pro-badge-yellow`, `bolt-blue-sm` and `flame-orange-sm` in `public/images/` carried a 140-square `#090C18` rect behind an 18-by-22 glyph; the rect was removed from those three, Sep 2026, so they can sit on a coloured pill. Six more (`bolt-blue`, `books-green`, `cards-blue`, `school-orange`, `notes-purple`, `target-green`) still carry it.
 - **`App Bar Button Icon` and `App Bar Button` have no Figma description,** and neither has Loading built in code: it needs `motion.duration.spin`, the same gap as `button`.
 - **`progressIndicator` instances come in 28px tall on a 16px bar.** The wrapper does not hug. Set the instance to a fixed 16 until the master is fixed.
 - **`button`'s Loading state is not built in code,** and neither are its `showLeftIcon` and `showRightIcon` properties. The blocker is gone — `IconSlot` now exists and `@untitled-ui/icons-react` is installed — so what remains is wiring `Button` to it. Two things to settle when someone does: `Button` sets its label colour on the label, and it has to move up to the pill so the label and both icons inherit from one place; and Loading still needs a rotation duration, since `motion.duration` has instant, fast, base, slow, exit and breathing, none of which is a spinner cycle. `motion.duration.spin` is the name to add.

@@ -2,27 +2,21 @@
 @import "../../build/css/tokens.css";
 @import "./fonts/fonts.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Dark only. The page and its text are the semantic tokens; there is no
+   light mode and no second value. Greed's OpenType features are set at :root
+   in fonts.css. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--semantic-background-page);
+  --color-foreground: var(--semantic-text-primary);
   --font-sans: var(--primitive-font-family-default);
-  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--semantic-background-page);
+  color: var(--semantic-text-primary);
   font-family: var(--primitive-font-family-default);
 }

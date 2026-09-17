@@ -1,0 +1,36 @@
+/* textBlock — see docs/design-system.md → Components built this sprint →
+   `textBlock`. Every value is a token from build/css/tokens.css. */
+
+/* Fills its parent; the screen's padding decides the margin. Headline and
+   caption stack Space/150 apart, centred, as the summary frames draw the
+   `verdict` frame. Both hug their height so long strings wrap. */
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-150);
+  box-sizing: border-box;
+  width: 100%;
+  text-align: center;
+}
+
+.headline {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-headline-m-fontFamily);
+  font-weight: var(--typeScale-headline-m-fontWeight);
+  font-size: var(--typeScale-headline-m-fontSize);
+  line-height: var(--typeScale-headline-m-lineHeight);
+  letter-spacing: var(--typeScale-headline-m-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.caption {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  overflow-wrap: anywhere;
+}

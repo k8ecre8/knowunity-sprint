@@ -1,0 +1,107 @@
+/* Confidence check — every value is a token from build/css/tokens.css.
+   Matches "Confidence check (before See what stuck)": middleContentContent
+   pads Space/400 top and bottom with a Space/400 gap; confidenceStage
+   fills the rest, centred, Space/600 gap, Space/400 top and bottom. */
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  padding-block: var(--primitive-space-400);
+}
+
+.stage {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-600);
+  padding-block: var(--primitive-space-400);
+}
+
+/* The chosen label: Headline M, text/primary, centred. Before a choice the
+   same line carries the instruction in text/tertiary, so the stage holds. */
+.label {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-tertiary);
+  font-family: var(--typeScale-headline-m-fontFamily);
+  font-weight: var(--typeScale-headline-m-fontWeight);
+  font-size: var(--typeScale-headline-m-fontSize);
+  line-height: var(--typeScale-headline-m-lineHeight);
+  letter-spacing: var(--typeScale-headline-m-letterSpacing);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.label[data-selected='true'] {
+  color: var(--semantic-text-primary);
+}
+
+/* answerOption — not in the library, built inline. The bar the frame draws
+   is a 17-tall track; here it is Control/400 (the thin progress bar
+   thickness) behind a row of five targets at Control/1200, since the bar
+   itself is far below the 44 minimum. */
+.slider {
+  position: relative;
+  width: 100%;
+  height: var(--primitive-control-1200);
+}
+
+/* Track: background/surface, Radius/Full, centred vertically in the row. */
+.track {
+  position: absolute;
+  inset-inline: var(--primitive-space-0);
+  top: calc((var(--primitive-control-1200) - var(--primitive-control-400)) / 2);
+  height: var(--primitive-control-400);
+  overflow: hidden;
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-background-surface);
+}
+
+/* Fill: interactive/primary, as far as the chosen position. It moves at
+   motion.duration.base; reduced mode collapses the duration in tokens.css,
+   and the label above carries the state either way. */
+.fill {
+  width: var(--fill);
+  height: 100%;
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-interactive-primary);
+  transition: width var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+.options {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* Five equal targets across the bar, each the row's full height and a fifth
+   of its width (over 44 at 390). No fill of their own: the track shows. */
+.option {
+  flex: 1;
+  min-width: var(--primitive-space-0);
+  height: 100%;
+  padding: var(--primitive-space-0);
+  border: none;
+  background: none;
+  appearance: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* No lip and no press geometry of its own: the fill moving to the tapped
+   position is the press feedback. */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The frame stretches the button to the content width. `button` hugs, so
+   both the wrapper and its pill are stretched here. */
+.actions > *,
+.actions > * > * {
+  width: 100%;
+}

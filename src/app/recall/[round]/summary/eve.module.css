@@ -1,0 +1,63 @@
+/* Exam-eve repeat summary — every value is a token from build/css/tokens.css.
+   Matches "Repeat summary / Test tomorrow": middleContentContent pads
+   Space/400 top and bottom with a Space/600 gap; the groups frame pads
+   Space/200 top and bottom with a Space/600 gap; inside a group the label
+   and its cards sit Space/200 apart. The frame's hidden "How it went"
+   heading is not rendered. */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-600);
+  padding-block: var(--primitive-space-400);
+}
+
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-600);
+  padding-block: var(--primitive-space-200);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-200);
+}
+
+/* groupLabel — not in the library, built inline. The frame's `row`: label
+   and count on one line, space between, centred on the cross axis. Body M
+   Bold in text/primary for the label; Body S Bold in text/success for the
+   count, on both groups as the frame draws it. The count never shrinks, so a
+   long label wraps instead. */
+.groupLabel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--primitive-space-300);
+  width: 100%;
+}
+
+.groupTitle {
+  flex: 1;
+  min-width: var(--primitive-space-0);
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+  overflow-wrap: anywhere;
+}
+
+.groupCount {
+  flex-shrink: 0;
+  color: var(--semantic-text-success);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+  white-space: nowrap;
+}

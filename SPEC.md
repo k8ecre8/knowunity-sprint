@@ -38,7 +38,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 **Not in the library**
 - `noteCard` (tone `outlined`, leading icon), used twice. This gets recreated in each screen's CSS.
 - The `clipboard-check` glyph is not in `IconSlot`.
-- The headline ("Here's how it went", "1 of 3 without help") has no `textBlock` in code.
+- The headline ("Here's how it went") has no `textBlock` in code.
 
 **Actions**
 - Continue → `/plan`, with the Plate Tectonics voice node marked `done` whatever the outcome.

@@ -1,0 +1,113 @@
+/* Typed turn — every value is a token from build/css/tokens.css. Matches
+   "Typed input (alt route)": middleContentContent pads Space/400 top and
+   bottom with a Space/400 gap; knowiePrompt overlaps the bubble onto Knowie
+   by Space/600; the stage holds the helper line. The input sits in
+   bottomContent rather than the frame's middleContent, because the scaffold
+   anchors the primary action there and the real keyboard pushes it up. */
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  padding-block: var(--primitive-space-400);
+}
+
+/* Knowie centred over the bubble, the bubble drawn on top and pulled up by
+   Space/600, as the frame's negative gap does. */
+.knowiePrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.knowiePrompt > :last-child {
+  position: relative;
+  margin-top: var(--primitive-space-negative-600);
+}
+
+/* "Second try, one hint": Caption M Regular, text/tertiary, centred. */
+.attemptLine {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-tertiary);
+  font-family: var(--typeScale-caption-m-regular-fontFamily);
+  font-weight: var(--typeScale-caption-m-regular-fontWeight);
+  font-size: var(--typeScale-caption-m-regular-fontSize);
+  line-height: var(--typeScale-caption-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-caption-m-regular-letterSpacing);
+  text-align: center;
+}
+
+/* Fills the rest and centres the helper line, where the voice frames put
+   the control's label. */
+.stage {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--primitive-space-400);
+  padding-block: var(--primitive-space-400);
+}
+
+/* The helper line: Body S Regular, text/secondary, centred. It is the state
+   label for the wait, so it reads the same with motion off. */
+.helper {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* While judging the line breathes at motion.duration.breathing. Reduced
+   mode sets that duration to zero, meaning do not run it, and the media
+   query removes it outright; the label carries the state either way. */
+.helper[data-phase='thinking'],
+.helper[data-phase='thinking-slow'] {
+  animation: breathe var(--motion-duration-breathing) var(--motion-easing-standard) infinite;
+}
+
+.helper[data-phase='error'] {
+  color: var(--semantic-text-primary);
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .helper[data-phase='thinking'],
+  .helper[data-phase='thinking-slow'] {
+    animation: none;
+  }
+}
+
+/* bottomContent: the input over the voice link, Space/300 apart. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-300);
+}
+
+/* Next question stretches to the content width, as the verdict frame draws
+   it. `button` hugs, so the wrapper and its pill are both stretched. */
+.actions > button,
+.actions > button > * {
+  width: 100%;
+}
+
+.voiceRow {
+  display: flex;
+  justify-content: center;
+}

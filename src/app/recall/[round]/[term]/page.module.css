@@ -1,0 +1,234 @@
+/* Voice turn — every value is a token from build/css/tokens.css. Matches
+   the "Q1 idle" family of frames: middleContentContent pads Space/400 top
+   and bottom with a Space/400 gap; knowiePrompt overlaps the bubble onto
+   Knowie by Space/600; the stage fills the rest and centres the helper line,
+   the control and the escapes. Actions sit in bottomContent, not the frame's
+   stage, because the scaffold anchors the primary action there. */
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  padding-block: var(--primitive-space-400);
+}
+
+/* Knowie centred over the bubble, the bubble drawn on top and pulled up by
+   Space/600, as the frame's negative gap does. */
+.knowiePrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.knowiePrompt > :last-child {
+  position: relative;
+  margin-top: var(--primitive-space-negative-600);
+}
+
+/* Fills the rest: helper, control, escapes, Space/400 apart. */
+.stage {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--primitive-space-400);
+  padding-block: var(--primitive-space-400);
+}
+
+/* The helper line: Body S Bold lead over Body S Regular, text/secondary,
+   centred. It is the state label, so it reads the same with motion off. */
+.helper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-100);
+  text-align: center;
+}
+
+.helperLead,
+.helperBody {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.helperLead {
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+.helperBody {
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+}
+
+.stage[data-phase='error'] .helperBody {
+  color: var(--semantic-text-primary);
+}
+
+/* --- voiceInput, not in the library; built inline ------------------------
+   Idle: a round Illustration/1500 control in interactive/primary with
+   microphone-01 at Icon/500 in interactive/onPrimary. The frame's white
+   glow is an effect with no token, so it is not drawn. */
+.micButton {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: var(--primitive-illustration-1500);
+  height: var(--primitive-illustration-1500);
+  padding: var(--primitive-space-0);
+  border: none;
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-interactive-primary);
+  color: var(--semantic-interactive-onprimary);
+  cursor: pointer;
+}
+
+/* Recording: the discard button, the control and a matching spacer so the
+   control stays centred, as the frame's recordRow does. */
+.recordRow {
+  display: flex;
+  align-items: center;
+}
+
+.spacer {
+  display: block;
+  width: var(--primitive-control-1200);
+  height: var(--primitive-control-1200);
+}
+
+/* The recording blob: Illustration/2500 in accent/brand/bold, send-01 at
+   Icon/500 or the "Tap to send" label in accent/brand/onBold. The frame's
+   gradient and glow have no tokens, so the fill is flat. The shape breathes
+   at motion.duration.breathing; reduced mode sets that to zero and the media
+   query removes it, leaving the label to carry the state. */
+.blob {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: var(--primitive-illustration-2500);
+  height: var(--primitive-illustration-2500);
+  padding: var(--primitive-space-0);
+  border: none;
+  border-radius: 63% 37% 58% 42% / 40% 66% 34% 60%;
+  background-color: var(--semantic-accent-brand-bold);
+  color: var(--semantic-accent-brand-onbold);
+  cursor: pointer;
+  animation: morph var(--motion-duration-breathing) var(--motion-easing-standard) infinite;
+}
+
+.blobLabel {
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+/* Transcribing: the blob empties to the subtle brand fill with a heavy
+   brand edge while the words are written down. Not tappable. */
+.blob[data-phase='transcribing'] {
+  border: var(--primitive-stroke-heavy-border) solid var(--semantic-accent-brand-bold);
+  background-color: var(--semantic-accent-brand-subtle);
+  cursor: default;
+}
+
+@keyframes morph {
+  0%,
+  100% {
+    border-radius: 63% 37% 58% 42% / 40% 66% 34% 60%;
+  }
+  33% {
+    border-radius: 38% 62% 42% 58% / 62% 38% 62% 38%;
+  }
+  66% {
+    border-radius: 55% 45% 35% 65% / 66% 40% 60% 34%;
+  }
+}
+
+/* Thinking: the blob resolves into a dashed Stroke/Heavy Border ring in
+   accent/brand/bold at the blob's own footprint. Nothing spins (decided Sep
+   2026, no rotation duration exists); it pulses at motion.duration.breathing
+   instead. The slow beat at 4s adds a second, inner ring at Illustration/1500
+   pulsing out of phase, so the wait visibly changes gear. The error is the
+   ring gone still in border/strong. */
+.ring {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: var(--primitive-illustration-2500);
+  height: var(--primitive-illustration-2500);
+  border: var(--primitive-stroke-heavy-border) dashed var(--semantic-accent-brand-bold);
+  border-radius: var(--primitive-radius-full);
+  animation: pulse var(--motion-duration-breathing) var(--motion-easing-standard) infinite;
+}
+
+.ring[data-phase='thinking-slow']::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  box-sizing: border-box;
+  width: var(--primitive-illustration-1500);
+  height: var(--primitive-illustration-1500);
+  border: var(--primitive-stroke-heavy-border) dashed var(--semantic-accent-brand-onsubtle);
+  border-radius: var(--primitive-radius-full);
+  transform: translate(-50%, -50%);
+  animation: pulse var(--motion-duration-breathing) var(--motion-easing-standard) infinite;
+  animation-delay: calc(var(--motion-duration-breathing) / -2);
+}
+
+.ring[data-phase='error'] {
+  border-color: var(--semantic-border-strong);
+  animation: none;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob,
+  .ring,
+  .ring::after {
+    animation: none;
+  }
+}
+
+/* "I don't know the answer" over "Type instead", Space/100 apart, sitting
+   Space/600 under the control as the frame draws it (the stage gap plus
+   Space/200). */
+.escapes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-100);
+  margin-top: var(--primitive-space-200);
+}
+
+/* bottomContent: one or two stacked actions, Space/300 apart, stretched to
+   the content width as the verdict frame draws Next question. `button`
+   hugs, so the wrapper and its pill are both stretched. */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-300);
+}
+
+.actions > button,
+.actions > button > * {
+  width: 100%;
+}
