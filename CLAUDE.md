@@ -19,7 +19,7 @@ A voice active-recall prototype: mocked recall, dark mode only, 390px iOS-style 
 - Set the Greed OpenType features at `:root` or every string renders wrong. See `docs/design-system.md` → Two things that will break the build if missed.
 - Build inside the 390px scaffold: safe areas, 44×44 minimum targets, no hover, thumb-zone primary actions, reduced-motion fallback on every animated state, layouts that hold 30–40% string expansion.
 - **When something is missing** from `tokens/tokens.json` or the component set: say what's missing and what you'd call it, then stop.
-- **Run `node scripts/check-tokens.mjs` after building** — it fails on raw hex colours. Fix what it reports before handing the work back.
+- **Run `node scripts/check-tokens.mjs` after building or creating or changing any component** — it fails on raw hex colours. Report findings, don't fix them.
 
 ## Never
 
