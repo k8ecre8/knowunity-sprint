@@ -21,6 +21,8 @@ If you need a number, a colour, a duration or a type step, read `tokens/tokens.j
 
 **`buttonIcon`** for the same four treatments with no label. Same sizes, same press rule.
 
+**`chatInput`** for text entry when a student chooses, or needs, to fall back from voice. Not the way to answer; voice is.
+
 **`buttonGroup`** for two buttons acting as one unit at the bottom of a screen. Note it hardcodes an icon button on the left and a primary on the right, so it does not currently do two text buttons side by side.
 
 ### Feedback
@@ -91,6 +93,8 @@ bottomSheetOnly   home indicator area
 - Do not put an action in `middleContent` that belongs in `bottomContent`. The anchored position is the affordance.
 - Do not resize the scaffold. 390 is the product width.
 
+**Built in code, Sep 2026,** as `src/components/Scaffold.tsx`, at `size=iPhone 13` only. The other seven `size` options (tablets, laptop, other phones) are out of scope, so there is no `size` prop. The four slots are `ReactNode` props with the Figma names, and `showTopNavSlot`, `showBottomNavSlot` and `showBottomSheetBackground` keep theirs. `Size/StatusBar` (48) was added for the Panel Header, which the file draws at a loose 48; `Control/1200` is the same number but means a tap target. The status bar is decoration, not a component: `Status Bar / Mode=Night` exported from the iPhone 13 master as `public/images/status-bar.svg` and painted as a CSS mask in `text/primary`, so it carries no hex and every screen gets it. `bottomSheetOnly`'s loose 34 is `env(safe-area-inset-bottom)`, and `bottomContent` adds the same inset to its bottom padding so the action clears the home indicator. Dropped: the root's untokened 10px gap (no effect under space-between), the hidden Scrim gradient no property toggles, and the Panel Header's hidden fill bound to Bricks' `Core/BG/Secondary Transparent`. The divider is `border/default` on every size; the non-iPhone-13 masters bind Bricks' `Core/Grayscale/Dividers`.
+
 ---
 
 ## How things behave
@@ -136,7 +140,7 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 - Icons inherit their colour from the token on the surrounding text or the component's `on*` token. Do not give an icon its own colour token.
 - In Figma the colour binding lives on the glyph's vector inside the slot. Swapping the glyph drops that binding and the icon renders dark until it is rebound. After every swap, select the vector and bind its stroke to the token again. `iconSlot` has no colour property on purpose: 325 instances carry 16 different bindings, and a tone axis would multiply the set by that.
 - One stroke weight across the system. Untitled UI ships several styles; mixing them is visible.
-- In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 59 glyphs on `iconSlot`'s swap property resolve to an export in it, and `IconSlot` carries one more (`plus`) that the file cannot yet. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
+- In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 59 glyphs on `iconSlot`'s swap property resolve to an export in it, and `IconSlot` carries three more (`plus`, `dots-vertical`, `share-02`) that the file cannot yet. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
 - The npm packages are MIT, so the code path does not inherit the free-tier limit below. The Figma file still does.
 
 **Licence.** The free tier covers one user, and that includes anyone accessing a published Figma library built on it. If this file goes to Knowunity or to other people, that is a paid tier.
@@ -196,6 +200,20 @@ Each entry names the component, its axes and properties, when to reach for it, w
 > DON'T: remove the lip to make a button look flatter. It is the only affordance telling a student the thing is pressable, and it is what moves when they press it.
 
 **Where the file and the description disagree.** The description says Text is "TO BUILD" and presses with no sink; the 12 built Text variants shift by the lip depth as well as filling. The description wins, and the code follows it. The description also says the filled press moves the depth "from paddingBottom to paddingTop", which would sink by exactly the lip depth, but the built Default variants have paddingBottom 0, so they sink by half that. The code follows the description here too.
+
+### `buttonIcon`
+
+**Axes:** `variant` (Primary, Secondary, Tertiary, Text), `size` (S, M, L), `state` (Default, Pressed, Disabled, Loading). 48 variants. The glyph is swapped on the nested `iconSlot`.
+
+**Reach for it** for an action carried by a glyph alone. Every rule on `button` applies: max one Primary a screen, press is geometry, no destructive variant.
+
+**Structure.** The same wrapper and pill as `button`: pill 32 / 40 / 56 (`Control/800`, `/1000`, `/1400`) inside a `Control/1200` wrapper at S and M, glyph `iconSlot` 200 / 250 / 300. The filled masters pad the glyph's container by the lip depth at the bottom so it centres on the visible face.
+
+The Figma description is `button`'s description with the TONE paragraph left out, and a DON'T that points verdicts at `verdictChip` rather than at tone; it is not repeated here.
+
+**Built in code, Sep 2026,** as `src/components/ButtonIcon.tsx` on `IconSlot`. No new tokens. `name` is the glyph swap, defaulting to the masters' `check`; `label` is code-only and required. Loading swaps the glyph to `loading-01`, sets `aria-busy` and blocks presses, but **does not spin: it was decided Sep 2026 not to add a rotation duration.** The glyph inherits `interactive/onPrimary` on Primary and `text/primary` elsewhere, `text/disabled` when disabled.
+
+**Where the file and the description disagree.** The Primary masters carry a `border/default` stroke; the description says no stroke and wins. The Text Pressed masters sink by the lip depth; the description says no sink and wins, as on `button`. Most glyph strokes are raw black and unbound — the dropped-binding problem.
 
 ### `planNode`
 
@@ -339,11 +357,13 @@ A single component, not a set. **Properties:** `showVerdict`, `showAction`, `bod
 
 **Built in code this sprint** as `src/components/Chips.tsx` on `IconSlot` (150 / 150 / 200 / 250 by size). Heights: `Control/500` (20), `Control/600` (24), `Control/800` (32), `Control/1000` (40) — the first two added Sep 2026, since XXS and XS were loose numbers on no scale. `active` keeps the file's string values. A code-only `onClick` makes a chip a pressable filter with `aria-pressed`; without it a chip is a plain span, as tags and counts are.
 
-**Where the file and the description disagree.** Every master's icon stroke is raw black, unbound; the code inherits the label colour, the only reading that works on both active fills. The M-size icon is a 16px glyph scaled to 20, giving a 2.5px stroke — the same fault the 32px `iconSlot` had; `IconSlot` renders one weight. Caption S Bold at XXS and XS is 12px, which the type token itself flags as below the readable minimum; the code follows the file.
+**Fixed in the Figma master, Sep 2026.** All 32 icon strokes (16 variants × 2 slots) were raw black and unbound — the dropped-binding problem above. Each is now bound to the token its own label carries: `text/primary` when inactive, `interactive/onPrimary` on active Primary, `pro/onBold` on active pro. The code already inherited the label colour, so the file now matches what was built.
+
+**Where the file and the description disagree.** The M-size icon is a 16px glyph scaled to 20, giving a 2.5px stroke — the same fault the 32px `iconSlot` had; `IconSlot` renders one weight. Caption S Bold at XXS and XS is 12px, which the type token itself flags as below the readable minimum; the code follows the file.
 
 ### `iconSlot`
 
-**Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 59 icons. `IconSlot` in code offers 60: `plus` was added Sep 2026 for `summaryCard`'s overflow row, but the `plus` the masters use is an unpublished orphan and cannot go on the swap list — see Known gaps.
+**Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 59 icons. `IconSlot` in code offers 62: `plus` was added Sep 2026 for `summaryCard`'s overflow row, and `dots-vertical` and `share-02` for `appBar`, but none of the three is on the swap list — see Known gaps.
 
 **Reach for it** wherever an icon sits inside another component. Never place an icon directly.
 
@@ -365,6 +385,86 @@ A single component, not a set. **Properties:** `showVerdict`, `showAction`, `bod
 **Where the file and the description disagree.** The description says six sizes ending at 32px; there are seven ending at 40, because it predates the 500 above. On instance counts all three numbers differ: the Figma description says 165, this file said 325, and the measured count in Sep 2026 is **350** — 135 at size 300, 95 at 400, 60 at 250, 38 at 500, 22 at 200, none at 150 or 100. Counted with `getInstancesAsync` per variant; the figures above it are historical and were not re-measured.
 
 **Deviations in code.** `Size (IGNORE)` becomes a `size` prop, keeping Figma's option values — the Figma name is not a valid identifier, and a prop is exactly the "parent drives it" the description asks for. The swap property becomes a `name` prop typed to the 59 glyphs, with no `children` escape hatch, so a caller cannot place an icon directly. Colour is `currentColor` rather than a per-vector binding, which removes the Figma problem where swapping a glyph drops its colour. A `label` prop was added for assistive tech, with no Figma counterpart: slots are `aria-hidden` unless labelled.
+
+### `appBar`
+
+**Axes:** `variant` (default, leftIconButtonOnly, leftAndRightIconButton, leftAndRightButton, leftAndTwoRightIconButtons, leftAnd2RightButtons). 6 variants. **Properties:** `Slot`. Nests `App Bar Button Icon` (`variant` default, `state` Default, Pressed, Disabled, Loading) and `App Bar Button` (`variant` text, the same four states, `Text`).
+
+**Reach for it** as the top edge of any full screen, in the scaffold's `topNavigation`. During a session its slot carries a `progressIndicator` at thickness 16.
+
+**What each variant means.** `default` is the slot alone. The rest add a back control on the left and, on the right, nothing, an overflow icon, a text action ("Skip"), share plus overflow, or overflow plus a text action.
+
+**Don't** put more than one thing in the slot. Don't use `App Bar Button` or `App Bar Button Icon` outside the bar; the text control is not `button` variant=Text, which has a different type step, padding and press.
+
+> The top bar of a screen. 375 wide, 56 tall, with a SLOT across the middle that holds whatever the screen needs. Six variants covering a left control plus one or two right controls.
+> USE: the top edge of any full screen. In the example screens the slot carries the progress indicator during a recall session.
+> DON'T: expect the slot to lay out more than one thing.
+> GUESS: the DON'T is inferred from the slot holding a single child; I have not tested it with more. Also note that no instance of this component set appears anywhere in the file, yet frames named appBar sit above five progress indicators — those are likely detached or renamed, so the component may not be what is actually in use.
+
+`App Bar Button Icon` and `App Bar Button` have empty descriptions in Figma.
+
+**Built in code, Sep 2026,** as `src/components/AppBar.tsx`, `AppBarButtonIcon.tsx` and `AppBarButton.tsx`, all composed on `IconSlot` (300 in the icon button). Width fills; height hugs to 56 (`Control/1200` row plus `Space/200` bottom padding), so no height token was added. `Slot` is a `slot` prop. The nested glyphs, labels and handlers are code-only props on the bar (`leftIcon`, `rightIcon`, `secondRightIcon`, `buttonText` and their `…Label` / `on…Press`), defaulting to the masters' `arrow-left`, `dots-vertical`, `share-02` and "Skip". The fade is two stacked `background/page`-to-transparent layers, as drawn. `dots-vertical` and `share-02` were added to `IconSlot` for this, code-only.
+
+**Where the file and the build differ, decided Sep 2026.** The icon button's four masters are drawn identical; in code Pressed and Disabled follow `App Bar Button` — `text/secondary` pressed, `text/disabled` disabled. `App Bar Button` hugs its label to a 30-wide target; in code it takes `Control/1200` as a minimum width with the label kept at the end edge. Loading is not built on either (see Known gaps). The slot's loose 10px padding and gap are dropped: with one centred child they change nothing. The icon masters' glyph strokes are raw black; each bar instance overrides them to `text/primary`, which the code sets once on the control.
+
+### `progressIndicator`
+
+**Axes:** `variant` (Primary, Coral), `thickness` (24, 16), `progress` (0, 25, 50, 75, 100). 20 variants. **Properties:** `showText`.
+
+**Reach for it** for position in a multi-step session, in `appBar`'s slot at thickness 16.
+
+**What each value means.** `progress` steps are design references, not the range. `showText` shows a count ("3/12") centred on the bar, at thickness 24 only; the 16 masters have no text layer. At 0 the fill is a dot as wide as the bar is thick.
+
+**Don't** snap real progress to the five steps; drive the bar. Don't copy the `Coral` naming (see Naming).
+
+> A horizontal progress bar with an optional count label. Twenty variants: Primary or Coral, 16 or 24 thick, in five progress steps.
+> USE: position in a multi-step session. Every use in the example screens is Primary at thickness 16, inside an appBar slot.
+> DON'T: treat the five progress steps as the full range. 0, 25, 50, 75 and 100 are design references; real progress needs the bar driven directly.
+> NOTE: the variant property is named Coral, an appearance word, where every other component in this file names variants by role.
+
+**Built in code, Sep 2026,** as `src/components/ProgressIndicator.tsx`. Code-only `current` and `total` drive the fill and the count label directly and override `progress`; `showText` renders only with a count. Code-only `label` names the `progressbar` role. Thickness 24 is `Control/600` inset by `Space/050`; thickness 16 is **`Control/400`, added Sep 2026** because 16 was on no scale. Primary fills `accent/brand/bold`, Coral `accent/coral/bold`, on a `background/stacking` track with a `border/default` stroke at `Stroke/Border`. Width fills. The fill animates at `motion.duration.base`, which reduced mode collapses. The label is Caption S Bold (9px, below the readable minimum), so it is `aria-hidden` and the count goes to `aria-valuetext`.
+
+### `chatInput`
+
+**Axes:** `Status` (Inactive, Typing, Loading, Ready to send, Long input, Recording). 6 variants. No other properties. Figma name `Chat Input`, in Restored components → Input. Nests `OLD Icon Button` twice and `iconSlot` at 300.
+
+**Reach for it** as the text route in the recall loop, anchored at the bottom of the screen, when a student chooses to type or cannot speak.
+
+**What each state means.** `Inactive` is empty and unfocused, with the microphone trailing. `Typing` is focused and still empty. `Ready to send` has one line and swaps the microphone for send. `Long input` has wrapped: the field grows upward, the corners drop to `Radius/600` and send stays on the bottom edge. `Loading` is sent and waiting, with `loading-01` in the trailing place. `Recording` draws a waveform in the field with a close control on the left.
+
+**Don't** show recording in it; this prototype does not. Don't treat it as the main answer route.
+
+> The input field to be used when a student chooses, or needs, to fall back to text entry over voice input.
+
+Added to the Figma set, Sep 2026.
+
+**Built in code, Sep 2026,** as `src/components/ChatInput.tsx`, composing `ButtonIcon` (send: Primary M; microphone: Text L) and `IconSlot` (Loading). `Status` keeps the Figma name and options, minus **Recording, which is not built** — recording is not shown inside the chat input in this prototype. Left unset, `Status` is derived from focus and text; Loading is only ever passed. **The leading plus control is removed,** decided Sep 2026: it reads as adding a file, and this flow has no attachments. Code-only: `value`, `defaultValue`, `onValueChange`, `placeholder`, `label`, `onSend`, `onMicPress`. The field is a real `<textarea>` that grows with its text. **Inter was added** for its text: `primitive.font.family.inter`, `primitive.font.size.inter-sm` (14), `primitive.font.lineheight.inter-sm` (17) and `typeScale.input.s-bold`, declared in `src/app/fonts/fonts.css`, with Greed's OpenType features switched off on the field.
+
+**Where the file and the build differ.** The masters nest `OLD Icon Button`, not `buttonIcon`: its radius binds `Scale 06` (32, not a token; `buttonIcon` uses `Radius/Full`), and send is `background/inverse` with a 16px glyph where `buttonIcon` M is `interactive/primary` (the same colour) with 20px. The microphone is a bare `iconSlot` in the masters with no tap target; in code it is a Text L `buttonIcon` whose 56 target overhangs the field's padding. The placeholder is "Type your answer", not the masters' "Ask anything...", which is AI Chat copy. The masters still carry the plus control. Loading does not spin. The Recording waveform's 33 bars are collapsed to 1×1 in the file.
+
+### `mascotSlot`
+
+**Axes:** `size` (XL, 2XL, 3XL, 4XL). 4 variants, default XL. Each nests `.mascotSlotBase`, whose instance-swap `Homie` holds the expression, default `standby`.
+
+**Reach for it** wherever Knowie appears. Knowie's words go in `responseBubble`, never in the slot.
+
+**What the axis means.** Size is the box, bound to `Illustration/800`, `/1500`, `/2500`, `/4000` (64 / 120 / 200 / 320), with `Space/300` padding inside.
+
+**Don't** make Knowie speak, scale an instance between steps, recolour Knowie, or make the slot a button.
+
+> mascotSlot: a fixed square box that holds Knowie. Wherever Knowie appears, it sits in a mascotSlot; never place the artwork directly.
+> size: XL (64, Illustration/800) | 2XL (120, Illustration/1500) | 3XL (200, Illustration/2500) | 4XL (320, Illustration/4000). Space/300 padding on every side, so the artwork never touches the box edge. The size is the box, not Knowie.
+> Expression: swapped on the nested .mascotSlotBase (Homie). Default standby. Pick the face for what Knowie is reacting to; the slot does not choose.
+> USE: the mascot on a screen, above or beside what Knowie says. Knowie's words go in responseBubble, never in the slot.
+> DON'T: make Knowie speak. Knowie replies in text and has no voice, speech-bubble tail or audio.
+> DON'T: scale an instance to a size between steps. Add an Illustration step and a variant.
+> DON'T: recolour Knowie. mascot/* tokens are Knowie's own and never used by the interface; interface tokens never go on Knowie.
+> DON'T: make the slot a button. It is decoration; the action belongs to a control beside it.
+> Description drafted Sep 2026; the set had none.
+
+**Built in code, Sep 2026,** as `src/components/MascotSlot.tsx`. No new tokens. `name` is the `Homie` swap, the same pattern as `IconSlot`, and offers the twelve expressions in `public/images/`; `determined`, `sad` and `thinking` exist only as PNG. Code-only `label` gives the image an accessible name; without it Knowie is decorative. The artwork is 200×217 and the masters stretch it to the square; the code uses `object-fit: contain`.
+
+**Where the file and the build differ.** The set sits on no page (its parent is null) though screens still instance it, and `figma_search_components` cannot find it. `Homie`'s 16 preferred values resolve to a library this file cannot reach, not to the 10 local expression masters. `dazed` is a local master with no asset, so code does not offer it; `angry`, `overIt` and `determined` are assets with no local master.
 
 ---
 
@@ -400,22 +500,32 @@ These are the rules the components above follow. Anything reading this file and 
 
 Say these are missing rather than working around them.
 
-- **No push-to-talk control.** The most-tapped thing in the recall loop has no component. `buttonIcon` tops out well below the size needed.
+- **No push-to-talk control.** The most-tapped thing in the recall loop has no component. `buttonIcon` tops out well below the size needed. The name to add is **`voiceInput`**: the recording blob and its helper label ("Tap to answer", "Listening...", "Thinking...") as one unit, a sibling to `chatInput`. It carries idle, recording, transcribing, thinking, thinking past 4 seconds and error, each with a reduced-motion form where the label carries the state. It needs motion durations for the blob and the ring loop that `motion.duration` does not have.
+- **No transcript treatment.** The recall loop now shows the student's words, read-only, before judging. `responseBubble` must not carry them, so the transcript uses `noteCard` tone `neutral` — which is not built in code, and neither is the Figma frame for the transcript step.
+- **No confirm or tray sheet in code.** The section intro tray and the confirm on tapping X both need a bottom sheet. `bottomSheet` is not editable in the file and does not exist in code; the name to rebuild it under is `bottomSheet`, one component for both.
+- **No `answerOption`.** The five-position confidence check before the review round uses it to match the onboarding slider. It is not in the file's component list, in code, or in `tokens/tokens.json`.
+- **No denied-mic screen** in Figma. The flow needs one between a denied mic prompt and the typed route.
+- **No `buttonGroup` in code.** Transcript send with discard beside it is the pattern it describes.
+- **`summaryCard` Skipped and `verdictChip` Skipped are unused** by the recall loop, which has no skip. Keep or retire them deliberately.
 - **No focus state on any component.** The tokens exist. This is a WCAG 2.2 gap.
 - **`chips` has no tone.** It offers Primary and pro only, so it cannot carry a verdict.
 - **No two-text-button group.** `buttonGroup` hardcodes an icon button on the left.
 - **No `Revealed` category on `summaryCard`**, and the summary grades on final outcome rather than first attempt.
 - **Five components are not editable** in this file — `bottomSheet`, `Text Field`, `Tabs`, `switch`, `Screen`. Their sources live elsewhere. Detach a copy to change one. `listItem` was restored as a local set this sprint and is editable.
-- **`dots-vertical` is missing from the icon set.** The kebab in `appBar`'s master and the plan-home `topBar` point at an orphaned copy. The glyph needs adding to the Untitled UI library; nothing in this file can import it.
+- **`dots-vertical` and `share-02` are not on `iconSlot`'s swap list.** The kebab in `appBar`'s master and the plan-home `topBar` point at an orphaned `dots-vertical`; `appBar`'s share glyph is a local copy. Both are in `IconSlot` in code since Sep 2026. The Figma fix is the same as `plus`: import published copies and add their keys to the swap list.
 - **No `sectionRow` component.** The plan-home section row (no lip, no fill, a divided trailing cell that is its own tap target) is not a `listItem` and is still hand-built.
 - **No confidence slider.**
+- **No `statusBar` component.** The scaffold's Panel Header nests `Status Bar / Mode=Night` from Knowunity's remote Bricks library. In code it is a static drawing inside `Scaffold` (09:41, full signal and battery), decided Sep 2026 as decoration; it never changes, and nothing else should use it.
 - **`appBar` has no variant for either `topBar`.** The app home bar (menu, three counters, timer) and the plan home bar (chip left, kebab right) do not fit any of its six variants.
+- **`App Bar Button Icon` and `App Bar Button` have no Figma description,** and neither has Loading built in code: it needs `motion.duration.spin`, the same gap as `button`.
 - **`progressIndicator` instances come in 28px tall on a 16px bar.** The wrapper does not hug. Set the instance to a fixed 16 until the master is fixed.
 - **`button`'s Loading state is not built in code,** and neither are its `showLeftIcon` and `showRightIcon` properties. The blocker is gone — `IconSlot` now exists and `@untitled-ui/icons-react` is installed — so what remains is wiring `Button` to it. Two things to settle when someone does: `Button` sets its label colour on the label, and it has to move up to the pill so the label and both icons inherit from one place; and Loading still needs a rotation duration, since `motion.duration` has instant, fast, base, slow, exit and breathing, none of which is a spinner cycle. `motion.duration.spin` is the name to add.
 - **`iconSlot`'s 400 variant is missing its height binding.** Its nested instance binds width to `Icon/400`, but the height is a loose 32. Setting one dimension through the plugin API clears the other, so this one has to be bound by hand in Figma. Siblings 300, 200, 150 and 100 bind both dimensions, so the file supports it.
 - **`iconSlot` sizes 150 and 100 have no instances.** 12px and 8px are unused across all 350 iconSlot instances in the file. Either they are for something not built yet, or they can go.
 - **`plus` is an orphan in the file.** `summaryCard`'s overflow row uses a `plus` whose component key is not published anywhere importable — the same problem as `dots-vertical`. It cannot be added to `iconSlot`'s swap list (an attempt was made and reverted, Sep 2026), so the Figma slot offers 59 glyphs while `IconSlot` in code offers 60. Fix: import `plus` from the published Untitled UI library, re-point the four summaryCard masters at it, and add that key to the swap list.
 - **`listItem` is missing three nested components in code:** `switch` (trailing Switch, 3 variants), `Checkbox` (trailing Checkbox, 12 variants) and `illustrationSlot` (the `showIllustration` leading slot, every variant). None exist as React components; `switch` is not editable in the file either. Until they are built, `ListItem` offers trailing Icon / Icon & Text / None and no illustration slot.
+- **`chatInput`'s masters nest the retired `OLD Icon Button`,** whose radius binds `Scale 06` — a variable outside `tokens/tokens.json` — and still carry the leading plus control that code removed. Re-point send at `buttonIcon` and remove the plus. Its Recording variant's waveform bars are collapsed to 1×1.
+- **Nothing spins.** `buttonIcon` and `chatInput` Loading show a still `loading-01`; no rotation duration was added, by decision, Sep 2026.
 - **`feedback/info` is bound but not a token.** `listItem`'s image-slot placeholder fill points at a colour variable with that bare name; `tokens.json` has only `feedback/info/bold|onBold|subtle|onSubtle`. Either add a leaf or rebind the slot to one of the four.
 - **`graduation-hat-02` is not on the `iconSlot` swap list** but is `listItem`'s leading placeholder glyph (the restore notes say `-01` was unreachable). Add it to the swap list and to `IconSlot`, or swap the masters to a listed glyph.
 - **`planNode`'s size-S `next` ring is 1.5px in Figma, unbound.** `Stroke/Border` is 1 and `Stroke/Heavy Border` is 2; nothing is 1.5. The code follows the description (2px) at both sizes. If 1.5 is the intent, add a stroke step for it and bind the four S masters to it.
@@ -437,7 +547,7 @@ The same list is in `tokens/tokens.json` under `typeScale.$extensions`.
 
 ### Where both are wired
 
-`src/app/fonts/fonts.css`, imported by `src/app/globals.css` and `.storybook/preview.css`, so a story and a screen render the same strings. Four faces are declared — 400 Regular, 600 SemiBold, 700 Bold, 900 Heavy — matching the weights the type scale uses and the `fontWeights` map in `style-dictionary.config.mjs`. Light, Medium and the italics are on disk but no token names them.
+`src/app/fonts/fonts.css`, imported by `src/app/globals.css` and `.storybook/preview.css`, so a story and a screen render the same strings. The same file declares **Inter** (`InterVariable.ttf`, one face over 100–900), the second typeface, added Sep 2026 for `chatInput`'s field only; its family string must stay exactly `Inter Variable`, and anything set in it resets `font-feature-settings` to `normal`, since Greed's features change Inter's glyphs. Four faces are declared — 400 Regular, 600 SemiBold, 700 Bold, 900 Heavy — matching the weights the type scale uses and the `fontWeights` map in `style-dictionary.config.mjs`. Light, Medium and the italics are on disk but no token names them.
 
 It is plain `@font-face` rather than `next/font/local` on purpose: `next/font` generates its own hashed family name, which a token cannot name, and Storybook never goes through `next/font` at all. The family string in that file has to stay exactly `Greed Standard-TRIAL`, because that is the literal every `typeScale` step carries; change one without the other and every label falls back silently.
 

@@ -1,0 +1,83 @@
+/* progressIndicator — see docs/design-system.md → `progressIndicator`. Every
+   value is a token from build/css/tokens.css. No bare hex, no loose px, no
+   fallbacks. */
+
+/* The track: background/stacking, Radius/Full. Fills its parent's width; the
+   350 in Figma is the master's size, not a rule. */
+.indicator {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-background-stacking);
+}
+
+/* Thickness 24 insets the container by Space/050 on every side, so the
+   stacking colour shows as a rim. Thickness 16 has no inset. */
+.thickness24 {
+  height: var(--primitive-control-600);
+  padding: var(--primitive-space-050);
+}
+
+.thickness16 {
+  height: var(--primitive-control-400);
+  padding: var(--primitive-space-0);
+}
+
+/* A size container, so the fill can use its height as its minimum width. */
+.container {
+  position: relative;
+  height: 100%;
+  border-radius: var(--primitive-radius-full);
+  container-type: size;
+}
+
+/* The container's border/default stroke at Stroke/Border, drawn inside and
+   above the fill as a Figma frame stroke is. An inset shadow, so it takes no
+   layout space and the fill keeps the container's full box. */
+.container::after {
+  content: '';
+  position: absolute;
+  inset: var(--primitive-space-0);
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 var(--primitive-stroke-border) var(--semantic-border-default);
+  pointer-events: none;
+}
+
+/* At progress 0 the fill is a dot as wide as it is tall, as the masters draw
+   it, so the bar never reads as empty. */
+.fill {
+  position: absolute;
+  inset-block: var(--primitive-space-0);
+  inset-inline-start: var(--primitive-space-0);
+  min-width: 100cqh;
+  max-width: 100%;
+  border-radius: var(--primitive-radius-full);
+  transition: width var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+.variantPrimary .fill {
+  background-color: var(--semantic-accent-brand-bold);
+}
+
+.variantCoral .fill {
+  background-color: var(--semantic-accent-coral-bold);
+}
+
+/* "Unit Progress": centred over the bar, Caption S Bold in
+   interactive/onSecondary. */
+.text {
+  position: absolute;
+  inset: var(--primitive-space-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--semantic-interactive-onsecondary);
+  font-family: var(--typeScale-caption-s-bold-fontFamily);
+  font-weight: var(--typeScale-caption-s-bold-fontWeight);
+  font-size: var(--typeScale-caption-s-bold-fontSize);
+  line-height: var(--typeScale-caption-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-caption-s-bold-letterSpacing);
+  white-space: nowrap;
+  pointer-events: none;
+}

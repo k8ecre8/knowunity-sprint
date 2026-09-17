@@ -23,7 +23,7 @@ const description = `
 
 **It is built on \`IconSlot\`,** stepping down with the chip: 150 at XXS and XS, 200 at S, 250 at M. \`leftIcon\` and \`rightIcon\` are the two swap properties, both defaulting to \`check\` as the masters do.
 
-**The icons take the label colour.** Every master's icon stroke is raw black, unbound — the dropped-binding problem. The description names no icon colour, so the slot inherits the label's, which is the only reading that works on both the active fills.
+**The icons take the label colour.** The slot inherits \`color\` from the chip, so an icon always matches the text beside it: \`text/primary\` when inactive, \`interactive/onPrimary\` on active Primary, \`pro/onBold\` on active pro. The masters' 32 icon strokes were raw black and unbound until Sep 2026, when they were rebound to those same tokens — so the file and the code now agree.
 
 **Two heights are new tokens.** XXS (20) and XS (24) were loose numbers with no step on any scale; they are now \`Control/500\` and \`Control/600\`, next to the S and M heights the button already used. Added Sep 2026.
 

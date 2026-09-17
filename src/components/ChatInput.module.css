@@ -1,0 +1,108 @@
+/* Chat Input — see docs/design-system.md → Components built this sprint →
+   `chatInput`. Every value is a token from build/css/tokens.css. No bare hex,
+   no loose px, no fallbacks. */
+
+/* Fills its parent, like every component that holds copy. The masters' leading
+   plus control is dropped: this flow has no attachments. */
+.root {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--primitive-space-050) var(--primitive-space-200);
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--primitive-space-200);
+  min-width: var(--primitive-space-0);
+  min-height: var(--primitive-control-1400);
+  box-sizing: border-box;
+  padding: var(--primitive-space-150) var(--primitive-space-400);
+  border: var(--primitive-stroke-border) solid var(--semantic-border-default);
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-background-input);
+}
+
+/* With a send control the trailing edge tightens so the 40 pill sits the same
+   distance from the edge as from the top and bottom. */
+.root[data-status='Ready to send'] .container,
+.root[data-status='Long input'] .container {
+  padding-inline-end: var(--primitive-space-200);
+}
+
+.root[data-status='Long input'] .container {
+  align-items: flex-end;
+  border-radius: var(--primitive-radius-600);
+}
+
+.fieldWrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: var(--primitive-space-0);
+}
+
+/* Inter, not Greed, so Greed's OpenType features set on :root are switched
+   off here or they change Inter's glyphs. The height is set from the text by
+   the component, so the field never scrolls inside itself. */
+.field {
+  flex: 1;
+  min-width: var(--primitive-space-0);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  border: none;
+  background: none;
+  resize: none;
+  overflow: hidden;
+  outline: none;
+  font-family: var(--typeScale-input-s-bold-fontFamily);
+  font-weight: var(--typeScale-input-s-bold-fontWeight);
+  font-size: var(--typeScale-input-s-bold-fontSize);
+  line-height: var(--typeScale-input-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-input-s-bold-letterSpacing);
+  font-feature-settings: normal;
+  color: var(--semantic-text-primary);
+  caret-color: var(--semantic-background-inverse);
+}
+
+.field::placeholder {
+  color: var(--semantic-text-disabled);
+  opacity: 1;
+}
+
+/* The forced Typing caret: a 1px bar in background/inverse, one line tall,
+   with the placeholder pushed past it by Space/050, as the master draws it. */
+.caret {
+  position: absolute;
+  inset-inline-start: var(--primitive-space-0);
+  top: var(--primitive-space-0);
+  width: var(--primitive-stroke-border);
+  height: var(--typeScale-input-s-bold-lineHeight);
+  background-color: var(--semantic-background-inverse);
+  pointer-events: none;
+}
+
+.field[data-forced-caret]:not(:focus) {
+  text-indent: calc(var(--primitive-stroke-border) + var(--primitive-space-050));
+}
+
+.field:focus ~ .caret {
+  display: none;
+}
+
+/* The microphone is a Text buttonIcon at L: a 24px glyph in a 56 tap target.
+   The target overhangs the field's padding rather than growing the field, so
+   the glyph sits where the master's bare iconSlot does. */
+.mic {
+  margin-block: var(--primitive-space-negative-400);
+  margin-inline-end: var(--primitive-space-negative-400);
+}
+
+/* The send control is a Primary buttonIcon at M: a 40 pill in a 48 tap
+   target. The 4px overhang keeps the pill inside the field's padding. */
+.send {
+  margin-block: var(--primitive-space-negative-100);
+  margin-inline-end: var(--primitive-space-negative-100);
+}

@@ -1,0 +1,55 @@
+/* App Bar Button — see docs/design-system.md → `appBar`. Every value is a token
+   from build/css/tokens.css. No bare hex, no loose px, no fallbacks. */
+
+/* The wrapper is the tap target. Figma hugs the label, which makes "Skip" 30
+   wide; the minimum width lifts it to Control/1200 so it clears 44. The label
+   sits at the end edge, where the hugging frame put it. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: none;
+  box-sizing: border-box;
+  min-width: var(--primitive-control-1200);
+  height: var(--primitive-control-1200);
+  padding: var(--primitive-space-0);
+  border: none;
+  background: none;
+  color: var(--semantic-text-primary);
+  cursor: pointer;
+  transition: color var(--motion-duration-instant) var(--motion-easing-standard);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+/* No fill and no stroke. Control/1000 tall, Space/150 gap, Radius/Full. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--primitive-control-1000);
+  gap: var(--primitive-space-150);
+  border-radius: var(--primitive-radius-full);
+}
+
+.label {
+  white-space: nowrap;
+  font-family: var(--typeScale-headline-xxs-bold-fontFamily);
+  font-weight: var(--typeScale-headline-xxs-bold-fontWeight);
+  font-size: var(--typeScale-headline-xxs-bold-fontSize);
+  line-height: var(--typeScale-headline-xxs-bold-lineHeight);
+  letter-spacing: var(--typeScale-headline-xxs-bold-letterSpacing);
+}
+
+/* Press is a colour change on this control, as the masters draw it: the
+   label drops to text/secondary. There is no lip to collapse. */
+.button:not(:disabled):active,
+.button[data-state='Pressed'] {
+  color: var(--semantic-text-secondary);
+}
+
+.button:disabled {
+  color: var(--semantic-text-disabled);
+}

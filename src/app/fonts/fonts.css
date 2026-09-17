@@ -47,6 +47,22 @@
   font-display: swap;
 }
 
+/* Inter — the second typeface, for text a student types into an editable
+   field (Chat Input) and its placeholder, as the Figma masters draw it. The
+   family name must stay exactly `Inter Variable`, the literal that
+   primitive.font.family.inter carries. One variable file covers every weight
+   the type scale names, so the face declares the file's full weight range.
+   Inter must not take Greed's features below: anything set in Inter resets
+   font-feature-settings to normal. The italic is on disk but no token uses it. */
+
+@font-face {
+  font-family: 'Inter Variable';
+  src: url('./InterVariable.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Greed needs these features on or every string renders wrong: without them
    the lowercase `l` loses its tail and the question mark takes an angular
    form, neither of which matches the product. `frac` is deliberately excluded

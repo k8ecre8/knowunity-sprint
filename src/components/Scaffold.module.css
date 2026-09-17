@@ -1,0 +1,106 @@
+/* scaffold — see docs/design-system.md → The scaffold. Every value is a token
+   from build/css/tokens.css. Built at size=iPhone 13 only. */
+
+/* background/page, Radius/600, Space/0 top and bottom padding. A vertical
+   stack; middleContent takes the spare height. Width follows the 390 viewport,
+   height follows the device. */
+.scaffold {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100dvh;
+  padding-block: var(--primitive-space-0);
+  overflow: hidden;
+  border-radius: var(--primitive-radius-600);
+  background-color: var(--semantic-background-page);
+}
+
+/* Size/StatusBar tall, border/default divider at Stroke/Border on the bottom
+   edge only. */
+.panelHeader {
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: var(--primitive-size-status-bar);
+  border-bottom: var(--primitive-stroke-border) solid var(--semantic-border-default);
+}
+
+/* The status bar: Bricks' `Status Bar / Mode=Night`, exported from the
+   iPhone 13 master as one decorative SVG. It is a mask, not an image, so its
+   colour is text/primary here rather than a hex in the file. Height follows
+   Size/StatusBar and the drawing keeps its proportions, centred. */
+.panelHeader::before {
+  content: '';
+  position: absolute;
+  inset: var(--primitive-space-0);
+  /* Reach under the divider so the drawing gets the full 48, as in Figma. */
+  inset-block-end: calc(var(--primitive-stroke-border) * -1);
+  background-color: var(--semantic-text-primary);
+  mask-image: url('/images/status-bar.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: auto 100%;
+}
+
+/* Hugs its child, Space/100 gap, clips. */
+.topNavigation {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+  gap: var(--primitive-space-100);
+  overflow: hidden;
+}
+
+/* Fills the spare height and scrolls. Space/200 vertical padding and gap,
+   Space/400 horizontal padding. */
+.middleContent {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1 1 auto;
+  min-height: var(--primitive-space-0);
+  gap: var(--primitive-space-200);
+  padding: var(--primitive-space-200) var(--primitive-space-400);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Anchored at the bottom, hugs, Space/400 padding and Space/100 gap. The
+   bottom padding adds the device's home-indicator inset so the action clears
+   it; Figma overlaps the two instead. */
+.bottomContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  flex-shrink: 0;
+  gap: var(--primitive-space-100);
+  padding: var(--primitive-space-400);
+  padding-bottom: calc(var(--primitive-space-400) + env(safe-area-inset-bottom));
+}
+
+/* background/scrim over the whole screen. */
+.bottomSheetBackground {
+  position: absolute;
+  inset: var(--primitive-space-0);
+  background-color: var(--semantic-background-scrim);
+}
+
+/* Pinned to the bottom edge, Space/100 gap. Its height is the device's
+   home-indicator inset rather than a token; it grows with a sheet inside. */
+.bottomSheetOnly {
+  position: absolute;
+  right: var(--primitive-space-0);
+  bottom: var(--primitive-space-0);
+  left: var(--primitive-space-0);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: var(--primitive-space-100);
+  padding-bottom: env(safe-area-inset-bottom);
+}

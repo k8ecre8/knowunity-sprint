@@ -109,6 +109,7 @@
   --primitive-illustration-1500: 120px;
   --primitive-illustration-2500: 200px;
   --primitive-illustration-4000: 320px;
+  --primitive-control-400: 16px; /** Thickness of the thin progress bar: progressIndicator at thickness 16, the one used in session app bars. Not a tap target. */
   --primitive-control-500: 20px; /** Height of the smallest control: chips at size XXS. Below the 44px tap minimum, so only for things that are not tapped on their own. */
   --primitive-control-600: 24px; /** Height of a very small control: chips at size XS. */
   --primitive-control-800: 32px; /** Height of a small control: the button pill at size S. Numbers at 25x the pixel value, like Space and Radius, not 12.5x like Icon. */
@@ -117,6 +118,7 @@
   --primitive-control-1400: 56px; /** Height of a large control: the button pill at size L, which is tall enough to be its own tap target. */
   --primitive-control-1500: 60px; /** Height of a compact list row: listItem Filled Compact and Outlined Compact. Fixed, with clipping, so a subtitle does not fit. */
   --primitive-control-1800: 72px; /** Height of a full list row: listItem Filled and Outlined. Fixed, with clipping. */
+  --primitive-size-status-bar: 48px; /** Height of the scaffold's Panel Header, which holds the iOS status bar. Not a control height: Control/1200 is also 48 but means a tap target, so this is its own step. Added Sep 2026. */
   --primitive-elevation-lip-sm: -2px;
   --primitive-elevation-lip-lg: -4px;
   --primitive-elevation-lip-outlined-sm: 2px; /** The lip on an outlined control at sizes S and M, built as a heavier bottom border because there is no fill to darken. Positive because it is a border weight, not an offset. Roughly half elevation.lip.sm and tuned by eye: a solid stroke at border/strong reads far heavier than a 15% inner shadow, so matching the numbers would over-weight it. */
@@ -135,6 +137,7 @@
   --primitive-font-size-5xl: 76px;
   --primitive-font-size-6xl: 103px;
   --primitive-font-size-root: 16px;
+  --primitive-font-size-inter-sm: 14px; /** Inter at the size Chat Input draws its field text. On Inter's own step, not Greed's: Greed has nothing at 14. */
   --primitive-font-lineheight-2xs: 12px;
   --primitive-font-lineheight-xs: 16px;
   --primitive-font-lineheight-sm: 20px;
@@ -145,11 +148,13 @@
   --primitive-font-lineheight-3xl: 60px;
   --primitive-font-lineheight-4xl: 76px;
   --primitive-font-lineheight-5xl: 104px;
+  --primitive-font-lineheight-inter-sm: 17px; /** Inter's auto line height at 14px, as Figma renders it: one line of Chat Input is 17 tall and six lines are 102. */
   --primitive-font-tracking-tight: -0.01em;
   --primitive-font-tracking-none: 0em;
   --primitive-font-tracking-loose: 0.01em;
   --primitive-font-family-display: 'Greed Standard-TRIAL';
   --primitive-font-family-default: 'Greed Standard-TRIAL';
+  --primitive-font-family-inter: 'Inter Variable'; /** The typeface of text a student types, and its placeholder. Chat Input only, measured from the Figma masters. Declared in src/app/fonts/fonts.css. Not Greed, so it takes none of Greed's OpenType features. */
   --primitive-font-weight-regular: 400;
   --primitive-font-weight-semibold: 600;
   --primitive-font-weight-bold: 700;
@@ -365,6 +370,11 @@
   --typeScale-caption-s-bold-fontSize: 9px; /** Decorative only; below the 14px readable minimum. */
   --typeScale-caption-s-bold-lineHeight: 12px; /** Decorative only; below the 14px readable minimum. */
   --typeScale-caption-s-bold-letterSpacing: 0.01em; /** Decorative only; below the 14px readable minimum. */
+  --typeScale-input-s-bold-fontFamily: 'Inter Variable'; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-s-bold-fontWeight: 600; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-s-bold-fontSize: 14px; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-s-bold-lineHeight: 17px; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-s-bold-letterSpacing: 0em; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,78 @@
+/* appBar — see docs/design-system.md → `appBar`. Every value is a token from
+   build/css/tokens.css. No bare hex, no loose px, no fallbacks. */
+
+/* "Top Nav Default": a row, Space/100 gap, Space/0 top and Space/200 bottom
+   padding. Height hugs to 56 — a Control/1200 row of controls plus the bottom
+   padding — so no height token is needed. Width fills the parent; the 375 in
+   Figma predates the 390 product width.
+
+   The fill is two identical layers of background/page fading to transparent
+   down the bar, as the master stacks them, so content scrolling under the bar
+   fades out before it reaches the controls. */
+.appBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  gap: var(--primitive-space-100);
+  padding-block: var(--primitive-space-0) var(--primitive-space-200);
+  background-image:
+    linear-gradient(to bottom, var(--semantic-background-page), transparent),
+    linear-gradient(to bottom, var(--semantic-background-page), transparent);
+}
+
+/* Side padding per variant, as each master binds it: Space/400 beside the
+   slot or a text button, Space/100 beside an icon button (whose own 48 target
+   carries the rest of the margin), Space/300 on the right of the mixed pair. */
+.variantDefault {
+  padding-inline: var(--primitive-space-400);
+}
+
+.variantLeftIconButtonOnly,
+.variantLeftAndRightButton {
+  padding-inline: var(--primitive-space-100) var(--primitive-space-400);
+}
+
+.variantLeftAndRightIconButton,
+.variantLeftAndTwoRightIconButtons {
+  padding-inline: var(--primitive-space-100);
+}
+
+.variantLeftAnd2RightButtons {
+  padding-inline: var(--primitive-space-100) var(--primitive-space-300);
+}
+
+/* Figma's Slot: grows to fill, Control/1200 tall, centres its one child and
+   stretches it across, as stretchChildOnInsert does. */
+.slot {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: var(--primitive-space-0);
+  min-height: var(--primitive-control-1200);
+}
+
+.slot > * {
+  flex: 1 1 auto;
+  min-width: var(--primitive-space-0);
+}
+
+/* "Right Buttons": a row with no gap. */
+.rightButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: none;
+  gap: var(--primitive-space-0);
+}
+
+.rightButtonsInset {
+  padding-inline-end: var(--primitive-space-100);
+}
+
+/* The instance override on leftAndRightButton: Space/300 before the label. */
+.leadingGap {
+  padding-inline-start: var(--primitive-space-300);
+}

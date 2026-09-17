@@ -1,0 +1,44 @@
+/* App Bar Button Icon — see docs/design-system.md → `appBar`. Every value is a
+   token from build/css/tokens.css. No bare hex, no loose px, no fallbacks. */
+
+/* The wrapper is the tap target: Control/1200 square around a Control/1000
+   circle, so a 24px glyph still clears the 44px minimum. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--primitive-control-1200);
+  height: var(--primitive-control-1200);
+  padding: var(--primitive-space-0);
+  border: none;
+  background: none;
+  color: var(--semantic-text-primary);
+  cursor: pointer;
+  transition: color var(--motion-duration-instant) var(--motion-easing-standard);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+/* No fill and no stroke: the circle only exists to carry Radius/Full. */
+.circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1000);
+  height: var(--primitive-control-1000);
+  border-radius: var(--primitive-radius-full);
+}
+
+/* The Figma masters draw Pressed and Disabled identical to Default. These
+   follow App Bar Button, its sibling in the same bar, as decided Sep 2026. */
+.button:not(:disabled):active,
+.button[data-state='Pressed'] {
+  color: var(--semantic-text-secondary);
+}
+
+.button:disabled {
+  color: var(--semantic-text-disabled);
+}

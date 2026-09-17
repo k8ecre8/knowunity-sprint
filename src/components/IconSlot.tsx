@@ -37,6 +37,7 @@ import {
   ClockPlus,
   ClockRefresh,
   ClockRewind,
+  DotsVertical,
   FileQuestion02,
   HelpCircle,
   InfoCircle,
@@ -51,6 +52,7 @@ import {
   Send01,
   Send02,
   Send03,
+  Share02,
   SkipBack,
   SkipForward,
   Star01,
@@ -70,14 +72,16 @@ import styles from './IconSlot.module.css';
 export type IconSlotSize = '100' | '150' | '200' | '250' | '300' | '400' | '500';
 
 /**
- * The 60 glyphs offered on the Figma slot's instance-swap property, in the
- * system's lower-kebab naming. Every one resolves to an export in
- * `@untitled-ui/icons-react`, so the Figma glyph and the built glyph are the
- * same drawing. A glyph that is not in this list is a gap to report, not a
- * thing to source elsewhere. `plus` was added Sep 2026 for summaryCard's
- * overflow row: it is in the package, but the `plus` the Figma masters use is
- * an unpublished orphan, so it could not be added to the Figma swap list. The
- * code list is 60; the Figma list is 59 until a published `plus` is imported.
+ * The 59 glyphs offered on the Figma slot's instance-swap property, plus three
+ * code-only additions, in the system's lower-kebab naming. Every one resolves
+ * to an export in `@untitled-ui/icons-react`, so the Figma glyph and the built
+ * glyph are the same drawing. A glyph that is not in this list is a gap to
+ * report, not a thing to source elsewhere. `plus` was added Sep 2026 for
+ * summaryCard's overflow row: it is in the package, but the `plus` the Figma
+ * masters use is an unpublished orphan, so it could not be added to the Figma
+ * swap list. `dots-vertical` and `share-02` were added Sep 2026 for appBar on the same
+ * terms: both are in the package, `dots-vertical` is an orphan in the file and
+ * `share-02` is not on the swap list, so the code list is 62.
  */
 export const icons = {
   'arrow-left': ArrowLeft,
@@ -118,6 +122,7 @@ export const icons = {
   'clock-plus': ClockPlus,
   'clock-refresh': ClockRefresh,
   'clock-rewind': ClockRewind,
+  'dots-vertical': DotsVertical,
   'file-question-02': FileQuestion02,
   'help-circle': HelpCircle,
   'info-circle': InfoCircle,
@@ -132,6 +137,7 @@ export const icons = {
   'send-01': Send01,
   'send-02': Send02,
   'send-03': Send03,
+  'share-02': Share02,
   'skip-back': SkipBack,
   'skip-forward': SkipForward,
   'star-01': Star01,

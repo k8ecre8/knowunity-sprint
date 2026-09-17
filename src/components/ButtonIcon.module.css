@@ -1,0 +1,150 @@
+/* buttonIcon — see docs/design-system.md → Components built this sprint →
+   `buttonIcon`. The same four treatments and press rule as `button`, with a
+   glyph in place of a label. Every value is a token from build/css/tokens.css.
+   No bare hex, no loose px, no fallbacks. */
+
+/* The wrapper is the tap target, not the drawn control: at S and M the pill is
+   32 and 40, so the wrapper carries the 48 that clears the 44px minimum. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--primitive-control-1200);
+  height: var(--primitive-control-1200);
+  padding: var(--primitive-space-0);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.button:disabled,
+.button[data-state='Loading'] {
+  cursor: not-allowed;
+}
+
+/* The pill is the control the student sees. The glyph inherits its colour. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: none;
+  border-radius: var(--primitive-radius-full);
+  transition:
+    transform var(--motion-duration-instant) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-instant) var(--motion-easing-standard),
+    padding var(--motion-duration-instant) var(--motion-easing-standard),
+    border-bottom-width var(--motion-duration-instant) var(--motion-easing-standard),
+    background-color var(--motion-duration-instant) var(--motion-easing-standard);
+}
+
+/* --- size ------------------------------------------------------------ */
+
+.sizeS .pill {
+  width: var(--primitive-control-800);
+  height: var(--primitive-control-800);
+}
+
+.sizeM .pill {
+  width: var(--primitive-control-1000);
+  height: var(--primitive-control-1000);
+}
+
+/* L is tall enough to be its own tap target, so wrapper and pill match. */
+.sizeL {
+  width: var(--primitive-control-1400);
+  height: var(--primitive-control-1400);
+}
+
+.sizeL .pill {
+  width: var(--primitive-control-1400);
+  height: var(--primitive-control-1400);
+}
+
+/* --- variant --------------------------------------------------------- */
+
+/* The lip on a filled control is an inner shadow: there is a fill to darken.
+   The lip tokens are negative offsets, so a depth is the token times -1.
+   The masters pad the glyph's container by the lip depth at the bottom, so the
+   glyph centres on the visible face rather than on the face plus the lip. */
+.variantPrimary .pill,
+.variantSecondary .pill {
+  padding-bottom: calc(var(--primitive-elevation-lip-sm) * -1);
+  box-shadow: inset 0 var(--primitive-elevation-lip-sm) 0 0 var(--primitive-color-alpha-dark-15);
+}
+
+.sizeL.variantPrimary .pill,
+.sizeL.variantSecondary .pill {
+  padding-bottom: calc(var(--primitive-elevation-lip-lg) * -1);
+  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--primitive-color-alpha-dark-15);
+}
+
+.variantPrimary .pill {
+  background-color: var(--semantic-interactive-primary);
+  color: var(--semantic-interactive-onprimary);
+}
+
+.variantSecondary .pill {
+  background-color: var(--semantic-interactive-secondary);
+  color: var(--semantic-text-primary);
+}
+
+/* The lip on an outlined control is a heavier bottom border: no fill to darken. */
+.variantTertiary .pill {
+  border-style: solid;
+  border-color: var(--semantic-border-strong);
+  border-width: var(--primitive-stroke-border);
+  border-bottom-width: var(--primitive-elevation-lip-outlined-sm);
+  color: var(--semantic-text-primary);
+}
+
+.sizeL.variantTertiary .pill {
+  border-bottom-width: var(--primitive-elevation-lip-outlined-lg);
+}
+
+.variantText .pill {
+  color: var(--semantic-text-primary);
+}
+
+/* --- state: Pressed --------------------------------------------------- */
+
+/* Press is geometry, not colour: the lip collapses to zero and the control
+   sinks by the lip depth. The fill does not change. `data-state="Pressed"`
+   forces the state for a story; `:active` is the real finger down. */
+.button:not(:disabled):not([data-state='Loading']):active .pill,
+.button[data-state='Pressed'] .pill {
+  padding-bottom: var(--primitive-space-0);
+  box-shadow: none;
+  transform: translateY(calc(var(--primitive-elevation-lip-sm) * -1));
+}
+
+.sizeL.button:not(:disabled):not([data-state='Loading']):active .pill,
+.sizeL.button[data-state='Pressed'] .pill {
+  transform: translateY(calc(var(--primitive-elevation-lip-lg) * -1));
+}
+
+.variantTertiary.button:not(:disabled):not([data-state='Loading']):active .pill,
+.variantTertiary.button[data-state='Pressed'] .pill {
+  border-bottom-width: var(--primitive-stroke-border);
+}
+
+/* Text has no lip, so it presses by filling instead, and does not sink.
+   Ordered last so it overrides the sink above at equal specificity. */
+.variantText.button:not(:disabled):not([data-state='Loading']):active .pill,
+.variantText.button[data-state='Pressed'] .pill {
+  background-color: var(--semantic-background-surface);
+  transform: none;
+}
+
+/* --- state: Disabled -------------------------------------------------- */
+
+.button:disabled .pill {
+  color: var(--semantic-text-disabled);
+}
+
+/* Primary is the only variant that loses its fill; the rest keep theirs and
+   only the glyph drops to text/disabled. The lip stays on all of them. */
+.button:disabled.variantPrimary .pill {
+  background-color: var(--semantic-background-surface);
+}
