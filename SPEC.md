@@ -223,7 +223,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 
 **Not in the library**
 - **The push-to-talk control:** Figma calls it `recordingControl`, and design-system.md names the gap `voiceInput` (see Open). This blocks the screen.
-- **The transcript container:** `noteCard` neutral, which isn't in code and has no Figma frame.
+- `noteCard` for the transcript container.
 - **The leave-confirm sheet:** `bottomSheet`.
 - **`bottomNav`:** Figma shows it on idle, recording and processing only (see Open).
 
@@ -372,7 +372,7 @@ Also:
 | 3 | miss → miss → miss | Error (over 10s) on the second judgement, then answer shown, then say it back |
 
 **Timing**
-- Transcribing takes about 1s.
+- Transcribing takes about 2s.
 - Judging takes "a few seconds" and stays under 4s unless a step overrides it.
 - A slow step resolves between 4s and 10s.
 - An error step passes 10s and shows retry. Retry re-runs the same step at normal speed.
@@ -391,7 +391,7 @@ Every row carries `termId`, `round`, `outcome`, `mode` (voice or typed, logged b
 **Input mode:** typing sticks within a session. A new round starts on voice.
 
 **Review and exam eve** are separate entry links with seeded data:
-- `/plan?day=review` seeds 10 review terms with `lastSeenAt` six days back.
+- `/plan?day=review` seeds 10 review terms with `lastSeenAt` three days back.
 - `/plan?day=eve` and `/?day=eve` seed 12 repeat terms.
 
 The tester's own section-round rows persist in `sessionStorage` and are merged in, so their outcomes feed the review selection and the comparison.
