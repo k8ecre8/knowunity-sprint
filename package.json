@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "tokens": "style-dictionary build --config style-dictionary.config.mjs",
+    "check:tokens": "node scripts/check-tokens.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "node --env-file=.env node_modules/.bin/chromatic --exit-zero-on-changes"
