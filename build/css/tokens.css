@@ -124,6 +124,11 @@
   --primitive-elevation-lip-lg: -4px;
   --primitive-elevation-lip-outlined-sm: 2px; /** The lip on an outlined control at sizes S and M, built as a heavier bottom border because there is no fill to darken. Positive because it is a border weight, not an offset. Roughly half elevation.lip.sm and tuned by eye: a solid stroke at border/strong reads far heavier than a 15% inner shadow, so matching the numbers would over-weight it. */
   --primitive-elevation-lip-outlined-lg: 3px; /** The same outlined lip at size L, against the 1px border on the other three sides. */
+  --primitive-opacity-0: 0; /** Fully transparent: an element faded out but kept in the layout. */
+  --primitive-opacity-50: 0.5; /** Half strength: the dim beat of a pulse (voiceInput's loading dots, the typed turn's thinking helper line). */
+  --primitive-opacity-55: 0.55; /** voiceInput's glow: the share of accent/brand/bold at the centre of its radial gradient, before it fades to transparent. */
+  --primitive-opacity-100: 1; /** Fully opaque: the bright beat of a pulse, or a placeholder kept at full strength against the browser's default fade. */
+  --primitive-scale-60: 0.6; /** An element shrunk to 60% while it is hidden, so it grows in as it fades in: the glyphs that swap in voiceInput's centre. */
   --primitive-focus-width: 2px; /** Thickness of the focus ring. Aliases the heavy border stroke so the ring stays in step with the system. Pair with border/focus for the colour and focus.offset for the gap. */
   --primitive-focus-offset: 2px;
   --primitive-font-size-2xs: 9px;

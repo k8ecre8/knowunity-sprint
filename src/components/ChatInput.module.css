@@ -69,7 +69,7 @@
 
 .field::placeholder {
   color: var(--semantic-text-disabled);
-  opacity: 1;
+  opacity: var(--primitive-opacity-100);
 }
 
 /* The forced Typing caret: a 1px bar in background/inverse, one line tall,
