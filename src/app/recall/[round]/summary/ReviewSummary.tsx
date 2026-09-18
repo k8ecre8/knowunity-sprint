@@ -81,6 +81,7 @@ const comparison: Record<Direction, Record<Direction, { headline: string; body: 
     same: {
       headline: 'You felt less confident.',
       body: 'Your answers stayed about where they were, so nothing has actually slipped. You know more than you feel.',
+      celebrate: true,
     },
     down: {
       headline: 'You felt less confident, and your answers agree.',

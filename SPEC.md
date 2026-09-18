@@ -139,7 +139,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **States**
 - **Idle:** the prompt, or the current hint.
-- **Typing.**
+- **Typing:** the keyboard is up. The app bar, Knowie at `MascotSlot` XL and the question bubble stay anchored at the top; the input sits directly under the bubble with "Use my voice instead" under it, so all of them stay above the keyboard and nothing is pushed off-screen. *Decided Sep 2026,* matching "Typed input (alt route)", which draws Knowie at 96 (see Open).
 - **Thinking:** the judging wait.
 - **Thinking, slow:** the second beat at 4s.
 - **Error:** past 10s, with retry.
@@ -150,6 +150,8 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - **Leave confirm.**
 
 Same ladder, script and outcomes as the voice turn, with no recording or transcript states.
+
+The input and the voice link sit under the bubble in every answering state, not in `bottomContent`; `bottomContent` holds only Retry (error) and Next question (verdict, answer shown).
 
 **Components**
 - `Scaffold`.
@@ -482,7 +484,7 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 2. **Idle "Tap to answer" control.** *Decided Sep 2026:* part of 1. The ring is the button, 120 across.
 3. **Transcript container.** *Decided Sep 2026:* the transcript sits in `voiceInput`'s own card, grown from the ring, with send and discard inside it; no `noteCard` or `buttonGroup`. There is still no Figma frame for the transcript step.
 4. **`bottomSheet`** for the intro tray and the leave confirm. Also Bottom-sheet App Bar.
-5. **`answerOption`** for the confidence check. Only three of the five labels are known: "So cooked", "Mostly solid", "Most of it".
+5. **`answerOption`** for the confidence check. *Labels decided Sep 2026,* lowest to highest: "So cooked", "Getting there", "Most of it", "Mostly solid", "Ready". Figma named three; "Getting there" and "Ready" and the order of the middle two were decided in code (`src/mock/terms.ts`). The control itself is still built inline.
 6. **The mocked iOS mic alert:** its component name and its copy.
 7. **Summaries:** `noteCard`, and `textBlock` for headlines and group labels. There's no component for "How you felt".
 8. **App home and plan home chrome:** `Tabs`, `bottomNav`, `sectionRow`, both `topBar`s, and the Ask Knowie bar. These need building, or the two screens need a different treatment in the prototype.
