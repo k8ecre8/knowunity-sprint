@@ -156,7 +156,7 @@ Same ladder, script and outcomes as the voice turn, with no recording or transcr
 - `AppBar` with `variant="leftAndRightIconButton"`, `leftIcon="x-close"`, and `slot` set to `ProgressIndicator` (`thickness="16"`, `current`, `total`).
 - `MascotSlot` at `size="2XL"`.
 - `ResponseBubble`:
-  - `showVerdict` is on after judging. `verdictTone` reports what the student just did: `Correct`, `Partial` or `Incorrect`, and no chip after "I don't know" or a clarifying question.
+  - `showVerdict` is on after judging. `verdictTone` reports what the student just did: `Correct`, `Partial` or `Incorrect`, and no chip after "I don't know" or a clarifying question, and none at answer shown, because the `Incorrect` chip reads "Try again" and there is no next try.
   - `showAction={false}`, since "Explain more" is reserved.
   - `body` and `body2` carry the text.
 - `ChatInput`: `onSend`, `onValueChange`, and `Status="Loading"` while judging.

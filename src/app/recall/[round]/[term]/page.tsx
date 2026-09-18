@@ -160,6 +160,10 @@ function Turn({
      equal the hints used. */
   const pointer = useRef(Math.min(startRung, current.script.length));
   const timers = useRef<number[]>([]);
+  /* The leave sheet pauses a wait: its timers stop when the sheet opens, and
+     the step in flight runs again at normal speed on Stay. */
+  const inFlight = useRef<ScriptStep | null>(null);
+  const paused = useRef<Phase | null>(null);
   // The mocked voice level the control's waveform follows. Nothing listens.
   const getLevel = useMemo(() => createSpeechLevel(), []);
 
@@ -206,6 +210,7 @@ function Turn({
 
   const judge = (step: ScriptStep, atNormalSpeed = false) => {
     clearTimers();
+    inFlight.current = step;
     setPhase('thinking');
     const delay = atNormalSpeed ? 'none' : (step.delay ?? 'none');
     timers.current.push(window.setTimeout(() => setPhase('thinking-slow'), SLOW_BEAT_MS));
@@ -222,6 +227,17 @@ function Turn({
     );
   };
 
+  const transcribe = (step: ScriptStep) => {
+    inFlight.current = step;
+    setPhase('transcribing');
+    timers.current.push(
+      window.setTimeout(() => {
+        setTake(step);
+        setPhase('transcript');
+      }, TRANSCRIBE_MS),
+    );
+  };
+
   const startRecording = () => setPhase('recording');
 
   /** Tap the control. What it does depends on the state it is in. */
@@ -229,6 +245,8 @@ function Turn({
     if (phase === 'idle' || phase === 'start-over' || phase === 'unclear') {
       // The mocked iOS prompt comes first on the first mic use in the app.
       if (micPermission === 'unasked') setPhase('prompt');
+      // Denied is permanent: the mic can't start, so the ring goes to mic denied.
+      else if (micPermission === 'denied') router.push(`/recall/${round}/mic-denied?from=voice&term=${term}`);
       else startRecording();
       return;
     }
@@ -241,13 +259,7 @@ function Turn({
         setPhase('unclear');
         return;
       }
-      setPhase('transcribing');
-      timers.current.push(
-        window.setTimeout(() => {
-          setTake(step);
-          setPhase('transcript');
-        }, TRANSCRIBE_MS),
-      );
+      transcribe(step);
       return;
     }
     if (phase === 'sayback-recording') {
@@ -319,6 +331,23 @@ function Turn({
     router.push(`/recall/${round}/summary`);
   };
 
+  const openSheet = () => {
+    if (phase === 'transcribing' || phase === 'thinking' || phase === 'thinking-slow') {
+      clearTimers();
+      paused.current = phase;
+    }
+    setSheetOpen(true);
+  };
+
+  const stay = () => {
+    setSheetOpen(false);
+    const was = paused.current;
+    paused.current = null;
+    if (!was || !inFlight.current) return;
+    if (was === 'transcribing') transcribe(inFlight.current);
+    else judge(inFlight.current, true);
+  };
+
   const leave = () => {
     clearTimers();
     updateSession((s) => ({ ...s, resume: { round, term, rung } }));
@@ -354,6 +383,7 @@ function Turn({
       body: 'Nice, that’s the shape of it. Nothing here is scored, and this one comes back in your review.',
     };
   } else if (rung === 3) {
+    // No chip: the Incorrect chip reads "Try again", and at answer shown there is no next try.
     bubble = { showVerdict: false, body: 'Here is a complete answer:', body2: current.answer };
   } else if (rung === 0) {
     bubble = { showVerdict: false, body: intro, body2: prompt };
@@ -412,7 +442,7 @@ function Turn({
           variant="leftAndRightIconButton"
           leftIcon="x-close"
           leftLabel="Leave this round"
-          onLeftPress={() => setSheetOpen(true)}
+          onLeftPress={openSheet}
           rightIcon="zap"
           rightLabel="Streak"
           slot={<ProgressIndicator thickness="16" current={progress} total={practice?.length ?? terms.length} />}
@@ -473,7 +503,7 @@ function Turn({
             showCaption
             caption="You’ll pick up this question at the same step when you come back."
           >
-            <Button variant="Primary" size="L" onClick={() => setSheetOpen(false)}>
+            <Button variant="Primary" size="L" onClick={stay}>
               Stay
             </Button>
             <Button variant="Text" size="L" onClick={leave}>

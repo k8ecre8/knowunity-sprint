@@ -41,7 +41,8 @@ function MicDenied({ round }: { round: Round }) {
   const router = useRouter();
   const session = useSession();
   const params = useSearchParams();
-  const again = params.get('from') === 'typed';
+  // Reached from a turn (typed, or the ring with the mic already off), not the prompt.
+  const again = params.has('from');
   const text = again ? copy.again : copy.first;
 
   // Landing here means the prompt was refused. Record it if nothing did, so
