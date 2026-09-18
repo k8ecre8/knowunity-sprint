@@ -136,15 +136,15 @@ export function EveSummary() {
         <div className={shared.actions}>
           {hasMisses ? (
             <>
-              <Button variant="Primary" size="L" className={shared.action} onClick={onPractice}>
+              <Button fullWidth variant="Primary" size="L" onClick={onPractice}>
                 One more try at the misses
               </Button>
-              <Button variant="Text" size="L" className={shared.action} onClick={onFinish}>
+              <Button fullWidth variant="Text" size="L" onClick={onFinish}>
                 Finish
               </Button>
             </>
           ) : (
-            <Button variant="Primary" size="L" className={shared.action} onClick={onFinish}>
+            <Button fullWidth variant="Primary" size="L" onClick={onFinish}>
               Finish
             </Button>
           )}

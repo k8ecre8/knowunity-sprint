@@ -53,6 +53,8 @@ Four treatments. Text does not exist yet.
 
 **Two tokens were added** for values the Figma set drew loose: \`primitive.control.800/1000/1200/1400\` (32/40/48/56, the control heights — 56 existed on no scale) and \`primitive.elevation.lip.outlined.sm/lg\` (2px/3px, the outlined lip).
 
+**fullWidth (added Sep 2026)** is code-only: Figma's fill-container sizing on an instance. The tap target and the pill stretch to the parent; height and lip do not change. Screens use it for stacked bottom actions instead of stretching the button from their own CSS.
+
 **Focus is still outstanding.** The browser's own focus ring is left in place rather than removed, so keyboard and Switch Control users are not stranded, but the designed ring is not built. The two decisions named above are still open.
 `;
 
@@ -193,4 +195,36 @@ export const TextMPressed: Story = {
 export const TextMDisabled: Story = {
   name: 'variant=Text, size=M, state=Disabled, tone=Default',
   args: { variant: 'Text', size: 'M', state: 'Disabled', children: 'Skip' },
+};
+
+/* --- fullWidth -------------------------------------------------------- */
+
+/** Stacked bottom actions: both buttons fill the column, as the summaries and the intro tray draw them. */
+export const FullWidth: Story = {
+  name: 'fullWidth, Primary L over Text L',
+  args: { size: 'L', fullWidth: true },
+  parameters: { layout: 'fullscreen' },
+  render: (args) => (
+    <div
+      data-testid="column"
+      style={{ display: 'flex', flexDirection: 'column', gap: 'var(--primitive-space-200)', padding: 'var(--primitive-space-400)' }}
+    >
+      <Button {...args} variant="Primary">
+        Continue
+      </Button>
+      <Button {...args} variant="Text" onClick={fn()}>
+        Try the ones you missed
+      </Button>
+    </div>
+  ),
+  play: async ({ canvas, args }) => {
+    const column = canvas.getByTestId('column');
+    const inner = column.clientWidth - 2 * parseFloat(getComputedStyle(column).paddingLeft);
+    for (const button of canvas.getAllByRole('button')) {
+      await expect(Math.round(button.getBoundingClientRect().width)).toBe(Math.round(inner));
+      await expect(Math.round((button.firstElementChild as HTMLElement).getBoundingClientRect().width)).toBe(Math.round(inner));
+    }
+    await userEvent.click(canvas.getByRole('button', { name: 'Continue' }));
+    await expect(args.onClick).toHaveBeenCalled();
+  },
 };

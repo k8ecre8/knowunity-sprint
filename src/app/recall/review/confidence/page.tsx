@@ -101,7 +101,7 @@ export default function ConfidenceCheckPage() {
       }
       bottomContent={
         <div className={styles.actions}>
-          <Button variant="Primary" size="L" state={rating === null ? 'Disabled' : 'Default'} onClick={start}>
+          <Button fullWidth variant="Primary" size="L" state={rating === null ? 'Disabled' : 'Default'} onClick={start}>
             Start the review
           </Button>
         </div>

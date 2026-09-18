@@ -121,10 +121,10 @@ function IntroTray() {
                 </ul>
               </div>
               <div className={styles.actions}>
-                <Button variant="Primary" size="L" onClick={start}>
+                <Button fullWidth variant="Primary" size="L" onClick={start}>
                   Start
                 </Button>
-                <Button variant="Text" size="L" onClick={cantTalk}>
+                <Button fullWidth variant="Text" size="L" onClick={cantTalk}>
                   I can’t talk right now
                 </Button>
               </div>

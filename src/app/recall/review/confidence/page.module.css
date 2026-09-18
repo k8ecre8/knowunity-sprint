@@ -98,10 +98,3 @@
   display: flex;
   flex-direction: column;
 }
-
-/* The frame stretches the button to the content width. `button` hugs, so
-   both the wrapper and its pill are stretched here. */
-.actions > *,
-.actions > * > * {
-  width: 100%;
-}

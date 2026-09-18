@@ -139,17 +139,11 @@
 }
 
 /* bottomSection: Space/400 padding plus the home-indicator inset, the two
-   actions Space/200 apart and stretched. `button` hugs, so the wrapper and
-   its pill are both stretched. */
+   actions Space/200 apart, each `Button` `fullWidth`. */
 .actions {
   display: flex;
   flex-direction: column;
   gap: var(--primitive-space-200);
   padding: var(--primitive-space-400);
   padding-bottom: calc(var(--primitive-space-400) + env(safe-area-inset-bottom));
-}
-
-.actions > *,
-.actions > * > * {
-  width: 100%;
 }

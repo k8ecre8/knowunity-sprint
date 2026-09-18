@@ -37,16 +37,10 @@
   padding-block: var(--primitive-space-400);
 }
 
-/* bottomContent: one or two stacked actions, Space/300 apart, stretched to
-   the content width as the verdict frame draws Next question. `button`
-   hugs, so the wrapper and its pill are both stretched. */
+/* bottomContent: one or two stacked actions, Space/300 apart, each
+   `Button` `fullWidth` as the verdict frame draws Next question. */
 .actions {
   display: flex;
   flex-direction: column;
   gap: var(--primitive-space-300);
-}
-
-.actions > button,
-.actions > button > * {
-  width: 100%;
 }

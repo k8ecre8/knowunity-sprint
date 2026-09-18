@@ -418,17 +418,17 @@ function Turn({
   if (answerShown) {
     actions = (
       <>
-        <Button variant="Primary" size="L" onClick={nextQuestion}>
+        <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
           Next question
         </Button>
-        <Button variant="Text" size="L" onClick={() => setPhase('sayback-recording')}>
+        <Button fullWidth variant="Text" size="L" onClick={() => setPhase('sayback-recording')}>
           Practice in my own words
         </Button>
       </>
     );
   } else if (phase === 'verdict' || phase === 'sayback-done') {
     actions = (
-      <Button variant="Primary" size="L" onClick={nextQuestion}>
+      <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
         Next question
       </Button>
     );

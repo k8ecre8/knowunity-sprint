@@ -258,11 +258,11 @@ export function ReviewSummary() {
       }
       bottomContent={
         <div className={shared.actions}>
-          <Button variant="Primary" size="L" className={shared.action} onClick={onContinue}>
+          <Button fullWidth variant="Primary" size="L" onClick={onContinue}>
             Continue
           </Button>
           {hasMisses && (
-            <Button variant="Secondary" size="L" className={shared.action} onClick={onPractice}>
+            <Button fullWidth variant="Secondary" size="L" onClick={onPractice}>
               Try the ones you missed
             </Button>
           )}

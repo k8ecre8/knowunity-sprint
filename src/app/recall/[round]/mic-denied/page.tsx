@@ -78,10 +78,10 @@ function MicDenied({ round }: { round: Round }) {
       }
       bottomContent={
         <div className={styles.actions}>
-          <Button variant="Primary" size="L" onClick={onTypeInstead}>
+          <Button fullWidth variant="Primary" size="L" onClick={onTypeInstead}>
             Type instead
           </Button>
-          <Button variant="Text" size="L" onClick={() => router.push('/plan')}>
+          <Button fullWidth variant="Text" size="L" onClick={() => router.push('/plan')}>
             Back to plan
           </Button>
         </div>

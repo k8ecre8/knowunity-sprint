@@ -399,7 +399,7 @@ function Turn({
             {phase === 'error' ? (
               /* The error takes the input's place, so nothing can be typed
                  that Send would ignore; Retry is the one action, in reach. */
-              <Button variant="Primary" size="L" onClick={retry}>
+              <Button fullWidth variant="Primary" size="L" onClick={retry}>
                 Retry
               </Button>
             ) : answering ? (
@@ -421,7 +421,7 @@ function Turn({
                 )}
               </>
             ) : (
-              <Button variant="Primary" size="L" onClick={nextQuestion}>
+              <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
                 Next question
               </Button>
             )}

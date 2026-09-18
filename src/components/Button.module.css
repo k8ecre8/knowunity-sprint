@@ -19,6 +19,13 @@
   cursor: not-allowed;
 }
 
+/* fullWidth: fill the parent, as Figma's fill-container sizing. The tap
+   target and the pill both stretch. */
+.fullWidth,
+.fullWidth .pill {
+  width: 100%;
+}
+
 /* The pill is the control the student sees. */
 .pill {
   display: inline-flex;

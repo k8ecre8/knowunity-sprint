@@ -117,13 +117,6 @@
   gap: var(--primitive-space-300);
 }
 
-/* Next question stretches to the content width, as the verdict frame draws
-   it. `button` hugs, so the wrapper and its pill are both stretched. */
-.actions > button,
-.actions > button > * {
-  width: 100%;
-}
-
 .voiceRow {
   display: flex;
   justify-content: center;
