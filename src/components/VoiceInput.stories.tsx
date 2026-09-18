@@ -28,7 +28,7 @@ const description = `
 
 **judging.** Sending eases the card back into the ring, which opens straight into the same arc and dots; **judgingSlow** is the same 4-second beat.
 
-**error.** Past 10 seconds the wait stops: the line closes and goes \`border/strong\`, and the middle offers \`refresh-cw-01\`. Tapping retries judging without re-recording. Grey, not red: red reads as a wrong answer in this app, and nothing has been judged.
+**error.** Past 10 seconds the wait stops: the line closes and goes \`border/strong\`, and the middle offers \`refresh-cw-01\` with "Tap to send again". Tapping re-runs judging on the same take, without re-recording. Not "try again": that is the miss verdict's chip. Grey, not red: red reads as a wrong answer in this app, and nothing has been judged.
 
 **idleActions** is a slot for idle's escapes, \`Space/600\` under the ring: the screen passes \`button\` Tertiary M "I don't know the answer" (and "Type instead"), because what they do belongs to the screen. They fade out and keep their space in every other state, so the ring never moves.
 
@@ -205,8 +205,8 @@ export const ErrorState: Story = {
   name: 'state=error',
   args: { state: 'error' },
   play: async ({ canvas, args }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('That took too long. Tap to try again');
-    await userEvent.click(canvas.getByRole('button', { name: 'Try again' }));
+    await expect(canvas.getByRole('status')).toHaveTextContent('That took too long. Tap to send again');
+    await userEvent.click(canvas.getByRole('button', { name: 'Send again' }));
     await expect(args.onRetry).toHaveBeenCalledOnce();
   },
 };

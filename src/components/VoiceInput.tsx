@@ -60,7 +60,7 @@ const LABEL: Record<VoiceInputState, string> = {
   transcript: 'Check it, then send',
   judging: 'Knowie is reading your answer',
   judgingSlow: 'Still reading, nearly there',
-  error: 'That took too long. Tap to try again',
+  error: 'That took too long. Tap to send again',
 };
 
 /**
@@ -342,7 +342,7 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
   }, [reduced, state, cardHeight]);
 
   const coreAction = state === 'idle' ? onStart : state === 'listening' ? onStop : state === 'error' ? onRetry : undefined;
-  const coreLabel = state === 'idle' ? 'Start answering' : state === 'listening' ? 'Stop recording' : state === 'error' ? 'Try again' : LABEL[state];
+  const coreLabel = state === 'idle' ? 'Start answering' : state === 'listening' ? 'Stop recording' : state === 'error' ? 'Send again' : LABEL[state];
   const waiting = state === 'transcribing' || state === 'transcribingSlow' || state === 'judging' || state === 'judgingSlow';
   const trashOn = LOOK[state].trash === 1;
   const cardOn = state === 'transcript';
