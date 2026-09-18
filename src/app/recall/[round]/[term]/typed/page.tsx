@@ -381,11 +381,6 @@ function Turn({
                 <p className={styles.helper} data-phase={phase} aria-live="polite">
                   {helperText}
                 </p>
-                {phase === 'error' && (
-                  <Button variant="Tertiary" size="M" onClick={retry}>
-                    Retry
-                  </Button>
-                )}
               </div>
             )}
           </div>
@@ -401,7 +396,13 @@ function Turn({
               if (!e.currentTarget.contains(e.relatedTarget)) setTyping(false);
             }}
           >
-            {answering ? (
+            {phase === 'error' ? (
+              /* The error takes the input's place, so nothing can be typed
+                 that Send would ignore; Retry is the one action, in reach. */
+              <Button variant="Primary" size="L" onClick={retry}>
+                Retry
+              </Button>
+            ) : answering ? (
               <>
                 <ChatInput
                   value={text}

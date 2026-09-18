@@ -6,11 +6,14 @@
    edge, which is not a Space step, so the tray is full width like the code
    `BottomSheet`. */
 
-/* The whole viewport: a tap anywhere on the scrim closes the tray, and the
-   tray sits at the bottom edge. */
+/* The whole viewport below the status bar: a tap anywhere on the scrim
+   closes the tray, and the tray sits at the bottom edge. Starting under the
+   scaffold's Size/StatusBar row keeps a tray grown by long strings from
+   rising under the status bar; it scrolls inside instead. */
 .layer {
   position: fixed;
   inset: var(--primitive-space-0);
+  top: var(--primitive-size-status-bar);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;

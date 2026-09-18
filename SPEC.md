@@ -37,7 +37,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - `Button` in `variant` Primary and Secondary, `size="L"`.
 
 **Not in the library**
-- `noteCard` (tone `outlined`, leading icon), used twice. This gets recreated in each screen's CSS.
+- `noteCard` (tone `outlined`, leading icon), used once. A second note was cut; its code is kept commented out.
 - The `clipboard-check` glyph is not in `IconSlot`.
 - The headline ("Here's how it went") has no `textBlock` in code.
 
@@ -397,7 +397,7 @@ The tester's own section-round rows persist in `sessionStorage` and are merged i
 
 **Selection:** weakest first (needs practice, then needed a hint, then terms with no earlier row, then correct without help), by the tester's latest row from earlier rounds, applied over the seeded list and keeping its order within a rank. The review's scripted unclear take goes on whichever term is asked first. The exam-eve repeat uses each term's second wording (`promptB`).
 
-**Confidence:** the before-plan rating is a constant in mock data, and the pre-review rating comes from screen 5. The review summary picks one of nine copy versions from the direction of each change: confidence up, same or down, against performance (section-round rows vs review rows) up, same or down.
+**Confidence:** the before-plan rating is a constant in mock data ("Getting there", position 2, so confidence can go down as well as up), and the pre-review rating comes from screen 5. The review summary picks one of nine copy versions from the direction of each change: confidence up, same or down, against performance (section-round rows vs review rows) up, same or down.
 
 ---
 
