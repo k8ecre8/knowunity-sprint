@@ -22,9 +22,8 @@ import { type ReactNode, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { PlanNode, type PlanNodeState } from '@/components/PlanNode';
-import { MascotSlot } from '@/components/MascotSlot';
 import { NoteCard } from '@/components/NoteCard';
-import { Button } from '@/components/Button';
+import { TestDayPanel } from '@/components/TestDayPanel';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
 import { plateTectonics } from '@/mock/terms';
@@ -240,17 +239,14 @@ export function PlanHome({ day: seeded, bottomSheetOnly, showBottomSheetBackgrou
           <NoteCard tone="outlined" badge="blue" showTitle title="Plan complete" showChevron>
             9 steps over 4 days
           </NoteCard>
-          {/* testDayPanel: the space the path left becomes the reminder. */}
-          <div className={styles.testDayPanel}>
-            <MascotSlot size="2XL" name="standby" />
-            <h2 className={styles.panelHeadline}>Your test is tomorrow</h2>
-            <p className={styles.panelBody}>Let’s review the material and make sure it’s still fresh.</p>
-            <div className={styles.panelCta}>
-              <Button variant="Primary" size="L" onClick={warmUp}>
-                Warm up now
-              </Button>
-            </div>
-          </div>
+          {/* The space the path left becomes the reminder. */}
+          <TestDayPanel
+            size="S"
+            headline="Your test is tomorrow"
+            body="Let’s review the material and make sure it’s still fresh."
+            cta="Warm up now"
+            onAction={warmUp}
+          />
         </div>
       ) : (
         <div className={styles.planBody}>

@@ -20,6 +20,7 @@ import { Scaffold } from '@/components/Scaffold';
 import { MascotSlot } from '@/components/MascotSlot';
 import { Button } from '@/components/Button';
 import { TextBlock } from '@/components/TextBlock';
+import { TestDayPanel } from '@/components/TestDayPanel';
 import { ListItem } from '@/components/ListItem';
 import { Chips } from '@/components/Chips';
 import { IconSlot, type IconName } from '@/components/IconSlot';
@@ -103,17 +104,15 @@ function AppHome({ seeded }: { seeded: Day | null }) {
   const hero =
     day === 'eve' ? (
       /* reminderHero: Knowie, one line, one action. */
-      <section className={[styles.hero, styles.heroEve].join(' ')} aria-labelledby="home-headline">
-        <MascotSlot size="2XL" name="standby" />
-        <h1 className={styles.headlineM} id="home-headline">
-          Your test is tomorrow
-        </h1>
-        <p className={styles.body}>Let’s review the material and make sure it’s still fresh.</p>
-        <div className={styles.cta}>
-          <Button variant="Primary" size="L" onClick={warmUp}>
-            Warm up now
-          </Button>
-        </div>
+      <section className={[styles.hero, styles.heroEve].join(' ')} aria-label="Test reminder">
+        <TestDayPanel
+          size="M"
+          as="h1"
+          headline="Your test is tomorrow"
+          body="Let’s review the material and make sure it’s still fresh."
+          cta="Warm up now"
+          onAction={warmUp}
+        />
       </section>
     ) : (
       /* hero: the ordinary study reminder. */

@@ -504,6 +504,14 @@ Added to the Figma set, Sep 2026.
 
 **Built in code this sprint** as `src/components/TextBlock.tsx`, promoted Sep 2026 from the inline headline in the section summary when the exam-eve repeat summary needed the same block with its caption shown. There is no Figma component: the summary frames draw a `verdict` frame of two text nodes, Headline M over Body M Regular, both `text/primary`, centred, `Space/150` apart, and that is the geometry in code. The block fills its parent, per the rows-and-cards-fill convention.
 
+### `testDayPanel`
+
+**Axis:** `size` (M, S), the headline. **Properties:** `headline`, `body`, `cta`, `onAction`. Code-only: `as` sets the heading level.
+
+**Reach for it** for the reminder the day before the test: exam plan home in complete mode (`size="S"`) and the app home's exam-eve hero (`size="M"`).
+
+**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (standby), `textBlock` with `captionTone="secondary"`, and `button` Primary L. Children are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it. The frames drew the headline and its line as two text nodes Space/300 apart; as one `textBlock` they sit Space/050 (S) or Space/150 (M) apart. No Figma component exists. The screen owns the padding around it.
+
 ### `voiceInput`
 
 **States:** `idle`, `listening`, `transcribing`, `transcribingSlow`, `transcript`, `judging`, `judgingSlow`, `error`. **Properties:** `state`; `helper` overrides the second line under the label; `idleActions` is a slot for idle's escapes; `transcript` is the read-only words. Code-only: `getLevel` (the voice level, sampled per frame while listening), `onStart`, `onStop`, `onSend`, `onDiscard`, `onRetry`.
