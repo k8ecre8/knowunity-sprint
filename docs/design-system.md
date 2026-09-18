@@ -21,6 +21,8 @@ If you need a number, a colour, a duration or a type step, read `tokens/tokens.j
 
 **`buttonIcon`** for the same four treatments with no label. Same sizes, same press rule.
 
+**`voiceInput`** for answering Knowie out loud: the push-to-talk control, its label and every state of a voice turn, from idle through the transcript to the judging wait. The way to answer.
+
 **`chatInput`** for text entry when a student chooses, or needs, to fall back from voice. Not the way to answer; voice is.
 
 **`buttonGroup`** for two buttons acting as one unit at the bottom of a screen. Note it hardcodes an icon button on the left and a primary on the right, so it does not currently do two text buttons side by side.
@@ -498,6 +500,26 @@ Added to the Figma set, Sep 2026.
 
 **Built in code this sprint** as `src/components/TextBlock.tsx`, promoted Sep 2026 from the inline headline in the section summary when the exam-eve repeat summary needed the same block with its caption shown. There is no Figma component: the summary frames draw a `verdict` frame of two text nodes, Headline M over Body M Regular, both `text/primary`, centred, `Space/150` apart, and that is the geometry in code. The block fills its parent, per the rows-and-cards-fill convention.
 
+### `voiceInput`
+
+**States:** `idle`, `listening`, `transcribing`, `transcribingSlow`, `transcript`, `judging`, `judgingSlow`, `error`. **Properties:** `state`; `helper` overrides the second line under the label; `idleActions` is a slot for idle's escapes; `transcript` is the read-only words. Code-only: `getLevel` (the voice level, sampled per frame while listening), `onStart`, `onStop`, `onSend`, `onDiscard`, `onRetry`.
+
+**Reach for it** for any turn a student answers out loud, including say it back. Put it in `middleContent`; it carries its own send, discard and retry, so none of those go in `bottomContent`. The screen owns the timing: it moves the control to the slow states at 4 seconds and to `error` at 10. Pass the escapes (`button` Tertiary M "I don't know the answer", `button` Text M "Type instead") through `idleActions`, because what they do belongs to the screen.
+
+> One `accent/brand/bold` line at `Stroke/Bold` carries every state of a voice turn, and the middle of the ring says what to do next in `text/primary` outline icons. The label sits above the ring (Body S Bold, `text/secondary`), with a quieter second line under it (Body S Regular) where a state has one; it is a live region and carries the state on its own with motion reduced.
+> IDLE: a 120 ring (`Illustration/1500`) round `microphone-01`, breathing at `motion.duration.breathing` with a soft glow and one ripple per breath. The ring is the button. The escapes sit `Space/1000` below it, the label `Space/1000` above.
+> LISTENING: tapping squeezes the middle like a press (`motion.duration.fast`) and swaps the microphone for "Tap when done". Sixty bars stand out of the ring and follow the voice, up to `Space/600` long. `trash-01` (`buttonIcon` Tertiary M) appears to the left.
+> TRANSCRIBING, JUDGING: the ring opens into an arc turning at `motion.duration.spin`, with three dots stepping on the same cycle. The trash stays through both waits; discarding returns to idle. THE 4-SECOND BEAT (`…Slow`): the arc becomes twelve dashes circling at `motion.duration.spin-slow`, and the label changes.
+> TRANSCRIPT: the ring's own line eases (`motion.duration.slow`, `motion.easing.standard`) out into the card that holds the words, read-only, under "Here's what Knowie heard", with send (`buttonIcon` Primary M `send-01`) inside it. The trash rides with the growing edge into the card's bottom-left corner. The card grows with its words. Sending eases it back into the ring, which opens straight into the judging arc.
+> ERROR: past 10 seconds the line closes and goes `border/strong`, the middle offers `refresh-cw-01` and the label reads "Tap to send again". Tapping re-runs judging on the same take. Grey, not red: red reads as a wrong answer.
+> DON'T: show a check anywhere in this control. A check means correct, and sending is not judging.
+> DON'T: say "try again" for the error. That is the miss verdict's chip.
+> DON'T: put the transcript in `responseBubble` or `noteCard`. It lives in this control's card, and there is never one after judging, or an editable one.
+
+**Built in code, Sep 2026,** as `src/components/VoiceInput.tsx`, promoted from the voice turn's inline control once the design settled (the "option D" canvas). Three tokens were added for it: `Stroke/Bold` (4), `motion.duration.spin` (1400) and `motion.duration.spin-slow` (4000), both zero in reduced mode. **Every number is read off the element at mount**, so sizes and durations come from `build/css/tokens.css` and reduced motion reaches the drawing: `spin` reads 0, the frame loop stops and each state draws one still frame. The line, the bars, the ripple and the dashes are SVG paths redrawn per frame outside React. **The glow is a shape, not an effect** (see Never). The label copy lives in `LABEL` and the second lines in `HELPER` at the top of the component; the voice turn overrides the second line for hints, start over and didn't catch that. The voice level is mocked by `createSpeechLevel()` in `src/mock/speech.ts`; no audio is read.
+
+**Where the file and the build differ.** Figma's `recordingControl` is a filled white disc in idle, a gradient blob with `send-01` while recording and a still dashed ring while thinking; the build replaces all three with the one line, decided Sep 2026 because the blob's gradient and glow were off-brand for Knowunity's flat, one-accent style. The frames draw the label and the escapes `Space/600` from the ring; the build uses `Space/1000` so the glow and the bars clear the text. The frames have no transcript, slow-beat or error state. Send is `buttonIcon` Primary M (white), not the canvas's violet circle.
+
 ## Conventions for new components
 
 These are the rules the components above follow. Anything reading this file and making a new component follows them.
@@ -530,15 +552,14 @@ These are the rules the components above follow. Anything reading this file and 
 
 Say these are missing rather than working around them.
 
-- **No push-to-talk component yet.** The most-tapped thing in the recall loop has no component. `buttonIcon` tops out well below the size needed. The name to add is **`voiceInput`**, a sibling to `chatInput`. Its design settled Sep 2026 ("option D" on the design canvas): one `accent/brand/bold` line at `Stroke/Bold` round a 120 (`Illustration/1500`) middle that carries the state in `text/primary` outline icons. Idle breathes; listening grows waveform bars out of the ring; transcribing and judging open it into a turning arc (`motion.duration.spin`) with stepping dots; past 4 seconds the arc becomes circling dashes (`motion.duration.spin-slow`); at the transcript step the same line becomes the card holding the words, with discard and send inside it. Each state has a reduced-motion form where the middle and the label carry the state. The error state past 10 seconds is not yet designed. The tokens it needs now exist.
-- **No transcript treatment.** The recall loop now shows the student's words, read-only, before judging. `responseBubble` must not carry them, so the transcript uses `noteCard` tone `neutral` — built in code since Sep 2026, but the Figma frame for the transcript step still does not exist.
+- **`voiceInput` has no Figma component.** It is built in code (see Components built this sprint); Figma's `recordingControl` still draws the earlier white disc and gradient blob, and there are no frames for the transcript, slow-beat or error states.
+- **The transcript step has no Figma frame.** In code the student's words sit in `voiceInput`'s own card, read-only, before judging (Sep 2026); `responseBubble` still must not carry them.
 - **No component for the review summary's "How you felt" reads.** The before-plan and today ratings side by side are hand-built in the screen as `confidenceReads`; see `docs/component-gaps.md`.
 - **`bottomSheet` is not editable in the file.** Its source lives elsewhere. In code it exists since Sep 2026 (see Components built this sprint), but only as headline, caption and actions: it has no `middleSection` slot for a mascot and rows, and no Bottom-sheet App Bar with the handle. The section intro tray is therefore built inline (`docs/component-gaps.md` → `introTray`). Adding those two to `BottomSheet` would let the tray use it.
 - **`thumbs-up` and `lock-01` are not on `iconSlot`'s swap list** or in `IconSlot`, though the intro tray frame uses both (swapped by hand inside slots still named `check-circle` and `pause-circle`). The tray shows those two named glyphs as placeholders, marked `data-placeholder-glyph`.
-- **The push-to-talk control is still built inline** in the voice turn (`docs/component-gaps.md` → `voiceInput`). Nothing blocks promoting it any more: `motion.duration.spin` and `Stroke/Bold` were added Sep 2026, the glow is a gradient fill of an existing colour, and the settled design has no gradient-filled blob.
 - **No `answerOption`.** The five-position confidence check before the review round uses it to match the onboarding slider. It is not in the file's component list, in code, or in `tokens/tokens.json`.
 - **No denied-mic screen** in Figma. The flow needs one between a denied mic prompt and the typed route.
-- **No `buttonGroup` in code.** Transcript send with discard beside it is the pattern it describes.
+- **No `buttonGroup` in code.** Its first use, the transcript's send with discard beside it, moved inside `voiceInput` in Sep 2026, so no screen currently needs it.
 - **`summaryCard` Skipped and `verdictChip` Skipped are unused** by the recall loop, which has no skip. Keep or retire them deliberately.
 - **No focus state on any component.** The tokens exist. This is a WCAG 2.2 gap.
 - **`chips` has no tone.** It offers Primary and pro only, so it cannot carry a verdict.

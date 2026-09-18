@@ -27,7 +27,7 @@ export type VoiceInputProps = {
    */
   helper?: string;
   /**
-   * Idle only: what sits under the ring, placed `Space/600` below it. The screen passes the
+   * Idle only: what sits under the ring, placed `Space/1000` below it. The screen passes the
    * escapes (`button` Tertiary M "I don't know the answer", "Type instead"), because what they
    * do belongs to the screen. They fade out and keep their space in every other state.
    */
@@ -45,7 +45,7 @@ export type VoiceInputProps = {
   onStop?: () => void;
   /** Transcript step: tapped send. */
   onSend?: () => void;
-  /** Listening, either wait, or the transcript step: tapped the trash. Always returns to idle. */
+  /** Listening, either wait (transcribing or judging), or the transcript step: tapped the trash. Always returns to idle. */
   onDiscard?: () => void;
   /** Error: tapped the ring to run judging again, without re-recording. */
   onRetry?: () => void;
@@ -79,8 +79,8 @@ const LOOK: Record<VoiceInputState, Look> = {
   transcribing: { gain: 0, len: 0.8, breathe: 0, glow: 0.35, ripple: 0, spin: 'spin', dash: 0, trash: 1, card: 0 },
   transcribingSlow: { gain: 0, len: 0.8, breathe: 0, glow: 0.5, ripple: 0, spin: 'spin', dash: 1, trash: 1, card: 0 },
   transcript: { gain: 0, len: 1, breathe: 0, glow: 0.3, ripple: 0, spin: 'none', dash: 0, trash: 1, card: 1 },
-  judging: { gain: 0, len: 0.8, breathe: 0, glow: 0.35, ripple: 0, spin: 'spin', dash: 0, trash: 0, card: 0 },
-  judgingSlow: { gain: 0, len: 0.8, breathe: 0, glow: 0.5, ripple: 0, spin: 'spin', dash: 1, trash: 0, card: 0 },
+  judging: { gain: 0, len: 0.8, breathe: 0, glow: 0.35, ripple: 0, spin: 'spin', dash: 0, trash: 1, card: 0 },
+  judgingSlow: { gain: 0, len: 0.8, breathe: 0, glow: 0.5, ripple: 0, spin: 'spin', dash: 1, trash: 1, card: 0 },
   error: { gain: 0, len: 1, breathe: 0, glow: 0.2, ripple: 0, spin: 'none', dash: 0, trash: 1, card: 0 },
 };
 
@@ -95,7 +95,7 @@ const DASHES = 12;
 type Tokens = {
   ring: number; bold: number; nudge: number; breath: number; barMax: number; ripple: number;
   inset: number; target: number; radius: number; trashGap: number;
-  base: number; slow: number; fast: number; breathing: number; spin: number; spinSlow: number;
+  instant: number; base: number; slow: number; fast: number; breathing: number; spin: number; spinSlow: number;
 };
 function readTokens(el: HTMLElement): Tokens {
   const cs = getComputedStyle(el);
@@ -115,6 +115,7 @@ function readTokens(el: HTMLElement): Tokens {
     target: px('--primitive-control-1200') / 2,
     radius: px('--primitive-radius-600'),
     trashGap: px('--primitive-space-1200'),
+    instant: ms('--motion-duration-instant'),
     base: ms('--motion-duration-base'),
     slow: ms('--motion-duration-slow'),
     fast: ms('--motion-duration-fast'),
@@ -219,9 +220,11 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
       });
       const since = (at: number, dur: number) => (still || at === -Infinity ? 1 : clamp((t - at) / dur));
 
-      // Voice: rises fast, settles slow.
+      // Voice: rises at motion.duration.instant, settles at motion.duration.base, whatever the frame rate.
+      const rise = still ? 1 : 1 - Math.exp(-dt / Math.max(1, T.instant));
+      const fall = still ? 1 : 1 - Math.exp(-dt / Math.max(1, T.base));
       const lvlTarget = !still && L.state === 'listening' && L.getLevel ? clamp(L.getLevel()) : 0;
-      L.amp += (lvlTarget - L.amp) * (lvlTarget > L.amp ? 0.5 : 0.12);
+      L.amp += (lvlTarget - L.amp) * (lvlTarget > L.amp ? rise : fall);
       const a = L.amp * p.gain;
 
       L.start = (L.start + dt * p.spinRate) % 360;
@@ -288,7 +291,7 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
         // Each bar wobbles on its own phase, at a tenth and a seventh of a spin.
         const n = T.spin ? 0.5 + 0.5 * Math.sin(t / (T.spin / 10) + i * 2.3) * Math.cos(t / (T.spin / 7) + i * 1.1) : 0;
         const want = still ? 0 : a * (0.25 + 0.75 * n);
-        L.lv[i] += (want - L.lv[i]) * (want > L.lv[i] ? 0.45 : 0.1);
+        L.lv[i] += (want - L.lv[i]) * (want > L.lv[i] ? rise : fall);
         const th = (i / BARS) * Math.PI * 2 - Math.PI / 2;
         const r0 = R + T.nudge + T.bold / 2, r1 = r0 + L.lv[i] * T.barMax;
         bars += `M${f2(cx + Math.cos(th) * r0)} ${f2(cy + Math.sin(th) * r0)} L${f2(cx + Math.cos(th) * r1)} ${f2(cy + Math.sin(th) * r1)} `;

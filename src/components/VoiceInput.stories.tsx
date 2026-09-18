@@ -26,11 +26,11 @@ const description = `
 
 **transcript.** The ring's own line eases out into the card that holds the words, read-only, with send inside it. The trash rides with the growing edge into the card's bottom-left corner.
 
-**judging.** Sending eases the card back into the ring, which opens straight into the same arc and dots; **judgingSlow** is the same 4-second beat.
+**judging.** Sending eases the card back into the ring, which opens straight into the same arc and dots; **judgingSlow** is the same 4-second beat. The trash stays: discarding from the wait returns to idle.
 
 **error.** Past 10 seconds the wait stops: the line closes and goes \`border/strong\`, and the middle offers \`refresh-cw-01\` with "Tap to send again". Tapping re-runs judging on the same take, without re-recording. Not "try again": that is the miss verdict's chip. Grey, not red: red reads as a wrong answer in this app, and nothing has been judged.
 
-**idleActions** is a slot for idle's escapes, \`Space/600\` under the ring: the screen passes \`button\` Tertiary M "I don't know the answer" (and "Type instead"), because what they do belongs to the screen. They fade out and keep their space in every other state, so the ring never moves.
+**idleActions** is a slot for idle's escapes, \`Space/1000\` under the ring: the screen passes \`button\` Tertiary M "I don't know the answer" (and "Type instead"), because what they do belongs to the screen. They fade out and keep their space in every other state, so the ring never moves.
 
 ### Don't
 
@@ -186,9 +186,11 @@ export const LongTranscript: Story = {
 export const Judging: Story = {
   name: 'state=judging',
   args: { state: 'judging' },
-  play: async ({ canvas }) => {
+  play: async ({ canvas, args }) => {
     await expect(canvas.getByRole('status')).toHaveTextContent('Knowie is reading your answer');
-    await expect(canvas.queryByRole('button', { name: 'Discard and start over' })).toBeNull();
+    // Discard works from the wait too, and returns to idle.
+    await userEvent.click(canvas.getByRole('button', { name: 'Discard and start over' }));
+    await expect(args.onDiscard).toHaveBeenCalledOnce();
     await expect(canvas.queryByRole('button', { name: 'Send answer' })).toBeNull();
   },
 };

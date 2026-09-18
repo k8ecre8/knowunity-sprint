@@ -188,12 +188,12 @@ Same ladder, script and outcomes as the voice turn, with no recording or transcr
 - **Idle:** "Tap to answer", with the helper "Even a partial answer is a great start".
 - **Start over:** after a discard ("No harm done, go again").
 - **Didn't catch that:** a scripted unclear take.
-- **Recording:** "Listening...".
+- **Recording:** "Listening", with "Tap when done" in the ring.
 - **Transcribing:** about 1s.
-- **Transcript:** read-only, with Send and Discard.
+- **Transcript:** read-only, inside the control's card, with send and discard.
 - **Thinking.**
 - **Thinking, slow:** at 4s.
-- **Error:** past 10s, with retry.
+- **Error:** past 10s, with retry ("That took too long. Tap to send again").
 - **Verdict:** correct.
 - **Hint 1:** "Give it another try".
 - **Hint 2:** "Last try, two hints".
@@ -209,7 +209,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 - `AppBar` with `variant="leftAndRightIconButton"`, `leftIcon="x-close"`, and `slot` set to `ProgressIndicator` (`thickness="16"`, `current`, `total`).
 - `MascotSlot` at `size="2XL"`, using `standby` and `thinking` while judging (the other expressions are in Open).
 - `ResponseBubble`, following the same verdict rules as the typed turn.
-- `ButtonIcon` with `variant="Tertiary"`, `size="M"` and `label` for Discard. The glyph is whatever Figma's instance carries.
+- `VoiceInput` for the push-to-talk control, its label, the transcript card, send, discard (`trash-01`) and retry. The escapes go in its `idleActions` slot.
 - `Button`:
   - Tertiary M "I don't know the answer";
   - Primary L "Next question";
@@ -217,8 +217,6 @@ Every animated state has a reduced-motion form, where the helper label carries t
   - Text for "Type instead".
 
 **Not in the library**
-- **The push-to-talk control:** Figma calls it `recordingControl`, and design-system.md names the gap `voiceInput` (see Open). This blocks the screen.
-- `noteCard` for the transcript container.
 - **The leave-confirm sheet:** `bottomSheet`.
 - **`bottomNav`:** Figma shows it on idle, recording and processing only (see Open).
 
@@ -475,9 +473,9 @@ After path 1, the rows in `sessionStorage` are exactly three, one per term, each
 Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 
 **Components missing from the library** (reported, not built):
-1. **Push-to-talk control.** Figma's component is `recordingControl`; `docs/design-system.md` names the gap `voiceInput`. Which name it gets, and its states. This blocks screens 7 and 8's recording path.
-2. **Idle "Tap to answer" control.** It's a bare `IconSlot` at 500 in Figma with no tap target, so it's part of 1 or separate.
-3. **Transcript container.** It's `noteCard` neutral, which isn't in code. There's no Figma frame for the transcript step, and the Send and Discard layout is undecided (`buttonGroup` isn't in code either).
+1. **Push-to-talk control.** *Decided Sep 2026:* it is `voiceInput`, built in code as `src/components/VoiceInput.tsx`; its states are in `docs/design-system.md`. Figma's `recordingControl` still draws the earlier design.
+2. **Idle "Tap to answer" control.** *Decided Sep 2026:* part of 1. The ring is the button, 120 across.
+3. **Transcript container.** *Decided Sep 2026:* the transcript sits in `voiceInput`'s own card, grown from the ring, with send and discard inside it; no `noteCard` or `buttonGroup`. There is still no Figma frame for the transcript step.
 4. **`bottomSheet`** for the intro tray and the leave confirm. Also Bottom-sheet App Bar.
 5. **`answerOption`** for the confidence check. Only three of the five labels are known: "So cooked", "Mostly solid", "Most of it".
 6. **The mocked iOS mic alert:** its component name and its copy.
