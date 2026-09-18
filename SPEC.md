@@ -515,3 +515,4 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 **Before hosting**
 26. The Greed trial licence hasn't been checked for web use. Deploy anyway.
 27. No component has a focus state (a WCAG 2.2 gap).
+28. **Knowie while typing.** "Typed input (alt route)" draws Knowie at 96, but `MascotSlot` has no 96 step: XL is 64 and 2XL is 120. The typed turn uses XL, so only his head shows above the bubble. A 96 step needs `Illustration/1200` in `tokens/tokens.json` and a `MascotSlot` size between XL and 2XL. 2XL does not fit above the keyboard.
