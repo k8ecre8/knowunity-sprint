@@ -243,6 +243,8 @@ function Turn({
 
   const useVoice = () => {
     clearTimers();
+    // The voice turn, or mic denied then back here, resumes at this hint step.
+    updateSession((s) => ({ ...s, resume: { round, term, rung } }));
     if (micPermission === 'denied') {
       router.push(`/recall/${round}/mic-denied?from=typed&term=${term}`);
       return;
@@ -411,14 +413,13 @@ function Turn({
                   onMicPress={useVoice}
                   Status={waiting ? 'Loading' : undefined}
                 />
-                {/* Hidden while typing: the input's own mic does the same. */}
-                {!typing && (
-                  <div className={styles.voiceRow}>
-                    <Button variant="Text" size="M" onClick={useVoice} state={waiting ? 'Disabled' : 'Default'}>
-                      Use my voice instead
-                    </Button>
-                  </div>
-                )}
+                {/* Shown while typing too: once there is text the input's own
+                    mic gives way to Send, so this is the only way to voice. */}
+                <div className={styles.voiceRow}>
+                  <Button variant="Text" size="M" onClick={useVoice} state={waiting ? 'Disabled' : 'Default'}>
+                    Use my voice instead
+                  </Button>
+                </div>
               </>
             ) : (
               <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>

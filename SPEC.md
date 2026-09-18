@@ -15,7 +15,7 @@ Scope and decisions come from `docs/sprint-context.md`. Values come from `tokens
 - `src/app/page.tsx` is the create-next-app page and contains bare hex values. It gets replaced by App home.
 - Mock data and session state live in new files: `src/mock/terms.ts` (terms, prompts, hints, answers, scripts, timestamps) and `src/mock/session.ts` (outcome rows, current rung, input mode, persisted to `sessionStorage`). See **How the mocked recall behaves**.
 - Every screen is a `Scaffold` at 390 wide. "Components" below lists only what is in Storybook. Anything else is listed as **not in the library**. Those gaps are reported, not built, per `CLAUDE.md`.
-- Quoted strings in this spec and in Figma are placeholders. The copy in code is the source of truth, including capitalisation of proper nouns such as subject and topic names. A copy rule here (for example "overconfidence is named") still applies; its wording does not.
+- Quoted strings in this spec and in Figma are placeholders. The copy in code is the source of truth, including capitalisation of proper nouns such as subject and topic names. A copy rule here (for example "the comparison reflects the change in confidence") still applies; its wording does not.
 
 ---
 
@@ -75,7 +75,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - Days-later claim: the headline gives the count and the gap ("8 of 10 correct without help, 6 days after you last revised").
 - Same-day: terms seen less than a day ago say "still fresh, come back tomorrow" instead of claiming learning.
 - The confidence comparison has nine copy versions: confidence up, same or down, crossed with performance up, same or down.
-  - Overconfidence is named in the copy.
+  - The copy reflects the change in the student's confidence (up, the same or down) and whether their answers back it up. It needn't use the word "confident".
   - Underconfidence gets the evidence and a celebratory `MascotSlot` expression.
 
 **Components**
@@ -383,7 +383,7 @@ Every row carries `termId`, `round`, `outcome`, `mode` (voice or typed, logged b
 
 **Practice retry** ("Try the ones you missed", "One more try at the misses") walks only the missed terms, in round order, with the progress bar counting those terms, then returns to the same summary unchanged.
 
-**Resume:** after X and Leave, the session stores the term and rung. Returning to that round's route reopens the same term at the same hint, idle.
+**Resume:** after X and Leave, and when the student switches between voice and typed (including through mic denied), the session stores the term and rung. Returning to that round's route reopens the same term at the same hint, idle.
 
 **Input mode:** typing sticks within a session. A new round starts on voice.
 
