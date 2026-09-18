@@ -15,6 +15,7 @@ Scope and decisions come from `docs/sprint-context.md`. Values come from `tokens
 - `src/app/page.tsx` is the create-next-app page and contains bare hex values. It gets replaced by App home.
 - Mock data and session state live in new files: `src/mock/terms.ts` (terms, prompts, hints, answers, scripts, timestamps) and `src/mock/session.ts` (outcome rows, current rung, input mode, persisted to `sessionStorage`). See **How the mocked recall behaves**.
 - Every screen is a `Scaffold` at 390 wide. "Components" below lists only what is in Storybook. Anything else is listed as **not in the library**. Those gaps are reported, not built, per `CLAUDE.md`.
+- Quoted strings in this spec and in Figma are placeholders. The copy in code is the source of truth, including capitalisation of proper nouns such as subject and topic names. A copy rule here (for example "overconfidence is named") still applies; its wording does not.
 
 ---
 

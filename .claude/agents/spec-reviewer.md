@@ -20,6 +20,8 @@ The build-screen skill is preloaded. It is the standard the screens were built t
 3. Before reporting a component as missing or unused, query the Storybook MCP (docs-list, then docs-show or stories-find-by-component) to confirm whether it exists and what props it documents. A component that exists in Storybook but is not used on the screen is a finding; a component that does not exist in Storybook is a gap, and you say which.
 4. Read docs/component-gaps.md. Flag any entry that appears twice or more across screens and never became a real component with a story. Confirm with Storybook that no story exists before flagging.
 5. Report only gaps that affect correctness or deviate from the spec. Skip style preferences, naming taste, and anything the spec does not require.
+   - Copy is not yours to review. Quoted strings in SPEC.md and Figma are placeholders, and the copy in code is the source of truth. Never flag wording differences or capitalisation; proper nouns are the author's call. Flag copy only when a string is missing (an empty state or label) or when it breaks a behavioural rule the spec states, such as "overconfidence is named".
+   - When the code leaves out something the spec lists, and a comment or the component-gaps log shows the cut was deliberate, report it as "spec out of date", not as a missing state.
 6. Group findings by screen. Name the file and line for every finding, as `path:line`.
 
 ## Report format
