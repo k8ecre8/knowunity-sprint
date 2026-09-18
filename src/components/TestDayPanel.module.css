@@ -3,8 +3,8 @@
 
    Fills its parent. Mascot, text and action are centred and Space/300
    apart; the action keeps Space/300 above and below, as both frames' cta
-   wrapper does. The headline and its line are one `textBlock`, so they sit
-   Space/050 apart rather than Space/300. */
+   wrapper does. The headline and its line are separate children, Space/300
+   apart, as both frames draw them; the headline is a `textBlock`. */
 .panel {
   display: flex;
   flex-direction: column;
@@ -19,4 +19,16 @@
   display: flex;
   justify-content: center;
   padding-block: var(--primitive-space-300);
+}
+
+/* The quieter line: Body M Regular in text/secondary. */
+.body {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+  overflow-wrap: anywhere;
 }

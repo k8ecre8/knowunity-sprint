@@ -1,9 +1,11 @@
 /* Typed turn — every value is a token from build/css/tokens.css. Matches
    "Typed input (alt route)": middleContentContent pads Space/400 top and
-   bottom with a Space/400 gap; knowiePrompt overlaps the bubble onto Knowie
-   by Space/600; the stage holds the helper line. The input sits in
-   bottomContent rather than the frame's middleContent, because the scaffold
-   anchors the primary action there and the real keyboard pushes it up. */
+   bottom with a Space/400 gap, everything anchored to the top; knowiePrompt
+   overlaps the bubble onto Knowie by Space/600; the stage holds the input
+   directly under the bubble, the voice link under it, and the helper line.
+   With the keyboard up the question and the input both stay above it, so
+   nothing is pushed off the top. bottomContent holds only Retry and Next
+   question, and collapses when empty. */
 
 .content {
   display: flex;
@@ -11,6 +13,12 @@
   flex-direction: column;
   gap: var(--primitive-space-400);
   padding-block: var(--primitive-space-400);
+}
+
+/* Nothing shrinks when the keyboard leaves less height: Knowie keeps his
+   size and the middle scrolls instead. */
+.content > * {
+  flex-shrink: 0;
 }
 
 /* Knowie centred over the bubble, the bubble drawn on top and pulled up by
@@ -38,16 +46,13 @@
   text-align: center;
 }
 
-/* Fills the rest and centres the helper line, where the voice frames put
-   the control's label. */
+/* stage: the input, the voice link and the helper line, Space/400 apart
+   and stacked from the top, as the frame's stage. */
 .stage {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
   gap: var(--primitive-space-400);
-  padding-block: var(--primitive-space-400);
 }
 
 /* The helper line: Body S Regular, text/secondary, centred. It is the state
@@ -93,31 +98,34 @@
   }
 }
 
-/* Keyboard up: the scaffold is pinned to the visual viewport, so the app
-   bar and question stay at the top and the input sits on the keyboard. The
+/* Keyboard up: the scaffold is pinned to the visual viewport, the part of
+   the screen the keyboard leaves, so iOS cannot scroll the question off the
+   top. Both edges are pinned so it keeps its width and centring. The
    properties are measured on the device by useVisualViewport in page.tsx.
    Doubled to outrank the scaffold's own height: 100dvh, whichever module
    loads first. */
 .typing.typing {
   position: fixed;
   top: var(--visual-viewport-top);
+  right: var(--primitive-space-0);
   left: var(--primitive-space-0);
   height: var(--visual-viewport-height);
 }
 
-/* The keyboard covers the home indicator, so its inset is not needed. */
-.typing [data-slot='bottomContent'] {
-  padding-bottom: var(--primitive-space-400);
+/* bottomContent holds only Retry or Next question; while answering it is
+   empty and takes no space. */
+.turn [data-slot='bottomContent']:empty {
+  display: none;
 }
 
-/* bottomContent: the input over the voice link, Space/300 apart. */
 .actions {
   display: flex;
   flex-direction: column;
-  gap: var(--primitive-space-300);
 }
 
+/* The voice link sits at the start of its row, under the input, as the
+   frame's typedActions draws it. */
 .voiceRow {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }

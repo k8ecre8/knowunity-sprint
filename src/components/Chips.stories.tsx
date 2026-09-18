@@ -176,3 +176,15 @@ export const Count: Story = {
     await expect(chip(canvasElement).querySelectorAll('svg')).toHaveLength(0);
   },
 };
+
+/** App home quick actions: size M, no right icon, the leading icon in feedback/info/onSubtle. */
+export const IconToneInfo: Story = {
+  name: 'iconTone=info',
+  args: { size: 'M', color: 'Primary', active: 'False', showRightIcon: false, leftIcon: 'upload-cloud-02', iconTone: 'info', children: 'Upload' },
+  play: async ({ canvasElement }) => {
+    const chip = canvasElement.querySelector('[data-icon-tone]') as HTMLElement;
+    const icon = chip.querySelector('span') as HTMLElement;
+    await expect(getComputedStyle(icon).color).not.toBe(getComputedStyle(chip).color);
+  },
+};
+

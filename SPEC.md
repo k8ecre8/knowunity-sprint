@@ -15,7 +15,7 @@ Scope and decisions come from `docs/sprint-context.md`. Values come from `tokens
 - `src/app/page.tsx` is the create-next-app page and contains bare hex values. It gets replaced by App home.
 - Mock data and session state live in new files: `src/mock/terms.ts` (terms, prompts, hints, answers, scripts, timestamps) and `src/mock/session.ts` (outcome rows, current rung, input mode, persisted to `sessionStorage`). See **How the mocked recall behaves**.
 - Every screen is a `Scaffold` at 390 wide. "Components" below lists only what is in Storybook. Anything else is listed as **not in the library**. Those gaps are reported, not built, per `CLAUDE.md`.
-- Quoted strings in this spec and in Figma are placeholders. The copy in code is the source of truth, including capitalisation of proper nouns such as subject and topic names. A copy rule here (for example "overconfidence is named") still applies; its wording does not.
+- Quoted strings in this spec and in Figma are placeholders. The copy in code is the source of truth, including capitalisation of proper nouns such as subject and topic names. A copy rule here (for example "the comparison reflects the change in confidence") still applies; its wording does not.
 
 ---
 
@@ -75,7 +75,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - Days-later claim: the headline gives the count and the gap ("8 of 10 correct without help, 6 days after you last revised").
 - Same-day: terms seen less than a day ago say "still fresh, come back tomorrow" instead of claiming learning.
 - The confidence comparison has nine copy versions: confidence up, same or down, crossed with performance up, same or down.
-  - Overconfidence is named in the copy.
+  - The copy reflects the change in the student's confidence (up, the same or down) and whether their answers back it up. It needn't use the word "confident".
   - Underconfidence gets the evidence and a celebratory `MascotSlot` expression.
 
 **Components**
@@ -139,7 +139,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **States**
 - **Idle:** the prompt, or the current hint.
-- **Typing.**
+- **Typing:** the keyboard is up. The app bar, Knowie at `MascotSlot` XL and the question bubble stay anchored at the top; the input sits directly under the bubble with "Use my voice instead" under it, so all of them stay above the keyboard and nothing is pushed off-screen. *Decided Sep 2026,* matching "Typed input (alt route)". Knowie is XL in every state on this screen (see Open 28).
 - **Thinking:** the judging wait.
 - **Thinking, slow:** the second beat at 4s.
 - **Error:** past 10s, with retry.
@@ -151,10 +151,12 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 Same ladder, script and outcomes as the voice turn, with no recording or transcript states.
 
+The input and the voice link sit under the bubble in every answering state, not in `bottomContent`; `bottomContent` holds only Retry (error) and Next question (verdict, answer shown).
+
 **Components**
 - `Scaffold`.
 - `AppBar` with `variant="leftAndRightIconButton"`, `leftIcon="x-close"`, and `slot` set to `ProgressIndicator` (`thickness="16"`, `current`, `total`).
-- `MascotSlot` at `size="2XL"`.
+- `MascotSlot` at `size="XL"` (Open 28).
 - `ResponseBubble`:
   - `showVerdict` is on after judging. `verdictTone` reports what the student just did: `Correct`, `Partial` or `Incorrect`, and no chip after "I don't know" or a clarifying question, and none at answer shown, because the `Incorrect` chip reads "Try again" and there is no next try.
   - `showAction={false}`, since "Explain more" is reserved.
@@ -383,7 +385,7 @@ Every row carries `termId`, `round`, `outcome`, `mode` (voice or typed, logged b
 
 **Practice retry** ("Try the ones you missed", "One more try at the misses") walks only the missed terms, in round order, with the progress bar counting those terms, then returns to the same summary unchanged.
 
-**Resume:** after X and Leave, the session stores the term and rung. Returning to that round's route reopens the same term at the same hint, idle.
+**Resume:** after X and Leave, and when the student switches between voice and typed (including through mic denied), the session stores the term and rung. Returning to that round's route reopens the same term at the same hint, idle.
 
 **Input mode:** typing sticks within a session. A new round starts on voice.
 
@@ -453,7 +455,8 @@ Each path is walked by tapping only, with no URL typing except the seeded entry 
    - X → Stay closes the sheet with nothing lost.
 7. **Review.**
    - `/plan?day=review` → cumulative review → confidence check (Start disabled until a position is chosen) → 10 terms → review summary.
-   - The headline states the count and the gap. Same-day terms show "still fresh".
+   - The summary states the count and the gap.
+   - `/recall/review/summary?fresh` shows the same-day state ("still fresh"). Tapping cannot reach it: `?day=review` seeds the section rows three days back, and finishing the section round ages them three days.
    - The comparison copy matches the direction of the seeded before-plan rating vs the chosen rating, and of section vs review performance.
 8. **Exam eve.**
    - `/?day=eve` → Warm up now → 12 terms using `promptB` → repeat summary.
@@ -462,7 +465,10 @@ Each path is walked by tapping only, with no URL typing except the seeded entry 
 
 ### 4. Platform constraints, on every screen
 - **Targets:** every tap target is at least 44×44 (inspect the box).
-- **Thumb zone:** primary actions are in `bottomContent`.
+- **Thumb zone:** primary actions are in `bottomContent`. Three exceptions, decided Sep 2026:
+  - Plan home and app home, where `bottomContent` holds `bottomNav`.
+  - The typed turn's input, which sits under the bubble so the keyboard pushes nothing off-screen.
+  - The voice turn's `VoiceInput` ring, which sits mid-screen under Knowie's bubble as the frames draw it.
 - **Safe areas:** nothing sits under the status bar or home indicator.
 - **Reduced motion:** with `prefers-reduced-motion: reduce` emulated, recording, transcribing, thinking and the slow beat are still distinguishable by label, with no motion.
 - **String expansion:** with every mock string temporarily 40% longer, nothing clips or overlaps and `middleContent` scrolls.
@@ -482,7 +488,7 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 2. **Idle "Tap to answer" control.** *Decided Sep 2026:* part of 1. The ring is the button, 120 across.
 3. **Transcript container.** *Decided Sep 2026:* the transcript sits in `voiceInput`'s own card, grown from the ring, with send and discard inside it; no `noteCard` or `buttonGroup`. There is still no Figma frame for the transcript step.
 4. **`bottomSheet`** for the intro tray and the leave confirm. Also Bottom-sheet App Bar.
-5. **`answerOption`** for the confidence check. Only three of the five labels are known: "So cooked", "Mostly solid", "Most of it".
+5. **`answerOption`** for the confidence check. *Labels decided Sep 2026,* lowest to highest: "So cooked", "Getting there", "Most of it", "Mostly solid", "Ready". Figma named three; "Getting there" and "Ready" and the order of the middle two were decided in code (`src/mock/terms.ts`). The control itself is still built inline.
 6. **The mocked iOS mic alert:** its component name and its copy.
 7. **Summaries:** `noteCard`, and `textBlock` for headlines and group labels. There's no component for "How you felt".
 8. **App home and plan home chrome:** `Tabs`, `bottomNav`, `sectionRow`, both `topBar`s, and the Ask Knowie bar. These need building, or the two screens need a different treatment in the prototype.
@@ -513,3 +519,4 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 **Before hosting**
 26. The Greed trial licence hasn't been checked for web use. Deploy anyway.
 27. No component has a focus state (a WCAG 2.2 gap).
+28. **Knowie on the typed turn.** *Decided Sep 2026:* `MascotSlot` XL (64) in every state, because the screen is tight. "Typed input (alt route)" draws 96, which has no `MascotSlot` step (`Illustration/1200` would be the token); revisit if the screen gets room.

@@ -48,8 +48,3 @@
   line-height: var(--typeScale-headline-s-lineHeight);
   letter-spacing: var(--typeScale-headline-s-letterSpacing);
 }
-
-/* captionTone secondary: the quieter line under a test-day headline. */
-.captionSecondary .caption {
-  color: var(--semantic-text-secondary);
-}

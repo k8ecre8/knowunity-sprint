@@ -3,13 +3,13 @@ import { expect, fn, userEvent } from 'storybook/test';
 import { TestDayPanel } from './TestDayPanel';
 
 const description = `
-**\`testDayPanel\`** for the reminder the day before the test: \`mascotSlot\` 2XL (standby), a \`textBlock\` with a text/secondary line, and one Primary L action.
+**\`testDayPanel\`** for the reminder the day before the test: \`mascotSlot\` 2XL (standby), a \`textBlock\` headline, a text/secondary line, and one Primary L action.
 
 **Promoted Sep 2026** from the exam plan home's complete mode, where it was built inline, when the app home's exam-eve hero turned out to be a copy of it.
 
 **Axis:** \`size\` (M, S) sets the headline: the app home frame draws Headline M, the plan home frame Headline S. **Properties:** \`headline\`, \`body\`, \`cta\` (the action's label), \`onAction\`. Code-only: \`as\` sets the heading level.
 
-**Spacing.** Children are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it. The headline and its line are one \`textBlock\`, so they sit Space/050 apart; the frames drew them Space/300 apart as separate text nodes.
+**Spacing.** Mascot, headline, line and action are Space/300 apart, and the action keeps Space/300 above and below, as both frames draw it. The headline is a \`textBlock\`; the line is Body M Regular in text/secondary.
 
 **Fills its parent.** The screen owns the padding around it.
 `;

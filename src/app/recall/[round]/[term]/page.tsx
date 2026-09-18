@@ -246,7 +246,10 @@ function Turn({
       // The mocked iOS prompt comes first on the first mic use in the app.
       if (micPermission === 'unasked') setPhase('prompt');
       // Denied is permanent: the mic can't start, so the ring goes to mic denied.
-      else if (micPermission === 'denied') router.push(`/recall/${round}/mic-denied?from=voice&term=${term}`);
+      else if (micPermission === 'denied') {
+        keepPlace();
+        router.push(`/recall/${round}/mic-denied?from=voice&term=${term}`);
+      }
       else startRecording();
       return;
     }
@@ -268,6 +271,9 @@ function Turn({
     }
   };
 
+  /** Switching input, or detouring through mic denied, keeps the hint step: the other turn resumes it. */
+  const keepPlace = () => updateSession((s) => ({ ...s, resume: { round, term, rung } }));
+
   const allowMic = () => {
     updateSession((s) => ({ ...s, micPermission: 'granted' }));
     startRecording();
@@ -276,6 +282,7 @@ function Turn({
   const denyMic = () => {
     clearTimers();
     updateSession((s) => ({ ...s, micPermission: 'denied' }));
+    keepPlace();
     router.push(`/recall/${round}/mic-denied?term=${term}`);
   };
 
@@ -311,6 +318,7 @@ function Turn({
 
   const typeInstead = () => {
     clearTimers();
+    keepPlace();
     updateSession((s) => ({ ...s, inputMode: 'typed' }));
     router.push(`/recall/${round}/${term}/typed`);
   };

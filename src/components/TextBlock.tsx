@@ -9,18 +9,15 @@ import styles from './TextBlock.module.css';
  * Headline M over Body M Regular, both text/primary, centred, Space/150
  * apart. That geometry is what this renders.
  *
- * SIZE S and CAPTIONTONE (added Sep 2026): Headline S over Body M Regular,
- * Space/050 apart, as the review summary's comparison draws it, for the
- * screens that had built that pair inline. `captionTone="secondary"` sets
- * the caption in text/secondary, as the test-day panel draws its line.
+ * SIZE S (added Sep 2026): Headline S over Body M Regular, Space/050 apart,
+ * as the review summary's comparison draws it, for the screens that had
+ * built that pair inline.
  */
 export type TextBlockProps = {
   /** Headline M, or Headline S at size S. Sentence case. */
   headline: string;
   /** M: Headline M, caption Space/150 below. S: Headline S, caption Space/050 below. */
   size?: 'M' | 'S';
-  /** The caption's colour: text/primary, or text/secondary for a quieter line. */
-  captionTone?: 'primary' | 'secondary';
   /** Body M Regular under the headline. Rendered only when `showCaption` is on. */
   caption?: string;
   showCaption?: boolean;
@@ -32,7 +29,6 @@ export type TextBlockProps = {
 export function TextBlock({
   headline,
   size = 'M',
-  captionTone = 'primary',
   caption,
   showCaption = false,
   as: Heading = 'h1',
@@ -40,7 +36,7 @@ export function TextBlock({
 }: TextBlockProps) {
   return (
     <div
-      className={[styles.block, size === 'S' && styles.sizeS, captionTone === 'secondary' && styles.captionSecondary, className]
+      className={[styles.block, size === 'S' && styles.sizeS, className]
         .filter(Boolean)
         .join(' ')}
     >

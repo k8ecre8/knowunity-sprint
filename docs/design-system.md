@@ -371,6 +371,8 @@ A single component, not a set. **Properties:** `showVerdict`, `showAction`, `bod
 
 **Where the file and the description disagree.** The M-size icon is a 16px glyph scaled to 20, giving a 2.5px stroke — the same fault the 32px `iconSlot` had; `IconSlot` renders one weight. Caption S Bold at XXS and XS is 12px, which the type token itself flags as below the readable minimum; the code follows the file.
 
+**`iconTone` (added Sep 2026, code-only).** `label` (default) gives the icons the label colour. `info` makes them `feedback/info/onSubtle` while the label keeps its colour, as the app home quick actions draw them (checked against "App home / Default"). The colour is set on a wrapper around each nested `iconSlot`, never on `iconSlot`, following the leading-icon exception in Icons.
+
 ### `iconSlot`
 
 **Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 69 icons. `IconSlot` in code offers 72: `plus` was added Sep 2026 for `summaryCard`'s overflow row, and `dots-vertical` and `share-02` for `appBar`, but none of the three is on the swap list — see Known gaps. Ten more — `globe-01`, `target-04`, `book-open-02`, `clipboard-check`, `thumbs-up`, `lock-01`, `trophy-02`, `list`, `graduation-hat-02`, `upload-cloud-02` — were added to the swap list and to `IconSlot` together, Sep 2026, linked to the published Untitled UI library.
@@ -498,9 +500,9 @@ Added to the Figma set, Sep 2026.
 
 ### `textBlock`
 
-**Axes:** `size` (M, S), `captionTone` (primary, secondary), both added Sep 2026. **Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level.
+**Axis:** `size` (M, S), added Sep 2026. **Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level.
 
-**size.** M is Headline M with the caption Space/150 below (the summary headlines). S is Headline S with the caption Space/050 below, as the review summary's comparison draws the pair; the app home study reminder and the test-day panel use it too. **captionTone.** primary is text/primary; secondary is text/secondary, for the test-day panel's quieter line.
+**size.** M is Headline M with the caption Space/150 below (the summary headlines). S is Headline S with the caption Space/050 below, as the review summary's comparison draws the pair; the app home study reminder and the test-day panel's headline use it too.
 
 **Reach for it** for a screen or section heading with an optional line under it. Not for body copy, and not for a label with a trailing count (the summaries' group labels are still hand-built; see `docs/component-gaps.md`).
 
@@ -520,7 +522,7 @@ Added to the Figma set, Sep 2026.
 
 **Reach for it** for the reminder the day before the test: exam plan home in complete mode (`size="S"`) and the app home's exam-eve hero (`size="M"`).
 
-**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (standby), `textBlock` with `captionTone="secondary"`, and `button` Primary L. Children are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it. The frames drew the headline and its line as two text nodes Space/300 apart; as one `textBlock` they sit Space/050 (S) or Space/150 (M) apart. No Figma component exists. The screen owns the padding around it.
+**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (standby), a `textBlock` headline, a Body M Regular line in `text/secondary` and `button` Primary L. All four are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it (checked against the frames Sep 2026). No Figma component exists. The screen owns the padding around it.
 
 ### `voiceInput`
 

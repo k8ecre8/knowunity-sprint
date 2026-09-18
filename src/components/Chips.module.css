@@ -1,6 +1,7 @@
 /* chips — see docs/design-system.md → Components built this sprint → `chips`.
    Every value is a token from build/css/tokens.css. No bare hex, no loose px,
-   no fallbacks. The icons inherit `color`, which is the label colour. */
+   no fallbacks. The icons inherit `color`, which is the label colour,
+   unless `iconTone` sets their wrapper's own. */
 
 .chip {
   display: inline-flex;
@@ -77,4 +78,15 @@ button.chip {
 .activeTrue.colorpro {
   background-color: var(--semantic-pro-bold);
   color: var(--semantic-pro-onbold);
+}
+
+/* --- iconTone ---------------------------------------------------------- */
+/* The wrapper around each nested iconSlot. With iconTone info the icons are
+   feedback/info/onSubtle and the label keeps its colour. */
+.icon {
+  display: inline-flex;
+}
+
+.iconInfo {
+  color: var(--semantic-feedback-info-onsubtle);
 }

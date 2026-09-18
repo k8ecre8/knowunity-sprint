@@ -243,6 +243,8 @@ function Turn({
 
   const useVoice = () => {
     clearTimers();
+    // The voice turn, or mic denied then back here, resumes at this hint step.
+    updateSession((s) => ({ ...s, resume: { round, term, rung } }));
     if (micPermission === 'denied') {
       router.push(`/recall/${round}/mic-denied?from=typed&term=${term}`);
       return;
@@ -345,7 +347,7 @@ function Turn({
 
   return (
     <Scaffold
-      className={typing ? styles.typing : undefined}
+      className={[styles.turn, typing && styles.typing].filter(Boolean).join(' ')}
       showBottomSheetBackground={sheetOpen}
       topNavigation={
         <AppBar
@@ -362,9 +364,9 @@ function Turn({
         (
           <div className={styles.content} inert={sheetOpen}>
             <div className={styles.knowiePrompt}>
-              {/* Knowie steps down to XL while typing, so the question fits
-                  above the keyboard. */}
-              <MascotSlot size={typing ? 'XL' : '2XL'} name={mascot} />
+              {/* XL in every state (decided Sep 2026): the screen is tight,
+                  and it keeps Knowie the same size when the keyboard opens. */}
+              <MascotSlot size="XL" name={mascot} />
               <ResponseBubble
                 showVerdict={bubble.showVerdict}
                 verdictTone={bubble.verdictTone}
@@ -377,9 +379,38 @@ function Turn({
               <p className={styles.attemptLine}>{attemptLine[rung]}</p>
             )}
             {answering && (
-              <div className={styles.stage}>
+              /* stage: the input sits directly under the bubble, as the frame
+                 draws it, so with the keyboard up the question, the input and
+                 the voice link all stay above it and nothing is pushed off. */
+              <div
+                className={styles.stage}
+                onFocus={(e) => setTyping(e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement)}
+                onBlur={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget)) setTyping(false);
+                }}
+              >
+                {phase !== 'error' && (
+                  <>
+                    <ChatInput
+                      value={text}
+                      onValueChange={setText}
+                      onSend={send}
+                      onMicPress={useVoice}
+                      Status={waiting ? 'Loading' : undefined}
+                    />
+                    {/* Shown while typing too: once there is text the input's own
+                        mic gives way to Send, so this is the only way to voice. */}
+                    <div className={styles.voiceRow}>
+                      <Button variant="Text" size="M" onClick={useVoice} state={waiting ? 'Disabled' : 'Default'}>
+                        Use my voice instead
+                      </Button>
+                    </div>
+                  </>
+                )}
+                {/* The attempt line above already says the hint step, so the
+                    helper stays empty rather than repeat it. */}
                 <p className={styles.helper} data-phase={phase} aria-live="polite">
-                  {helperText}
+                  {helperText !== attemptLine[rung] ? helperText : null}
                 </p>
               </div>
             )}
@@ -387,46 +418,21 @@ function Turn({
         )
       }
       bottomContent={
-        (
-          <div
-            className={styles.actions}
-            inert={sheetOpen}
-            onFocus={(e) => setTyping(e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement)}
-            onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget)) setTyping(false);
-            }}
-          >
-            {phase === 'error' ? (
-              /* The error takes the input's place, so nothing can be typed
-                 that Send would ignore; Retry is the one action, in reach. */
-              <Button fullWidth variant="Primary" size="L" onClick={retry}>
-                Retry
-              </Button>
-            ) : answering ? (
-              <>
-                <ChatInput
-                  value={text}
-                  onValueChange={setText}
-                  onSend={send}
-                  onMicPress={useVoice}
-                  Status={waiting ? 'Loading' : undefined}
-                />
-                {/* Hidden while typing: the input's own mic does the same. */}
-                {!typing && (
-                  <div className={styles.voiceRow}>
-                    <Button variant="Text" size="M" onClick={useVoice} state={waiting ? 'Disabled' : 'Default'}>
-                      Use my voice instead
-                    </Button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
-                Next question
-              </Button>
-            )}
+        phase === 'error' ? (
+          /* The error takes the input's place, so nothing can be typed that
+             Send would ignore; Retry is the one action, in reach. */
+          <div className={styles.actions} inert={sheetOpen}>
+            <Button fullWidth variant="Primary" size="L" onClick={retry}>
+              Retry
+            </Button>
           </div>
-        )
+        ) : !answering ? (
+          <div className={styles.actions} inert={sheetOpen}>
+            <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
+              Next question
+            </Button>
+          </div>
+        ) : undefined
       }
       bottomSheetOnly={
         sheetOpen && (
