@@ -1,10 +1,7 @@
 /* Section intro tray — every value is a token from build/css/tokens.css.
-   Matches the "Section intro tray" frame: a bottomSheet (height M) in
-   background/surface with Radius/900 top corners, a Bottom-sheet App Bar
-   holding the handle, the intro content in its middle section and the two
-   actions in its bottom section. The frame insets the sheet 20 from each
-   edge, which is not a Space step, so the tray is full width like the code
-   `BottomSheet`. */
+   The tray is a `BottomSheet` with its app bar, the intro content in its
+   middleSection and the two actions as its children. The frame insets the
+   sheet 20 from each edge, which is not a Space step, so it is full width. */
 
 /* The whole viewport below the status bar: a tap anywhere on the scrim
    closes the tray, and the tray sits at the bottom edge. Starting under the
@@ -27,74 +24,15 @@
   cursor: pointer;
 }
 
-/* The sheet. Enters from below at motion.duration.slow; reduced mode
-   collapses it and the media query removes it outright. */
-.tray {
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  width: 100%;
-  max-height: 100%;
-  border-start-start-radius: var(--primitive-radius-900);
-  border-start-end-radius: var(--primitive-radius-900);
-  background-color: var(--semantic-background-surface);
-  animation: rise var(--motion-duration-slow) var(--motion-easing-enter);
-}
-
-@keyframes rise {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tray {
-    animation: none;
-  }
-}
-
-/* Bottom-sheet App Bar: Control/1800 tall, padded Space/300, no title. It is
-   the tray's close target, so it is a button and clears 44 on its own. The
-   frame's fade-out gradient has no token. */
-.appBar {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  box-sizing: border-box;
-  width: 100%;
-  height: var(--primitive-control-1800);
-  padding: var(--primitive-space-300);
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-/* The handle: Space/800 by Space/100 in background/floating at Radius/100.
-   Neither dimension is on the Illustration scale, so both are Space steps. */
-.handle {
-  display: block;
-  width: var(--primitive-space-800);
-  height: var(--primitive-space-100);
-  border-radius: var(--primitive-radius-100);
-  background-color: var(--semantic-background-floating);
-}
-
-/* introContent inside middleSection: Space/400 sides plus Space/600 inside,
-   Space/200 top and bottom, Space/400 gap, centred. Scrolls if a long string
-   set outgrows the device. */
+/* introContent inside the sheet's middleSection: Space/600 inside the
+   sheet's own Space/400 sides, Space/200 top, Space/400 bottom and gap, centred. The
+   sheet scrolls it if a long string set outgrows the device. */
 .intro {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--primitive-space-400);
-  min-height: var(--primitive-space-0);
-  padding: var(--primitive-space-200) calc(var(--primitive-space-400) + var(--primitive-space-600));
-  /* middleSection's Space/200 plus introContent's own. */
-  padding-bottom: var(--primitive-space-400);
-  overflow-y: auto;
+  padding: var(--primitive-space-200) var(--primitive-space-600) var(--primitive-space-400);
 }
 
 /* Three rows, Space/300 apart: iconSlot 300 then Body M Regular in
@@ -136,14 +74,4 @@
   line-height: var(--typeScale-body-m-regular-lineHeight);
   letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
   overflow-wrap: anywhere;
-}
-
-/* bottomSection: Space/400 padding plus the home-indicator inset, the two
-   actions Space/200 apart, each `Button` `fullWidth`. */
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--primitive-space-200);
-  padding: var(--primitive-space-400);
-  padding-bottom: calc(var(--primitive-space-400) + env(safe-area-inset-bottom));
 }

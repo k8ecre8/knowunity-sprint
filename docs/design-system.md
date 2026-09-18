@@ -480,11 +480,13 @@ Added to the Figma set, Sep 2026.
 
 ### `bottomSheet`
 
-**Properties:** `headline`, `caption`, `showCaption` (off by default); the actions are children. No axes.
+**Properties:** `headline`, `caption`, `showCaption` (off by default), `middleSection`, `showAppBar`, `onClose`; the actions are children. No axes.
 
 **Reach for it** for a decision or a tray that rises over the current screen: the confirm on tapping X during a round, and the section intro tray. It goes in the scaffold's `bottomSheetOnly` slot with `showBottomSheetBackground` on, and the slots behind it `inert`. It is a `dialog` named by its text.
 
-**Built in code, Sep 2026,** as `src/components/BottomSheet.tsx`, promoted from the typed turn's inline leave confirm when the voice turn needed the same sheet. The Figma `bottomSheet` is not editable (its source lives elsewhere), so the geometry is the one the typed turn tuned: `background/surface`, `Radius/600` top corners, `Space/600` top padding, `Space/400` sides and bottom plus the home-indicator inset, `Space/400` between a `textBlock` and the actions, actions `Space/200` apart and stretched. It enters from below at `motion.duration.slow`, which reduced mode collapses. Put the safe action first as Primary and the escape under it as Text. No new tokens.
+**Built in code, Sep 2026,** as `src/components/BottomSheet.tsx`, promoted from the typed turn's inline leave confirm when the voice turn needed the same sheet. The Figma `bottomSheet` is not editable (its source lives elsewhere), so the geometry is the one the typed turn tuned, with the intro tray frame's corners: `background/surface`, `Radius/900` top corners, `Space/600` top padding, `Space/400` sides and bottom plus the home-indicator inset, `Space/400` between a `textBlock` and the actions, actions `Space/200` apart and stretched. It enters from below at `motion.duration.slow`, which reduced mode collapses. Put the safe action first as Primary and the escape under it as Text. No new tokens.
+
+**`middleSection` and `showAppBar` (added Sep 2026)** moved the section intro tray onto the component. `middleSection` is Figma's freeform slot between the app bar and the actions; it takes the headline block's place, scrolls if it outgrows the sheet, and `headline` then only names the dialog. `showAppBar` adds the Bottom-sheet App Bar: Control/1800, padded Space/300, the handle Space/800 by Space/100 in `background/floating` at Radius/100; with `onClose` it is a close target. The corners moved from `Radius/600` to `Radius/900` in the same pass, because the tray is the one frame drawn from Figma's `bottomSheet`; the leave confirm had no frame. The sheet is never taller than its container.
 
 ### `permissionAlert`
 
@@ -575,7 +577,7 @@ Say these are missing rather than working around them.
 - **`voiceInput` has no Figma component.** It is built in code (see Components built this sprint); Figma's `recordingControl` still draws the earlier white disc and gradient blob, and there are no frames for the transcript, slow-beat or error states.
 - **The transcript step has no Figma frame.** In code the student's words sit in `voiceInput`'s own card, read-only, before judging (Sep 2026); `responseBubble` still must not carry them.
 - **No component for the review summary's "How you felt" reads.** The before-plan and today ratings side by side are hand-built in the screen as `confidenceReads`; see `docs/component-gaps.md`.
-- **`bottomSheet` is not editable in the file.** Its source lives elsewhere. In code it exists since Sep 2026 (see Components built this sprint), but only as headline, caption and actions: it has no `middleSection` slot for a mascot and rows, and no Bottom-sheet App Bar with the handle. The section intro tray is therefore built inline (`docs/component-gaps.md` → `introTray`). Adding those two to `BottomSheet` would let the tray use it.
+- **`bottomSheet` is not editable in the file.** Its source lives elsewhere. In code it exists since Sep 2026, with `middleSection` and the Bottom-sheet App Bar, and the section intro tray uses it (see Components built this sprint).
 - **`thumbs-up` and `lock-01` are not on `iconSlot`'s swap list,** though the intro tray frame uses both (swapped by hand inside slots still named `check-circle` and `pause-circle`). Both are in `IconSlot` in code since Sep 2026 and the tray uses them.
 - **No `answerOption`.** The five-position confidence check before the review round uses it to match the onboarding slider. It is not in the file's component list, in code, or in `tokens/tokens.json`.
 - **No denied-mic screen** in Figma. The flow needs one between a denied mic prompt and the typed route.
