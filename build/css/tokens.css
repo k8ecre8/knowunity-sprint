@@ -95,6 +95,7 @@
   --primitive-radius-full: 9999px;
   --primitive-stroke-border: 1px;
   --primitive-stroke-heavy-border: 2px;
+  --primitive-stroke-bold: 4px; /** A drawn line that is the component, not an edge on one: voiceInput's ring, arc, dashes and waveform bars. Matches the shipped wavy processing ring. */
   --primitive-icon-100: 8px;
   --primitive-icon-150: 12px;
   --primitive-icon-200: 16px;
@@ -261,6 +262,8 @@
   --motion-duration-slow: 450ms; /** Large travel: sheets and full-screen transitions. */
   --motion-duration-exit: 170ms; /** Dismissal of anything that entered at base. */
   --motion-duration-breathing: 3500ms; /** Knowie's ambient idle loop; zero in reduced mode means do not run it. */
+  --motion-duration-spin: 1400ms; /** One turn of a working indicator: voiceInput's processing arc, and the step cycle of its dots. Zero in reduced mode means do not run it. */
+  --motion-duration-spin-slow: 4000ms; /** One turn of a long wait's second beat: voiceInput's dashes past 4 seconds. Slower than spin so the change of gear reads. Zero in reduced mode means do not run it. */
   --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1); /** Decelerates; for anything arriving on screen. */
   --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1); /** Accelerates; for anything leaving. */
   --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1); /** Decelerates and accelerates; for anything moving in place. */
@@ -385,5 +388,7 @@
     --motion-duration-slow: 1ms;
     --motion-duration-exit: 1ms;
     --motion-duration-breathing: 0ms;
+    --motion-duration-spin: 0ms;
+    --motion-duration-spin-slow: 0ms;
   }
 }
