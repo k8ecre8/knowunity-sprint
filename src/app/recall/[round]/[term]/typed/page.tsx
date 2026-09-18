@@ -364,9 +364,9 @@ function Turn({
         (
           <div className={styles.content} inert={sheetOpen}>
             <div className={styles.knowiePrompt}>
-              {/* Knowie steps down to XL while typing, as the frame draws the
-                  keyboard state, so the question fits above the keyboard. */}
-              <MascotSlot size={typing ? 'XL' : '2XL'} name={mascot} />
+              {/* XL in every state (decided Sep 2026): the screen is tight,
+                  and it keeps Knowie the same size when the keyboard opens. */}
+              <MascotSlot size="XL" name={mascot} />
               <ResponseBubble
                 showVerdict={bubble.showVerdict}
                 verdictTone={bubble.verdictTone}

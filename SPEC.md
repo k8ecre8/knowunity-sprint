@@ -139,7 +139,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **States**
 - **Idle:** the prompt, or the current hint.
-- **Typing:** the keyboard is up. The app bar, Knowie at `MascotSlot` XL and the question bubble stay anchored at the top; the input sits directly under the bubble with "Use my voice instead" under it, so all of them stay above the keyboard and nothing is pushed off-screen. *Decided Sep 2026,* matching "Typed input (alt route)", which draws Knowie at 96 (see Open).
+- **Typing:** the keyboard is up. The app bar, Knowie at `MascotSlot` XL and the question bubble stay anchored at the top; the input sits directly under the bubble with "Use my voice instead" under it, so all of them stay above the keyboard and nothing is pushed off-screen. *Decided Sep 2026,* matching "Typed input (alt route)". Knowie is XL in every state on this screen (see Open 28).
 - **Thinking:** the judging wait.
 - **Thinking, slow:** the second beat at 4s.
 - **Error:** past 10s, with retry.
@@ -156,7 +156,7 @@ The input and the voice link sit under the bubble in every answering state, not 
 **Components**
 - `Scaffold`.
 - `AppBar` with `variant="leftAndRightIconButton"`, `leftIcon="x-close"`, and `slot` set to `ProgressIndicator` (`thickness="16"`, `current`, `total`).
-- `MascotSlot` at `size="2XL"`.
+- `MascotSlot` at `size="XL"` (Open 28).
 - `ResponseBubble`:
   - `showVerdict` is on after judging. `verdictTone` reports what the student just did: `Correct`, `Partial` or `Incorrect`, and no chip after "I don't know" or a clarifying question, and none at answer shown, because the `Incorrect` chip reads "Try again" and there is no next try.
   - `showAction={false}`, since "Explain more" is reserved.
@@ -515,4 +515,4 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 **Before hosting**
 26. The Greed trial licence hasn't been checked for web use. Deploy anyway.
 27. No component has a focus state (a WCAG 2.2 gap).
-28. **Knowie while typing.** "Typed input (alt route)" draws Knowie at 96, but `MascotSlot` has no 96 step: XL is 64 and 2XL is 120. The typed turn uses XL, so only his head shows above the bubble. A 96 step needs `Illustration/1200` in `tokens/tokens.json` and a `MascotSlot` size between XL and 2XL. 2XL does not fit above the keyboard.
+28. **Knowie on the typed turn.** *Decided Sep 2026:* `MascotSlot` XL (64) in every state, because the screen is tight. "Typed input (alt route)" draws 96, which has no `MascotSlot` step (`Illustration/1200` would be the token); revisit if the screen gets room.
