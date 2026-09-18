@@ -496,7 +496,9 @@ Added to the Figma set, Sep 2026.
 
 ### `textBlock`
 
-**Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level. No axes.
+**Axes:** `size` (M, S), `captionTone` (primary, secondary), both added Sep 2026. **Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level.
+
+**size.** M is Headline M with the caption Space/150 below (the summary headlines). S is Headline S with the caption Space/050 below, as the review summary's comparison draws the pair; the app home study reminder and the test-day panel use it too. **captionTone.** primary is text/primary; secondary is text/secondary, for the test-day panel's quieter line.
 
 **Reach for it** for a screen or section heading with an optional line under it. Not for body copy, and not for a label with a trailing count (the summaries' group labels are still hand-built; see `docs/component-gaps.md`).
 

@@ -243,10 +243,7 @@ export function ReviewSummary() {
                     <MascotSlot size="XL" name="excited" />
                   </div>
                 )}
-                <div className={styles.verdict}>
-                  <h3 className={styles.verdictHeadline}>{verdict.headline}</h3>
-                  <p className={styles.verdictBody}>{verdict.body}</p>
-                </div>
+                <TextBlock size="S" as="h3" headline={verdict.headline} showCaption caption={verdict.body} />
               </div>
             </section>
 

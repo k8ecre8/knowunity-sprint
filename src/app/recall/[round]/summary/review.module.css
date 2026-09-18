@@ -92,34 +92,3 @@
   display: flex;
   justify-content: center;
 }
-
-/* The comparison copy: Headline S over Body M Regular, Space/050 apart,
-   both text/primary and centred. */
-.verdict {
-  display: flex;
-  flex-direction: column;
-  gap: var(--primitive-space-050);
-  text-align: center;
-}
-
-.verdictHeadline {
-  margin: var(--primitive-space-0);
-  color: var(--semantic-text-primary);
-  font-family: var(--typeScale-headline-s-fontFamily);
-  font-weight: var(--typeScale-headline-s-fontWeight);
-  font-size: var(--typeScale-headline-s-fontSize);
-  line-height: var(--typeScale-headline-s-lineHeight);
-  letter-spacing: var(--typeScale-headline-s-letterSpacing);
-  overflow-wrap: anywhere;
-}
-
-.verdictBody {
-  margin: var(--primitive-space-0);
-  color: var(--semantic-text-primary);
-  font-family: var(--typeScale-body-m-regular-fontFamily);
-  font-weight: var(--typeScale-body-m-regular-fontWeight);
-  font-size: var(--typeScale-body-m-regular-fontSize);
-  line-height: var(--typeScale-body-m-regular-lineHeight);
-  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
-  overflow-wrap: anywhere;
-}

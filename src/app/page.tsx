@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { MascotSlot } from '@/components/MascotSlot';
 import { Button } from '@/components/Button';
+import { TextBlock } from '@/components/TextBlock';
 import { ListItem } from '@/components/ListItem';
 import { Chips } from '@/components/Chips';
 import { IconSlot, type IconName } from '@/components/IconSlot';
@@ -116,11 +117,9 @@ function AppHome({ seeded }: { seeded: Day | null }) {
       </section>
     ) : (
       /* hero: the ordinary study reminder. */
-      <section className={styles.hero} aria-labelledby="home-headline">
+      <section className={styles.hero} aria-label="Study reminder">
         <MascotSlot size="2XL" name="standby" />
-        <h1 className={styles.headlineS} id="home-headline">
-          Your Earth and Space Science exam is in {daysToExam[day]} days
-        </h1>
+        <TextBlock size="S" headline={`Your Earth and Space Science exam is in ${daysToExam[day]} days`} />
         <div className={styles.cta}>
           <Button variant="Primary" size="M" onClick={() => router.push('/plan')}>
             Continue studying
