@@ -93,6 +93,23 @@
   }
 }
 
+/* Keyboard up: the scaffold is pinned to the visual viewport, so the app
+   bar and question stay at the top and the input sits on the keyboard. The
+   properties are measured on the device by useVisualViewport in page.tsx.
+   Doubled to outrank the scaffold's own height: 100dvh, whichever module
+   loads first. */
+.typing.typing {
+  position: fixed;
+  top: var(--visual-viewport-top);
+  left: var(--primitive-space-0);
+  height: var(--visual-viewport-height);
+}
+
+/* The keyboard covers the home indicator, so its inset is not needed. */
+.typing [data-slot='bottomContent'] {
+  padding-bottom: var(--primitive-space-400);
+}
+
 /* bottomContent: the input over the voice link, Space/300 apart. */
 .actions {
   display: flex;

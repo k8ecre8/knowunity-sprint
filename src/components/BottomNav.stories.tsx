@@ -12,7 +12,7 @@ const description = `
 
 **active:** which tab is text/primary; the rest are text/tertiary. The plan and session screens have \`plans\` active; the app home has \`chat\`.
 
-The bar is app chrome outside this flow, so the tabs are inert. Three glyphs (\`myai-chat\`, \`target-04\`, \`trophy-02\`) are not in \`IconSlot\`; their tabs show placeholders marked \`data-placeholder-glyph\`.
+The bar is app chrome outside this flow, so the tabs are inert. One glyph, \`myai-chat\`, is not in \`IconSlot\`; its tab shows \`send-01\` as a placeholder, marked \`data-placeholder-glyph\`. \`target-04\` and \`trophy-02\` were added to \`IconSlot\` Sep 2026 and are the real glyphs.
 `;
 
 const meta = {
@@ -44,8 +44,12 @@ export const Chat: Story = {
 export const Plans: Story = {
   name: 'active=plans',
   args: { active: 'plans' },
-  play: async ({ canvas }) => {
+  play: async ({ canvas, canvasElement }) => {
     await expect(canvas.getByRole('img', { name: 'Plans' }).parentElement).toHaveAttribute('aria-current', 'page');
+    // Only Chat still stands in for a missing glyph.
+    const placeholders = canvasElement.querySelectorAll('[data-placeholder-glyph]');
+    await expect(placeholders).toHaveLength(1);
+    await expect(placeholders[0]).toHaveAttribute('data-placeholder-glyph', 'myai-chat');
   },
 };
 

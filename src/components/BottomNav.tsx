@@ -12,14 +12,14 @@ import styles from './BottomNav.module.css';
  */
 export type BottomNavTab = 'chat' | 'plans' | 'trophy' | 'profile';
 
-/* Three of the four glyphs are not in IconSlot. Each placeholder is marked
-   with the glyph it stands in for, so it can be swapped when added. */
+/* `myai-chat` is not in IconSlot. Its placeholder is marked with the glyph
+   it stands in for, so it can be swapped when added. */
 type Tab = { id: BottomNavTab; label: string; icon: IconName; placeholderFor?: string };
 
 const tabs: readonly Tab[] = [
   { id: 'chat', label: 'Chat', icon: 'send-01', placeholderFor: 'myai-chat' },
-  { id: 'plans', label: 'Plans', icon: 'check-circle', placeholderFor: 'target-04' },
-  { id: 'trophy', label: 'Achievements', icon: 'star-01', placeholderFor: 'trophy-02' },
+  { id: 'plans', label: 'Plans', icon: 'target-04' },
+  { id: 'trophy', label: 'Achievements', icon: 'trophy-02' },
   { id: 'profile', label: 'Profile', icon: 'user-circle' },
 ];
 

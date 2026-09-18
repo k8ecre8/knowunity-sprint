@@ -85,14 +85,11 @@ export function SectionSummary() {
               ))}
             </div>
 
-            {/* `clipboard-check` is not in IconSlot; `check` stands in. See docs/component-gaps.md. */}
-            {partial.length > 0 && (
-              <div data-placeholder-glyph="clipboard-check">
-                <NoteCard tone="outlined" icon="check">
-                  {`${joinNames(partial.map(nameOf))}: you got there, but it took some digging. Worth one more look before the test.`}
-                </NoteCard>
-              </div>
-            )}
+            {/* {partial.length > 0 && (
+              <NoteCard tone="outlined" icon="clipboard-check">
+                {`${joinNames(partial.map(nameOf))}: you got there, but it took some digging. Worth one more look before the test.`}
+              </NoteCard>
+            )} */}
 
             <NoteCard tone="outlined" icon="refresh-cw-01">
               {hasMisses

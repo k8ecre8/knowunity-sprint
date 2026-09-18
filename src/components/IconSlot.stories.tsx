@@ -24,7 +24,7 @@ const description = `
 
 **\`Size (IGNORE)\` became \`size\`,** because the Figma name is not a valid identifier. The option values are Figma's, unchanged. The DON'T resolves cleanly in code: a prop *is* the parent driving the size, which is exactly what the description asks for.
 
-**The instance-swap property became \`name\`,** a union of 62 glyph names: the 59 on the Figma slot plus three code-only additions, defaulting to \`check\`. All 62 resolve to an export in \`@untitled-ui/icons-react\`, so the Figma glyph and the built glyph are the same drawing. (\`plus\` was added for summaryCard's overflow row, and \`dots-vertical\` and \`share-02\` for appBar. The Figma list is still 59: the \`plus\` its masters use is an unpublished orphan that cannot be put on the swap list, so parity waits on published copies of all three being imported.) A glyph outside that list is a gap to report, not something to source elsewhere — which is why there is no \`children\` escape hatch.
+**The instance-swap property became \`name\`,** a union of 72 glyph names: the 69 on the Figma slot plus three code-only additions, defaulting to \`check\`. All 72 resolve to an export in \`@untitled-ui/icons-react\`, so the Figma glyph and the built glyph are the same drawing. (\`plus\` was added for summaryCard's overflow row, and \`dots-vertical\` and \`share-02\` for appBar. Those three are still missing from the Figma list of 69: the \`plus\` its masters use is an unpublished orphan that cannot be put on the swap list, so parity waits on published copies of all three being imported.) A glyph outside that list is a gap to report, not something to source elsewhere — which is why there is no \`children\` escape hatch.
 
 **The stroke is a constant 2px at every size.** Figma renders 2px at six of its seven sizes; the 32px variant renders 2.667 because its inner icon is bound to \`Icon/300\` and scaled up. That is a bug in the master, not a decision, so it is deliberately not reproduced. \`vector-effect: non-scaling-stroke\` holds the package's own stroke width steady across the ramp.
 
@@ -147,9 +147,24 @@ export const AllGlyphs: Story = {
     </ul>
   ),
   play: async ({ canvas }) => {
-    // The catalogue is the swap list plus the three code-only glyphs: 62.
-    await expect(iconNames).toHaveLength(62);
+    // The catalogue is the swap list plus the three code-only glyphs: 72.
+    await expect(iconNames).toHaveLength(72);
     await expect(canvas.getByText('microphone-01')).toBeVisible();
+    // The ten added Sep 2026 to clear the screens' placeholders.
+    for (const name of [
+      'globe-01',
+      'target-04',
+      'book-open-02',
+      'clipboard-check',
+      'thumbs-up',
+      'lock-01',
+      'trophy-02',
+      'list',
+      'graduation-hat-02',
+      'upload-cloud-02',
+    ]) {
+      await expect(canvas.getByText(name)).toBeVisible();
+    }
   },
 };
 

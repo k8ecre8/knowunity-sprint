@@ -349,9 +349,10 @@ Also:
 
 **Nothing listens.** Tapping the control starts a visual recording state and tapping again stops it. No audio is captured and no model is called.
 
-**Mic permission** is a mocked iOS alert, shown on the first mic use in a browser session.
-- The choice is stored in `sessionStorage`.
-- Denied is permanent for the session, because the OS can't re-prompt.
+**Mic permission** is a mocked iOS alert, shown on the first mic use in the browser.
+- The choice is stored in `localStorage`, apart from the session, because iOS keeps a permission for the app, not for a tab. It survives new tabs and reloads.
+- Denied is permanent, because the OS can't re-prompt.
+- `/plan?reset` clears the session and the mic choice, for testing on a phone.
 
 **Every term has a script** in `src/mock/terms.ts`: an ordered list of steps, one per judged answer.
 - Each step is `correct`, `partial`, `miss`, `unclear` or `question`.
@@ -415,7 +416,7 @@ Someone checks this is done and correct in this order. Every step must pass, and
 
 ### 2. Setup for the walkthrough
 - `npm run dev`, then Chrome devtools device mode at iPhone 13 (390×844) with dark scheme.
-- Clear `sessionStorage` before each path.
+- Open `/plan?reset` before each path (clears `sessionStorage` and the mic choice in `localStorage`).
 
 ### 3. End-to-end paths
 Each path is walked by tapping only, with no URL typing except the seeded entry links.

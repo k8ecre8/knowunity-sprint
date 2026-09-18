@@ -36,20 +36,18 @@ export function planDayFrom(value: string | null): PlanDay {
   return value === 'review' || value === 'eve' ? value : 'day1';
 }
 
-/* Glyphs the frames use that IconSlot does not carry. Each placeholder is
-   marked so it can be swapped when the glyph is added. */
-type Glyph = { icon: IconName; placeholderFor?: string };
+type Glyph = { icon: IconName };
 const glyphs = {
-  globe: { icon: 'info-circle', placeholderFor: 'globe-01' },
-  target: { icon: 'check-circle', placeholderFor: 'target-04' },
-  book: { icon: 'help-circle', placeholderFor: 'book-open-02' },
-  clipboard: { icon: 'check', placeholderFor: 'clipboard-check' },
+  globe: { icon: 'globe-01' },
+  target: { icon: 'target-04' },
+  book: { icon: 'book-open-02' },
+  clipboard: { icon: 'clipboard-check' },
   calendar: { icon: 'calendar' },
 } satisfies Record<string, Glyph>;
 
 function GlyphSlot({ glyph, size }: { glyph: Glyph; size: '250' | '300' | '400' }) {
   return (
-    <span className={styles.glyph} data-placeholder-glyph={glyph.placeholderFor}>
+    <span className={styles.glyph}>
       <IconSlot size={size} name={glyph.icon} />
     </span>
   );
@@ -60,6 +58,7 @@ function GlyphSlot({ glyph, size }: { glyph: Glyph; size: '250' | '300' | '400' 
 type Step = {
   id: string;
   title: string;
+  /** Question count and duration. Shown only while the step is `next`. */
   caption?: string;
   state: PlanNodeState;
   glyph: Glyph;
@@ -83,7 +82,7 @@ function buildPaths(day: PlanDay, session: Session, go: (href: string) => void):
     {
       section: 'Plate tectonics',
       steps: [
-        { id: 'pt-1', title: 'Plate tectonics 1', state: 'done', glyph: { icon: 'star-01' } },
+        { id: 'pt-1', title: 'Plate tectonics 1', caption: '3 questions, ~5 mins', state: 'done', glyph: { icon: 'star-01' } },
         {
           id: 'pt-voice',
           title: 'Explain it out loud',
@@ -92,15 +91,15 @@ function buildPaths(day: PlanDay, session: Session, go: (href: string) => void):
           glyph: { icon: 'microphone-01' },
           onPress: () => go(`/plan/${SECTION_ID}/intro`),
         },
-        { id: 'pt-2', title: 'Plate tectonics 2', state: afterVoice, glyph: { icon: 'file-question-02' } },
-        { id: 'pt-3', title: 'Plate tectonics 3', state: seeded, glyph: { icon: 'file-question-02' } },
+        { id: 'pt-2', title: 'Plate tectonics 2', caption: '3 questions, ~5 mins', state: afterVoice, glyph: { icon: 'file-question-02' } },
+        { id: 'pt-3', title: 'Plate tectonics 3', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
       ],
     },
     {
       section: 'Earthquakes and volcanoes',
       steps: [
-        { id: 'eq-1', title: 'Earthquakes 1', state: seeded, glyph: { icon: 'file-question-02' } },
-        { id: 'vo-1', title: 'Volcanoes 1', state: seeded, glyph: { icon: 'file-question-02' } },
+        { id: 'eq-1', title: 'Earthquakes 1', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
+        { id: 'vo-1', title: 'Volcanoes 1', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
       ],
     },
     {
@@ -108,13 +107,13 @@ function buildPaths(day: PlanDay, session: Session, go: (href: string) => void):
       steps: [
         {
           id: REVIEW_ID,
-          title: 'See what stuck',
-          caption: 'Quiz and explain out loud, 10 questions, ~10 min',
+          title: 'Cumulative Review',
+          caption: '10 questions, ~10 min',
           state: day === 'review' ? (reviewDone ? 'done' : 'next') : 'todo',
           glyph: { icon: 'refresh-cw-01' },
           onPress: day === 'review' ? () => go('/recall/review/confidence') : undefined,
         },
-        { id: 'practice-test', title: 'Practice test', state: reviewDone ? 'next' : 'todo', glyph: glyphs.clipboard },
+        { id: 'practice-test', title: 'Practice test', caption: '12 questions, ~12 min', state: reviewDone ? 'next' : 'todo', glyph: glyphs.clipboard },
       ],
     },
   ];
@@ -126,12 +125,11 @@ function StepRow({ step, index }: { step: Step; index: number }) {
       <PlanNode state={step.state} tone="blue" size="M" name={step.glyph.icon} />
       <span className={styles.stepText}>
         <span className={styles.stepTitle}>{step.title}</span>
-        {step.caption && <span className={styles.stepCaption}>{step.caption}</span>}
+        {step.state === 'next' && step.caption && <span className={styles.stepCaption}>{step.caption}</span>}
       </span>
     </>
   );
   const className = [styles.step, index % 2 === 0 ? styles.stepOut : styles.stepIn].join(' ');
-  const marker = step.glyph.placeholderFor;
   if (step.onPress) {
     return (
       <li className={styles.stepItem}>
@@ -139,7 +137,6 @@ function StepRow({ step, index }: { step: Step; index: number }) {
           type="button"
           className={className}
           data-state={step.state}
-          data-placeholder-glyph={marker}
           onClick={step.onPress}
         >
           {inner}
@@ -149,7 +146,7 @@ function StepRow({ step, index }: { step: Step; index: number }) {
   }
   return (
     <li className={styles.stepItem}>
-      <div className={className} data-state={step.state} data-placeholder-glyph={marker}>
+      <div className={className} data-state={step.state}>
         {inner}
       </div>
     </li>

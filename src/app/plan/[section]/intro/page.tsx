@@ -22,13 +22,11 @@ import { currentTerm, updateSession, useSession } from '@/mock/session';
 import { PlanHome } from '../../PlanHome';
 import styles from './page.module.css';
 
-/* The three rows under the headline, as the frame draws them. Two of the
-   frame's glyphs are not in IconSlot; their placeholders are the glyphs the
-   frame's slots were named for, and are marked so they can be swapped. */
-const rows: { icon: IconName; placeholderFor?: string; text: string }[] = [
+/* The three rows under the headline, as the frame draws them. */
+const rows: { icon: IconName; text: string }[] = [
   { icon: 'microphone-01', text: 'Explain concepts in your own words.' },
-  { icon: 'check-circle', placeholderFor: 'thumbs-up', text: 'It’s okay to pause, stumble, or even start over.' },
-  { icon: 'pause-circle', placeholderFor: 'lock-01', text: 'Your recording is only used to check your answer. It is not saved.' },
+  { icon: 'thumbs-up', text: 'It’s okay to pause, stumble, or even start over.' },
+  { icon: 'lock-01', text: 'Your recording is only used to check your answer. It is not saved.' },
 ];
 
 function IntroTray() {
@@ -111,7 +109,7 @@ function IntroTray() {
                 <ul className={styles.rows}>
                   {rows.map((row) => (
                     <li key={row.icon} className={styles.row}>
-                      <span data-placeholder-glyph={row.placeholderFor}>
+                      <span>
                         <IconSlot size="300" name={row.icon} />
                       </span>
                       <span className={styles.rowText}>{row.text}</span>

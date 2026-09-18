@@ -33,7 +33,7 @@ If you need a number, a colour, a duration or a type step, read `tokens/tokens.j
 
 **`snackbar`** for a transient message that needs no decision.
 
-**`permissionAlert`** for the mocked iOS microphone prompt, once per session. It is the OS talking, not Knowie, so it is not a `bottomSheet` and not a `responseBubble`.
+**`permissionAlert`** for the mocked iOS microphone prompt, once per browser (until `/plan?reset`). It is the OS talking, not Knowie, so it is not a `bottomSheet` and not a `responseBubble`.
 
 **`responseBubble`** for anything Knowie says: the prompt on an idle turn, the verdict and feedback after judging. One container for the whole turn loop.
 
@@ -142,7 +142,7 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 - Icons inherit their colour from the token on the surrounding text or the component's `on*` token. Do not give an icon its own colour token.
 - In Figma the colour binding lives on the glyph's vector inside the slot. Swapping the glyph drops that binding and the icon renders dark until it is rebound. After every swap, select the vector and bind its stroke to the token again. `iconSlot` has no colour property on purpose: 325 instances carry 16 different bindings, and a tone axis would multiply the set by that.
 - One stroke weight across the system. Untitled UI ships several styles; mixing them is visible.
-- In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 59 glyphs on `iconSlot`'s swap property resolve to an export in it, and `IconSlot` carries three more (`plus`, `dots-vertical`, `share-02`) that the file cannot yet. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
+- In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 69 glyphs on `iconSlot`'s swap property resolve to an export in it, and `IconSlot` carries three more (`plus`, `dots-vertical`, `share-02`) that the file cannot yet. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
 - The npm packages are MIT, so the code path does not inherit the free-tier limit below. The Figma file still does.
 
 **Licence.** The free tier covers one user, and that includes anyone accessing a published Figma library built on it. If this file goes to Knowunity or to other people, that is a paid tier.
@@ -369,7 +369,7 @@ A single component, not a set. **Properties:** `showVerdict`, `showAction`, `bod
 
 ### `iconSlot`
 
-**Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 59 icons. `IconSlot` in code offers 62: `plus` was added Sep 2026 for `summaryCard`'s overflow row, and `dots-vertical` and `share-02` for `appBar`, but none of the three is on the swap list — see Known gaps.
+**Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 69 icons. `IconSlot` in code offers 72: `plus` was added Sep 2026 for `summaryCard`'s overflow row, and `dots-vertical` and `share-02` for `appBar`, but none of the three is on the swap list — see Known gaps. Ten more — `globe-01`, `target-04`, `book-open-02`, `clipboard-check`, `thumbs-up`, `lock-01`, `trophy-02`, `list`, `graduation-hat-02`, `upload-cloud-02` — were added to the swap list and to `IconSlot` together, Sep 2026, linked to the published Untitled UI library.
 
 **Reach for it** wherever an icon sits inside another component. Never place an icon directly.
 
@@ -390,7 +390,7 @@ A single component, not a set. **Properties:** `showVerdict`, `showAction`, `bod
 
 **Where the file and the description disagree.** The description says six sizes ending at 32px; there are seven ending at 40, because it predates the 500 above. On instance counts all three numbers differ: the Figma description says 165, this file said 325, and the measured count in Sep 2026 is **350** — 135 at size 300, 95 at 400, 60 at 250, 38 at 500, 22 at 200, none at 150 or 100. Counted with `getInstancesAsync` per variant; the figures above it are historical and were not re-measured.
 
-**Deviations in code.** `Size (IGNORE)` becomes a `size` prop, keeping Figma's option values — the Figma name is not a valid identifier, and a prop is exactly the "parent drives it" the description asks for. The swap property becomes a `name` prop typed to the 59 glyphs, with no `children` escape hatch, so a caller cannot place an icon directly. Colour is `currentColor` rather than a per-vector binding, which removes the Figma problem where swapping a glyph drops its colour. A `label` prop was added for assistive tech, with no Figma counterpart: slots are `aria-hidden` unless labelled.
+**Deviations in code.** `Size (IGNORE)` becomes a `size` prop, keeping Figma's option values — the Figma name is not a valid identifier, and a prop is exactly the "parent drives it" the description asks for. The swap property becomes a `name` prop typed to the 72 glyphs, with no `children` escape hatch, so a caller cannot place an icon directly. Colour is `currentColor` rather than a per-vector binding, which removes the Figma problem where swapping a glyph drops its colour. A `label` prop was added for assistive tech, with no Figma counterpart: slots are `aria-hidden` unless labelled.
 
 ### `appBar`
 
@@ -557,7 +557,7 @@ Say these are missing rather than working around them.
 - **`button`'s Loading state is not built in code,** and neither are its `showLeftIcon` and `showRightIcon` properties. The blocker is gone — `IconSlot` now exists and `@untitled-ui/icons-react` is installed — so what remains is wiring `Button` to it. Two things to settle when someone does: `Button` sets its label colour on the label, and it has to move up to the pill so the label and both icons inherit from one place; and Loading still needs a rotation duration, since `motion.duration` has instant, fast, base, slow, exit and breathing, none of which is a spinner cycle. `motion.duration.spin` is the name to add.
 - **`iconSlot`'s 400 variant is missing its height binding.** Its nested instance binds width to `Icon/400`, but the height is a loose 32. Setting one dimension through the plugin API clears the other, so this one has to be bound by hand in Figma. Siblings 300, 200, 150 and 100 bind both dimensions, so the file supports it.
 - **`iconSlot` sizes 150 and 100 have no instances.** 12px and 8px are unused across all 350 iconSlot instances in the file. Either they are for something not built yet, or they can go.
-- **`plus` is an orphan in the file.** `summaryCard`'s overflow row uses a `plus` whose component key is not published anywhere importable — the same problem as `dots-vertical`. It cannot be added to `iconSlot`'s swap list (an attempt was made and reverted, Sep 2026), so the Figma slot offers 59 glyphs while `IconSlot` in code offers 60. Fix: import `plus` from the published Untitled UI library, re-point the four summaryCard masters at it, and add that key to the swap list.
+- **`plus` is an orphan in the file.** `summaryCard`'s overflow row uses a `plus` whose component key is not published anywhere importable — the same problem as `dots-vertical`. It cannot be added to `iconSlot`'s swap list (an attempt was made and reverted, Sep 2026), so it is on `IconSlot` in code but not on the Figma slot. Fix: import `plus` from the published Untitled UI library, re-point the four summaryCard masters at it, and add that key to the swap list.
 - **`listItem` is missing three nested components in code:** `switch` (trailing Switch, 3 variants), `Checkbox` (trailing Checkbox, 12 variants) and `illustrationSlot` (the `showIllustration` leading slot, every variant). None exist as React components; `switch` is not editable in the file either. Until they are built, `ListItem` offers trailing Icon / Icon & Text / None and no illustration slot.
 - **`chatInput`'s masters nest the retired `OLD Icon Button`,** whose radius binds `Scale 06` — a variable outside `tokens/tokens.json` — and still carry the leading plus control that code removed. Re-point send at `buttonIcon` and remove the plus. Its Recording variant's waveform bars are collapsed to 1×1.
 - **Nothing spins.** `buttonIcon` and `chatInput` Loading show a still `loading-01`; no rotation duration was added, by decision, Sep 2026.

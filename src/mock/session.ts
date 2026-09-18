@@ -1,6 +1,8 @@
 /* Session state for the mocked recall — see SPEC.md → How the mocked recall
-   behaves. Everything lives in `sessionStorage` under one key, so clearing
-   storage resets the prototype. Summaries count rows and nothing else. */
+   behaves. The session lives in `sessionStorage` under one key. The mic
+   answer is the exception: it lives in `localStorage`, because iOS keeps a
+   permission for the app, not for a tab. `resetPrototype` (`/plan?reset`)
+   clears both. Summaries count rows and nothing else. */
 
 import { useSyncExternalStore } from 'react';
 import { termsForRound, type Round, type ScriptStep, type Term } from './terms';
@@ -46,6 +48,9 @@ export type Session = {
 };
 
 const KEY = 'knowie.session';
+const MIC_KEY = 'knowie.mic';
+
+type MicPermission = Session['micPermission'];
 
 export const emptySession: Session = {
   rows: [],
@@ -57,31 +62,60 @@ export const emptySession: Session = {
   preReviewRating: null,
 };
 
-function storage(): Storage | null {
+function storage(kind: 'sessionStorage' | 'localStorage' = 'sessionStorage'): Storage | null {
   if (typeof window === 'undefined') return null;
   try {
-    return window.sessionStorage;
+    return window[kind];
   } catch {
     return null;
+  }
+}
+
+function readMic(): MicPermission {
+  try {
+    const raw = storage('localStorage')?.getItem(MIC_KEY);
+    return raw === 'granted' || raw === 'denied' ? raw : 'unasked';
+  } catch {
+    return 'unasked';
   }
 }
 
 export function readSession(): Session {
   const store = storage();
   if (!store) return emptySession;
+  const micPermission = readMic();
   try {
     const raw = store.getItem(KEY);
-    if (!raw) return emptySession;
-    return { ...emptySession, ...(JSON.parse(raw) as Partial<Session>) };
+    if (!raw) return { ...emptySession, micPermission };
+    return { ...emptySession, ...(JSON.parse(raw) as Partial<Session>), micPermission };
   } catch {
-    return emptySession;
+    return { ...emptySession, micPermission };
   }
 }
 
 export function writeSession(next: Session): void {
   const store = storage();
   if (!store) return;
-  store.setItem(KEY, JSON.stringify(next));
+  const { micPermission, ...rest } = next;
+  store.setItem(KEY, JSON.stringify(rest));
+  try {
+    const local = storage('localStorage');
+    if (micPermission === 'unasked') local?.removeItem(MIC_KEY);
+    else local?.setItem(MIC_KEY, micPermission);
+  } catch {
+    // Storage blocked: the prompt shows again next time.
+  }
+}
+
+/** Clears the session and the mic answer, so the prototype starts fresh. */
+export function resetPrototype(): void {
+  try {
+    storage()?.removeItem(KEY);
+    storage('localStorage')?.removeItem(MIC_KEY);
+  } catch {
+    // Nothing stored, nothing to clear.
+  }
+  listeners.forEach((l) => l());
 }
 
 const listeners = new Set<() => void>();
@@ -98,10 +132,10 @@ export function updateSession(patch: (s: Session) => Session): Session {
 let cachedRaw: string | null | undefined;
 let cachedSession: Session = emptySession;
 
-/** Snapshot for useSyncExternalStore: stable while the stored string is unchanged. */
+/** Snapshot for useSyncExternalStore: stable while the stored strings are unchanged. */
 function snapshot(): Session {
   const store = storage();
-  const raw = store ? store.getItem(KEY) : null;
+  const raw = store ? `${store.getItem(KEY)}|${readMic()}` : null;
   if (raw !== cachedRaw) {
     cachedRaw = raw;
     cachedSession = readSession();

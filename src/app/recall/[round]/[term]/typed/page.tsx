@@ -12,7 +12,7 @@
    transcript states. Recall is mocked: sending walks the term's script on a
    real delay, and nothing reads the text. Knowie replies in text only. */
 
-import { use, useEffect, useRef, useState } from 'react';
+import { use, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { AppBar } from '@/components/AppBar';
@@ -48,9 +48,9 @@ type Phase = 'idle' | 'thinking' | 'thinking-slow' | 'error' | 'verdict';
 type Chip = 'Correct' | 'Partial' | 'Incorrect' | null;
 
 /* Copy for the states no frame draws (Open 19, decided here). The helper
-   line under Knowie carries the state, so reduced motion loses nothing. */
+   line under Knowie carries the state, so reduced motion loses nothing.
+   Idle at the prompt has no helper: SPEC's typed idle is the prompt alone. */
 const helper = {
-  idle: 'Even a partial answer is a great start',
   hint1: 'Give it another try',
   hint2: 'Last try, two hints',
   thinking: 'Thinking…',
@@ -69,6 +69,31 @@ function outcomeFor(rung: Rung): Outcome {
   if (rung === 0) return 'correct-without-help';
   if (rung === 1) return 'needed-a-hint';
   return 'needs-practice';
+}
+
+/* While the keyboard is up, the scaffold is pinned to the visual viewport:
+   the part of the screen the keyboard leaves. iOS otherwise keeps the page at
+   full height and scrolls it to show the input, which takes the question off
+   the top. These are device measurements, like 100dvh, not design values. */
+function useVisualViewport(active: boolean) {
+  useLayoutEffect(() => {
+    const viewport = window.visualViewport;
+    if (!active || !viewport) return;
+    const root = document.documentElement.style;
+    const sync = () => {
+      root.setProperty('--visual-viewport-top', `${viewport.offsetTop}px`);
+      root.setProperty('--visual-viewport-height', `${viewport.height}px`);
+    };
+    sync();
+    viewport.addEventListener('resize', sync);
+    viewport.addEventListener('scroll', sync);
+    return () => {
+      viewport.removeEventListener('resize', sync);
+      viewport.removeEventListener('scroll', sync);
+      root.removeProperty('--visual-viewport-top');
+      root.removeProperty('--visual-viewport-height');
+    };
+  }, [active]);
 }
 
 function TypedTurn({ round, term }: { round: Round; term: number }) {
@@ -104,6 +129,9 @@ function Turn({
   const [chip, setChip] = useState<Chip>(null);
   const [text, setText] = useState('');
   const [sheetOpen, setSheetOpen] = useState(false);
+  // The chat input has focus, so the keyboard is up.
+  const [typing, setTyping] = useState(false);
+  useVisualViewport(typing);
   /* The script pointer. Advances only when a verdict is shown; a cancelled
      wait or a retry re-runs the same step. On resume, the steps judged so
      far equal the hints used. */
@@ -254,7 +282,7 @@ function Turn({
             ? helper.hint1
             : rung === 2
               ? helper.hint2
-              : helper.idle;
+              : null;
 
   const mascot: MascotName =
     phase === 'verdict'
@@ -270,6 +298,7 @@ function Turn({
 
   return (
     <Scaffold
+      className={typing ? styles.typing : undefined}
       showBottomSheetBackground={sheetOpen}
       topNavigation={
         <AppBar
@@ -286,7 +315,9 @@ function Turn({
         (
           <div className={styles.content} inert={sheetOpen}>
             <div className={styles.knowiePrompt}>
-              <MascotSlot size="2XL" name={mascot} />
+              {/* Knowie steps down to XL while typing, so the question fits
+                  above the keyboard. */}
+              <MascotSlot size={typing ? 'XL' : '2XL'} name={mascot} />
               <ResponseBubble
                 showVerdict={bubble.showVerdict}
                 verdictTone={bubble.verdictTone}
@@ -315,7 +346,14 @@ function Turn({
       }
       bottomContent={
         (
-          <div className={styles.actions} inert={sheetOpen}>
+          <div
+            className={styles.actions}
+            inert={sheetOpen}
+            onFocus={(e) => setTyping(e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget)) setTyping(false);
+            }}
+          >
             {answering ? (
               <>
                 <ChatInput
@@ -325,11 +363,14 @@ function Turn({
                   onMicPress={useVoice}
                   Status={waiting ? 'Loading' : undefined}
                 />
-                <div className={styles.voiceRow}>
-                  <Button variant="Text" size="M" onClick={useVoice} state={waiting ? 'Disabled' : 'Default'}>
-                    Use my voice instead
-                  </Button>
-                </div>
+                {/* Hidden while typing: the input's own mic does the same. */}
+                {!typing && (
+                  <div className={styles.voiceRow}>
+                    <Button variant="Text" size="M" onClick={useVoice} state={waiting ? 'Disabled' : 'Default'}>
+                      Use my voice instead
+                    </Button>
+                  </div>
+                )}
               </>
             ) : (
               <Button variant="Primary" size="L" onClick={nextQuestion}>

@@ -27,16 +27,16 @@ import styles from './page.module.css';
 
 type Day = 'default' | 'eve';
 
-/* Glyphs the frames use that IconSlot does not carry. Each placeholder is
-   marked so it can be swapped when the glyph is added. */
+/* `ai-quiz` is not in IconSlot. Its placeholder is marked so it can be
+   swapped when the glyph is added. */
 type Glyph = { icon: IconName; placeholderFor?: string };
 const glyphs = {
-  menu: { icon: 'dots-vertical', placeholderFor: 'list' },
+  menu: { icon: 'list' },
   focus: { icon: 'clock' },
-  college: { icon: 'star-01', placeholderFor: 'graduation-hat-02' },
+  college: { icon: 'graduation-hat-02' },
   quiz: { icon: 'file-question-02', placeholderFor: 'ai-quiz' },
-  practiceTest: { icon: 'check', placeholderFor: 'clipboard-check' },
-  upload: { icon: 'arrows-up', placeholderFor: 'upload-cloud-02' },
+  practiceTest: { icon: 'clipboard-check' },
+  upload: { icon: 'upload-cloud-02' },
   plus: { icon: 'plus' },
   mic: { icon: 'microphone-01' },
 } satisfies Record<string, Glyph>;
@@ -74,7 +74,7 @@ function AppHome({ day }: { day: Day }) {
   /* topBar: menu, the three counters, and the focus timer. All decoration. */
   const topBar = (
     <div className={styles.topBar}>
-      <span className={styles.barIcon} data-placeholder-glyph={glyphs.menu.placeholderFor} aria-hidden="true">
+      <span className={styles.barIcon} aria-hidden="true">
         <IconSlot size="300" name={glyphs.menu.icon} />
       </span>
       <ul className={styles.counters} aria-label="Account">
@@ -133,7 +133,7 @@ function AppHome({ day }: { day: Day }) {
 
       {/* marginWrap: Space/1600 above Dream College on the default frame, none on eve. */}
       <div className={day === 'eve' ? styles.collegeWrapEve : styles.collegeWrap}>
-        <span className={styles.college} data-placeholder-glyph={glyphs.college.placeholderFor}>
+        <span className={styles.college}>
           <ListItem
             variant="Outlined Compact"
             trailing="None"

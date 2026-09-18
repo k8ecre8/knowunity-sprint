@@ -94,9 +94,10 @@
   overflow-y: auto;
 }
 
-/* Three rows, Space/300 apart: iconSlot 300 then Body S Regular in
-   text/primary, Space/300 between them, top-aligned so a wrapped line hangs
-   under the text, not the icon. */
+/* Three rows, Space/300 apart: iconSlot 300 then Body M Regular in
+   text/primary (the frame draws Body S; stepped up for legibility, and Body
+   M's 24 line height matches the 24 icon), Space/300 between them,
+   top-aligned so a wrapped line hangs under the text, not the icon. */
 .rows {
   display: flex;
   flex-direction: column;
@@ -119,11 +120,11 @@
 }
 
 .rowText {
-  font-family: var(--typeScale-body-s-regular-fontFamily);
-  font-weight: var(--typeScale-body-s-regular-fontWeight);
-  font-size: var(--typeScale-body-s-regular-fontSize);
-  line-height: var(--typeScale-body-s-regular-lineHeight);
-  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
   overflow-wrap: anywhere;
 }
 
