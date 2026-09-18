@@ -6,12 +6,13 @@
    section-done or review-day states; both are the Day 1 frame with the node
    states moved along.
 
-   Four states, from the `?day` seed and the session:
+   Four states, from the simulated day in the session (`session.day`, moved
+   on by the summaries, or seeded by `?day=`):
    - Day 1: the Plate tectonics voice node is `next`.
    - Section done: that node is `done` (the section summary marks it).
-   - Review day (`?day=review`): every section node is done and "See what
-     stuck" is `next`, or `done` once the review summary has marked it.
-   - Plan complete, test tomorrow (`?day=eve`): the path collapses into the
+   - Review day: every section node is done and "See what stuck" is `next`,
+     or `done` once the review summary has marked it.
+   - Plan complete, test tomorrow (eve): the path collapses into the
      "Plan complete" card and the warm-up reminder.
 
    The section intro tray renders this same screen behind its sheet, so it
@@ -27,14 +28,8 @@ import { Button } from '@/components/Button';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
 import { plateTectonics } from '@/mock/terms';
-import { currentTerm, updateSession, useSession, type Session } from '@/mock/session';
+import { currentTerm, daysToExam, updateSession, useSession, type Day, type Session } from '@/mock/session';
 import styles from './PlanHome.module.css';
-
-export type PlanDay = 'day1' | 'review' | 'eve';
-
-export function planDayFrom(value: string | null): PlanDay {
-  return value === 'review' || value === 'eve' ? value : 'day1';
-}
 
 type Glyph = { icon: IconName };
 const glyphs = {
@@ -71,7 +66,7 @@ type Path = { section?: string; phase?: string; steps: Step[] };
 const SECTION_ID = plateTectonics.id;
 const REVIEW_ID = 'see-what-stuck';
 
-function buildPaths(day: PlanDay, session: Session, go: (href: string) => void): Path[] {
+function buildPaths(day: Day,session: Session, go: (href: string) => void): Path[] {
   const sectionDone = day === 'review' || session.doneSections.includes(SECTION_ID);
   const reviewDone = day === 'review' && session.doneSections.includes(REVIEW_ID);
   // Review day seeds every section node as done.
@@ -156,15 +151,17 @@ function StepRow({ step, index }: { step: Step; index: number }) {
 /* --- the screen ---------------------------------------------------------- */
 
 export type PlanHomeProps = {
-  day: PlanDay;
+  /** A seeded day for the first render, before the session has it. Left out, the session's day. */
+  day?: Day;
   /** A sheet over the plan: the scaffold's slots behind it go inert. */
   bottomSheetOnly?: ReactNode;
   showBottomSheetBackground?: boolean;
 };
 
-export function PlanHome({ day, bottomSheetOnly, showBottomSheetBackground = false }: PlanHomeProps) {
+export function PlanHome({ day: seeded, bottomSheetOnly, showBottomSheetBackground = false }: PlanHomeProps) {
   const router = useRouter();
   const session = useSession();
+  const day = seeded ?? session?.day ?? 'day1';
   const titleId = useId();
   const behindSheet = Boolean(bottomSheetOnly);
 
@@ -178,7 +175,7 @@ export function PlanHome({ day, bottomSheetOnly, showBottomSheetBackground = fal
     router.push(`/recall/eve/${term}`);
   };
 
-  const daysLeft = day === 'eve' ? 'Test tomorrow' : day === 'review' ? '3 days' : '6 days';
+  const daysLeft = day === 'eve' ? 'Test tomorrow' : `${daysToExam[day]} days`;
 
   /* topBar: the plan-home bar is a kebab on the right and nothing else. The
      menu is app chrome outside this flow, so it is decoration here. */
@@ -190,10 +187,10 @@ export function PlanHome({ day, bottomSheetOnly, showBottomSheetBackground = fal
     </div>
   );
 
-  /* bottomNav: app chrome, `plans` active, inert behind a sheet. */
+  /* bottomNav: `plans` active, Chat goes to the app home. Inert behind a sheet. */
   const bottomNav = (
     <div inert={behindSheet}>
-      <BottomNav active="plans" />
+      <BottomNav active="plans" hrefs={{ chat: '/', plans: '/plan' }} />
     </div>
   );
 

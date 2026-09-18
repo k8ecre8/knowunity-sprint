@@ -4,17 +4,18 @@
    Figma, Exam Section 1 - Claude (Core Flow): "App home / Default (study
    reminder)" and "App home / Reminder state".
 
-   Two states, from the `?day` seed:
-   - Default: the hero is the study reminder ("…exam is in 6 days") and
-     "Continue studying" goes into the plan.
-   - Exam-eve reminder (`?day=eve`): "Your test is tomorrow", and "Warm up now"
-     is a shortcut straight into the repeat, not the plan.
+   Two states, from the simulated day in the session (seeded by `?day=eve`):
+   - Default (Day 1 and review day): the hero is the study reminder
+     ("…exam is in N days") and "Continue studying" goes into the plan.
+   - Exam-eve reminder: "Your test is tomorrow", and "Warm up now" is a
+     shortcut straight into the repeat, not the plan.
 
-   Everything else on the page (top bar, counters, Dream College, quick
-   actions, Ask Knowie, the tab bar) is the existing app as built, and inert. */
+   The tab bar's Plans tab goes to the plan. Everything else on the page (top
+   bar, counters, Dream College, quick actions, Ask Knowie, the other tabs) is
+   the existing app as built, and inert. */
 
 import { Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { MascotSlot } from '@/components/MascotSlot';
 import { Button } from '@/components/Button';
@@ -22,10 +23,9 @@ import { ListItem } from '@/components/ListItem';
 import { Chips } from '@/components/Chips';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
-import { currentTerm, updateSession, useSession } from '@/mock/session';
+import { currentTerm, daysToExam, updateSession, useSession, type Day } from '@/mock/session';
+import { useEntryLink } from '@/mock/useEntryLink';
 import styles from './page.module.css';
-
-type Day = 'default' | 'eve';
 
 /* `ai-quiz` is not in IconSlot. Its placeholder is marked so it can be
    swapped when the glyph is added. */
@@ -57,9 +57,10 @@ const quickActions: readonly { id: string; label: string; glyph: Glyph }[] = [
   { id: 'upload', label: 'Upload', glyph: glyphs.upload },
 ];
 
-function AppHome({ day }: { day: Day }) {
+function AppHome({ seeded }: { seeded: Day | null }) {
   const router = useRouter();
   const session = useSession();
+  const day = seeded ?? session?.day ?? 'day1';
 
   const warmUp = () => {
     if (!session) return;
@@ -117,7 +118,7 @@ function AppHome({ day }: { day: Day }) {
       <section className={styles.hero} aria-labelledby="home-headline">
         <MascotSlot size="2XL" name="standby" />
         <h1 className={styles.headlineS} id="home-headline">
-          Your Earth and Space Science exam is in 6 days
+          Your Earth and Space Science exam is in {daysToExam[day]} days
         </h1>
         <div className={styles.cta}>
           <Button variant="Primary" size="M" onClick={() => router.push('/plan')}>
@@ -170,12 +171,18 @@ function AppHome({ day }: { day: Day }) {
     </div>
   );
 
-  return <Scaffold topNavigation={topBar} middleContent={middle} bottomContent={<BottomNav active="chat" />} />;
+  return (
+    <Scaffold
+      topNavigation={topBar}
+      middleContent={middle}
+      bottomContent={<BottomNav active="chat" hrefs={{ chat: '/', plans: '/plan' }} />}
+    />
+  );
 }
 
 function Home() {
-  const params = useSearchParams();
-  return <AppHome day={params.get('day') === 'eve' ? 'eve' : 'default'} />;
+  const seeded = useEntryLink('/');
+  return <AppHome seeded={seeded} />;
 }
 
 export default function HomePage() {

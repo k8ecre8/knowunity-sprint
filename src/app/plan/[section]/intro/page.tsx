@@ -48,7 +48,7 @@ function IntroTray() {
   }, [prompt]);
 
   // Null on the server and the first client render, so the markup matches.
-  if (!session) return <PlanHome day="day1" showBottomSheetBackground />;
+  if (!session) return <PlanHome showBottomSheetBackground />;
 
   // The only section with a round is Plate Tectonics; its round is `section`.
   const round = 'section';
@@ -81,7 +81,6 @@ function IntroTray() {
   return (
     /* Behind the tray sits the plan as on screen 9, with its slots inert. */
     <PlanHome
-      day="day1"
       showBottomSheetBackground
       bottomSheetOnly={
         prompt ? (

@@ -17,7 +17,7 @@ import { MascotSlot } from '@/components/MascotSlot';
 import { IconSlot } from '@/components/IconSlot';
 import { Button } from '@/components/Button';
 import { beforePlanRating, confidenceLabels, findTerm, termsForRound } from '@/mock/terms';
-import { rowsForRound, summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { advanceDay, rowsForRound, summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import shared from './page.module.css';
 import styles from './review.module.css';
 
@@ -198,12 +198,14 @@ export function ReviewSummary() {
     : 'Knowie will remind you to review this material the day before your test. You’ll see every term again, asked a new way.';
 
   const onContinue = () => {
-    // The plan opens with the review node done, whatever the outcome.
+    // The review node is done whatever the outcome, and the plan moves on to
+    // the day before the test.
     updateSession((s) => ({
       ...s,
       doneSections: Array.from(new Set([...s.doneSections, 'see-what-stuck'])),
     }));
-    router.push('/plan?day=review');
+    advanceDay('eve');
+    router.push('/plan');
   };
 
   const onPractice = () => {

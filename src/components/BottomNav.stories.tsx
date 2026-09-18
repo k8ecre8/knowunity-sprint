@@ -12,7 +12,7 @@ const description = `
 
 **active:** which tab is text/primary; the rest are text/tertiary. The plan and session screens have \`plans\` active; the app home has \`chat\`.
 
-The bar is app chrome outside this flow, so the tabs are inert. One glyph, \`myai-chat\`, is not in \`IconSlot\`; its tab shows \`send-01\` as a placeholder, marked \`data-placeholder-glyph\`. \`target-04\` and \`trophy-02\` were added to \`IconSlot\` Sep 2026 and are the real glyphs.
+**hrefs:** where each tab goes. A tab with an entry is a link; the active tab and any tab left out stay inert. The app home and the exam plan home link Chat (\`/\`) and Plans (\`/plan\`), so a tester can move between them; trophy and profile are outside this flow and stay inert. One glyph, \`myai-chat\`, is not in \`IconSlot\`; its tab shows \`send-01\` as a placeholder, marked \`data-placeholder-glyph\`. \`target-04\` and \`trophy-02\` were added to \`IconSlot\` Sep 2026 and are the real glyphs.
 `;
 
 const meta = {
@@ -50,6 +50,18 @@ export const Plans: Story = {
     const placeholders = canvasElement.querySelectorAll('[data-placeholder-glyph]');
     await expect(placeholders).toHaveLength(1);
     await expect(placeholders[0]).toHaveAttribute('data-placeholder-glyph', 'myai-chat');
+  },
+};
+
+/** App home and exam plan home: Chat and Plans link to each other; the active tab and the rest stay inert. */
+export const WithLinks: Story = {
+  name: 'hrefs: chat and plans',
+  args: { active: 'chat', hrefs: { chat: '/', plans: '/plan' } },
+  play: async ({ canvas }) => {
+    await expect(canvas.getByRole('link', { name: 'Plans' })).toHaveAttribute('href', '/plan');
+    // The active tab is not a link to itself, and tabs without an href are inert.
+    await expect(canvas.getAllByRole('link')).toHaveLength(1);
+    await expect(canvas.getByRole('img', { name: 'Chat' }).parentElement).toHaveAttribute('aria-current', 'page');
   },
 };
 

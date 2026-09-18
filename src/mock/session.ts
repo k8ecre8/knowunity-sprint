@@ -35,7 +35,26 @@ export type Practice = {
   termIds: string[];
 };
 
+/**
+ * The simulated day. Finishing a round moves it on: the section summary to
+ * review day, the review summary to exam eve. `?day=review|eve` on `/` or
+ * `/plan` jumps straight there.
+ */
+export type Day = 'day1' | 'review' | 'eve';
+
+/** Days between Day 1 and the review, used to age the tester's section rows. */
+const REVIEW_GAP_DAYS = 3;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export function dayFrom(value: string | null): Day | null {
+  return value === 'day1' || value === 'review' || value === 'eve' ? value : null;
+}
+
+/** Days left to the exam, by simulated day. */
+export const daysToExam: Record<Day, number> = { day1: 6, review: 3, eve: 1 };
+
 export type Session = {
+  day: Day;
   rows: OutcomeRow[];
   inputMode: InputMode;
   micPermission: 'unasked' | 'granted' | 'denied';
@@ -53,6 +72,7 @@ const MIC_KEY = 'knowie.mic';
 type MicPermission = Session['micPermission'];
 
 export const emptySession: Session = {
+  day: 'day1',
   rows: [],
   inputMode: 'voice',
   micPermission: 'unasked',
@@ -166,6 +186,26 @@ export function recordOutcome(row: OutcomeRow): void {
     ...s,
     rows: [...s.rows.filter((r) => !(r.termId === row.termId && r.round === row.round)), row],
   }));
+}
+
+/**
+ * Moves the simulated day on. Going to review day ages the tester's own
+ * section rows by the review gap, so the review summary's days-later claim
+ * counts real rows.
+ */
+export function advanceDay(day: Day): void {
+  updateSession((s) => {
+    if (s.day === day) return s;
+    const rows =
+      day === 'review'
+        ? s.rows.map((r) =>
+            r.round === 'section'
+              ? { ...r, lastSeenAt: new Date(Date.parse(r.lastSeenAt) - REVIEW_GAP_DAYS * DAY_MS).toISOString() }
+              : r,
+          )
+        : s.rows;
+    return { ...s, day, rows };
+  });
 }
 
 export function rowsForRound(session: Session, round: Round): OutcomeRow[] {

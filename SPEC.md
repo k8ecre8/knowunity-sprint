@@ -42,7 +42,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - The headline ("Here's how it went") has no `textBlock` in code.
 
 **Actions**
-- Continue → `/plan`, with the Plate Tectonics voice node marked `done` whatever the outcome.
+- Continue → `/plan`, with the Plate Tectonics voice node marked `done` whatever the outcome. The simulated day moves to review day, and the tester's section rows age three days.
 - Try the ones you missed → see Open.
 
 ### 2. Exam-eve repeat summary
@@ -64,7 +64,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **Actions**
 - One more try at the misses → see Open.
-- Finish → `/plan` in complete mode.
+- Finish → `/plan`, which is already on exam eve (complete mode).
 - Expanding an overflow row changes nothing but the view.
 
 ### 3. Review summary
@@ -90,7 +90,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - "How you felt": the before-plan and today ratings side by side, which has no component.
 
 **Actions**
-- Continue → `/plan` in complete mode.
+- Continue → `/plan`. The simulated day moves to exam eve, so the plan opens in complete mode.
 - Try the ones you missed → see Open.
 
 ### 4. Mic denied
@@ -321,7 +321,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 **Actions**
 - Continue studying → `/plan`.
 - Warm up now → `/recall/eve/1`. That's a shortcut straight into the repeat, not the plan.
-- Everything else on the page is inert.
+- The tab bar's Plans tab → `/plan`. Everything else on the page is inert.
 
 ---
 
@@ -389,6 +389,8 @@ Every row carries `termId`, `round`, `outcome`, `mode` (voice or typed, logged b
 - `/plan?day=review` seeds 10 review terms with `lastSeenAt` three days back.
 - `/plan?day=eve` and `/?day=eve` seed 12 repeat terms.
 
+**Simulated day:** the session holds the day (`day1`, `review`, `eve`), and plan home and app home read it from there. `?day=` sets it and then drops out of the URL. Finishing a round moves it on: section summary Continue → review day, review summary Continue → exam eve. The tab bar's Chat and Plans tabs link app home and plan home.
+
 The tester's own section-round rows persist in `sessionStorage` and are merged in, so their outcomes feed the review selection and the comparison.
 
 **Selection:** weakest first (needs practice, then needed a hint, then correct without help), applied over the seeded list. The exam-eve repeat uses each term's second wording (`promptB`).
@@ -454,7 +456,7 @@ Each path is walked by tapping only, with no URL typing except the seeded entry 
 8. **Exam eve.**
    - `/?day=eve` → Warm up now → 12 terms using `promptB` → repeat summary.
    - `NeedsPractice` is fully open, and `Good` shows 3 rows then "N more", which expands.
-   - Finish → `/plan` in complete mode.
+   - Finish → `/plan`, which is already on exam eve (complete mode).
 
 ### 4. Platform constraints, on every screen
 - **Targets:** every tap target is at least 44×44 (inspect the box).

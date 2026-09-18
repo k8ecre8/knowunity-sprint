@@ -1,11 +1,12 @@
+import Link from 'next/link';
 import { IconSlot, type IconName } from './IconSlot';
 import styles from './BottomNav.module.css';
 
 /**
  * `bottomNav` — the app tab bar. See docs/design-system.md → Components built
  * this sprint → `bottomNav`. Four tabs (chat, plans, trophy, profile), one
- * `active` value; the rest are tertiary. App chrome outside this flow, so the
- * tabs are inert: nothing here goes anywhere.
+ * `active` value; the rest are tertiary. A tab with an entry in `hrefs` is a
+ * link, except the active one; the rest are inert.
  *
  * Promoted Sep 2026 from the exam plan home's inline bar when the app home
  * needed the same bar with `chat` active.
@@ -26,24 +27,31 @@ const tabs: readonly Tab[] = [
 export type BottomNavProps = {
   /** Figma axis `active`: the section the student is in. */
   active?: BottomNavTab;
+  /** Where each tab goes. Tabs left out, and the active tab, are inert. */
+  hrefs?: Partial<Record<BottomNavTab, string>>;
   className?: string;
 };
 
-export function BottomNav({ active = 'plans', className }: BottomNavProps) {
+export function BottomNav({ active = 'plans', hrefs = {}, className }: BottomNavProps) {
   return (
     <nav className={[styles.bar, className].filter(Boolean).join(' ')} aria-label="App sections">
       {tabs.map((tab) => {
         const isActive = tab.id === active;
-        return (
-          <span
-            key={tab.id}
-            className={styles.tab}
-            data-tab={tab.id}
-            data-active={isActive || undefined}
-            aria-current={isActive ? 'page' : undefined}
-            data-placeholder-glyph={tab.placeholderFor}
-          >
-            <IconSlot size="300" name={tab.icon} label={tab.label} />
+        const href = isActive ? undefined : hrefs[tab.id];
+        const shared = {
+          className: styles.tab,
+          'data-tab': tab.id,
+          'data-active': isActive || undefined,
+          'data-placeholder-glyph': tab.placeholderFor,
+        };
+        const icon = <IconSlot size="300" name={tab.icon} label={tab.label} />;
+        return href ? (
+          <Link key={tab.id} href={href} {...shared}>
+            {icon}
+          </Link>
+        ) : (
+          <span key={tab.id} {...shared} aria-current={isActive ? 'page' : undefined}>
+            {icon}
           </span>
         );
       })}

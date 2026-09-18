@@ -14,7 +14,7 @@ import { SummaryCard, type SummaryCardTone } from '@/components/SummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { Button } from '@/components/Button';
 import { findTerm, termsForRound } from '@/mock/terms';
-import { summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { advanceDay, summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import shared from './page.module.css';
 import styles from './eve.module.css';
 
@@ -96,7 +96,8 @@ export function EveSummary() {
       ...s,
       doneSections: Array.from(new Set([...s.doneSections, 'exam-eve-repeat'])),
     }));
-    router.push('/plan?day=eve');
+    advanceDay('eve');
+    router.push('/plan');
   };
 
   const onPractice = () => {

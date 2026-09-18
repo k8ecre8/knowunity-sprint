@@ -11,7 +11,7 @@ import { TextBlock } from '@/components/TextBlock';
 import { Button } from '@/components/Button';
 import { NoteCard } from '@/components/NoteCard';
 import { findTerm, termsForRound } from '@/mock/terms';
-import { summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { advanceDay, summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import styles from './page.module.css';
 
 const round = 'section';
@@ -43,6 +43,8 @@ export function SectionSummary() {
       ...s,
       doneSections: Array.from(new Set([...s.doneSections, 'plate-tectonics'])),
     }));
+    // Three days pass: the plan opens on review day.
+    advanceDay('review');
     router.push('/plan');
   };
 
