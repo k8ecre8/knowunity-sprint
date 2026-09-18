@@ -356,7 +356,10 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
         <p className={styles.label} role="status">
           {LABEL[state]}
         </p>
-        {(helper ?? HELPER[state]) ? <p className={styles.helper}>{helper ?? HELPER[state]}</p> : null}
+        {/* Always rendered, so the ring stays put when a state has no second line. */}
+        <p className={styles.helper} aria-hidden={!(helper ?? HELPER[state]) || undefined}>
+          {helper ?? HELPER[state]}
+        </p>
       </div>
       <div
         ref={stageRef}

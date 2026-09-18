@@ -224,8 +224,11 @@
   text-align: center;
 }
 
+/* The second line keeps its height when empty, so the ring never moves
+   between states. */
 .helper {
   margin: var(--primitive-space-0);
+  min-height: var(--typeScale-body-s-regular-lineHeight);
   color: var(--semantic-text-secondary);
   font-family: var(--typeScale-body-s-regular-fontFamily);
   font-weight: var(--typeScale-body-s-regular-fontWeight);
