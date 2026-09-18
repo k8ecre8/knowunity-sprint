@@ -10,8 +10,8 @@ import { SummaryCard } from '@/components/SummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { Button } from '@/components/Button';
 import { NoteCard } from '@/components/NoteCard';
-import { findTerm, termsForRound } from '@/mock/terms';
-import { summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { findTerm } from '@/mock/terms';
+import { advanceDay, roundTerms, rowsForRound, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import styles from './page.module.css';
 
 const round = 'section';
@@ -26,8 +26,8 @@ export function SectionSummary() {
   const session = useSession();
 
   // null until the browser has the session, so server and client markup match.
-  const rows = session ? summaryRows(session, round).rows : null;
-  const terms = termsForRound(round);
+  const rows = session ? rowsForRound(session, round) : null;
+  const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
   const good = (rows ?? []).filter((r) => r.outcome === 'correct-without-help');
@@ -42,16 +42,22 @@ export function SectionSummary() {
     updateSession((s) => ({
       ...s,
       doneSections: Array.from(new Set([...s.doneSections, 'plate-tectonics'])),
+      practice: null,
     }));
+    // Three days pass: the plan opens on review day.
+    advanceDay('review');
     router.push('/plan');
   };
 
   const onPractice = () => {
     // Practice only: the turn writes no rows. Opens the first missed term.
-    const termIds = missed.map((r) => r.termId);
+    // In round order, not by outcome group; typing sticks within a session.
+    const missedIds = new Set(missed.map((r) => r.termId));
+    const termIds = terms.filter((t) => missedIds.has(t.id)).map((t) => t.id);
     const first = terms.findIndex((t) => t.id === termIds[0]);
+    const typed = session?.inputMode === 'typed' ? '/typed' : '';
     updateSession((s) => ({ ...s, practice: { round, termIds }, resume: null }));
-    router.push(`/recall/${round}/${first + 1}`);
+    router.push(`/recall/${round}/${first + 1}${typed}`);
   };
 
   const cards = [
@@ -101,11 +107,11 @@ export function SectionSummary() {
       }
       bottomContent={
         <div className={styles.actions}>
-          <Button variant="Primary" size="L" className={styles.action} onClick={onContinue}>
+          <Button fullWidth variant="Primary" size="L" onClick={onContinue}>
             Continue
           </Button>
           {hasMisses && (
-            <Button variant="Secondary" size="L" className={styles.action} onClick={onPractice}>
+            <Button fullWidth variant="Secondary" size="L" onClick={onPractice}>
               Try the ones you missed
             </Button>
           )}

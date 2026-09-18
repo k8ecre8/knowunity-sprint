@@ -26,7 +26,7 @@ A voice active-recall prototype: mocked recall, dark mode only, 390px iOS-style 
 - Never edit `AGENTS.md`. `next dev` regenerates it.
 - Never edit `build/css/tokens.css`. It's generated: edit `tokens/tokens.json` and run `npm run tokens`.
 - Never write a bare hex, a loose px value, or a CSS fallback (`var(--token, #333)`).
-- Never add light mode, a transcript anywhere in the recording flow, or anything listed under `docs/sprint-context.md` → Not building.
+- Never add light mode, live transcription while recording, or anything listed under `docs/sprint-context.md` → Not building. The read-only transcript step before judging is built, in `VoiceInput`'s transcript card; keep it read-only.
 - Never invent a component or a token to fill a gap. The known gaps are enumerated in `docs/design-system.md` → Known gaps; report, don't work around.
 - Never design from the reference screenshots alone — they are the existing app, not the target.
 - The full never list is `docs/design-system.md` → Never. It governs code as much as Figma.

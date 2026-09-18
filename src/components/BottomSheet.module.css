@@ -1,9 +1,11 @@
 /* bottomSheet — see docs/design-system.md → Components built this sprint →
    `bottomSheet`. Every value is a token from build/css/tokens.css.
-   background/surface, Radius/600 on the top corners, Space/600 top padding,
-   Space/400 sides and bottom plus the home-indicator inset, Space/400 gap.
-   Enters from below at motion.duration.slow; reduced mode collapses it and
-   the media query removes it outright. */
+   background/surface, Radius/900 on the top corners (the section intro
+   tray's frame, the one drawn from Figma's `bottomSheet`), Space/600 top
+   padding, Space/400 sides and bottom plus the home-indicator inset,
+   Space/400 gap. Never taller than its container: a long middle section
+   scrolls inside. Enters from below at motion.duration.slow; reduced mode
+   collapses it and the media query removes it outright. */
 
 .sheet {
   display: flex;
@@ -11,10 +13,11 @@
   gap: var(--primitive-space-400);
   box-sizing: border-box;
   width: 100%;
+  max-height: 100%;
   padding: var(--primitive-space-600) var(--primitive-space-400);
   padding-bottom: calc(var(--primitive-space-400) + env(safe-area-inset-bottom));
-  border-start-start-radius: var(--primitive-radius-600);
-  border-start-end-radius: var(--primitive-radius-600);
+  border-start-start-radius: var(--primitive-radius-900);
+  border-start-end-radius: var(--primitive-radius-900);
   background-color: var(--semantic-background-surface);
   animation: rise var(--motion-duration-slow) var(--motion-easing-enter);
 }
@@ -34,10 +37,51 @@
   }
 }
 
-/* Stacked actions, Space/200 apart, each stretched to the sheet's width.
-   `button` hugs, so the wrapper and its pill are both stretched. */
+/* With the app bar, the bar takes the top edge in place of the padding. */
+.withAppBar {
+  padding-top: var(--primitive-space-0);
+}
+
+/* Bottom-sheet App Bar: Control/1800 tall, padded Space/300, no title. As a
+   close target it is a button and clears 44 on its own. The frame's
+   fade-out gradient has no token. */
+.appBar {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--primitive-control-1800);
+  margin-bottom: var(--primitive-space-negative-400);
+  padding: var(--primitive-space-300);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* The handle: Space/800 by Space/100 in background/floating at Radius/100.
+   Neither dimension is on the Illustration scale, so both are Space steps. */
+.handle {
+  display: block;
+  width: var(--primitive-space-800);
+  height: var(--primitive-space-100);
+  border-radius: var(--primitive-radius-100);
+  background-color: var(--semantic-background-floating);
+}
+
+/* middleSection: scrolls when a long string set outgrows the device. */
+.middle {
+  display: flex;
+  flex-direction: column;
+  min-height: var(--primitive-space-0);
+  overflow-y: auto;
+}
+
+/* Stacked actions, Space/200 apart, each stretched to the sheet's width. */
 .actions {
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: var(--primitive-space-200);
 }

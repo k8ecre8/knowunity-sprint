@@ -6,12 +6,13 @@
    section-done or review-day states; both are the Day 1 frame with the node
    states moved along.
 
-   Four states, from the `?day` seed and the session:
+   Four states, from the simulated day in the session (`session.day`, moved
+   on by the summaries, or seeded by `?day=`):
    - Day 1: the Plate tectonics voice node is `next`.
    - Section done: that node is `done` (the section summary marks it).
-   - Review day (`?day=review`): every section node is done and "See what
-     stuck" is `next`, or `done` once the review summary has marked it.
-   - Plan complete, test tomorrow (`?day=eve`): the path collapses into the
+   - Review day: every section node is done and the cumulative review is
+     `next`, or `done` once the review summary has marked it.
+   - Plan complete, test tomorrow (eve): the path collapses into the
      "Plan complete" card and the warm-up reminder.
 
    The section intro tray renders this same screen behind its sheet, so it
@@ -21,20 +22,14 @@ import { type ReactNode, useId } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { PlanNode, type PlanNodeState } from '@/components/PlanNode';
-import { MascotSlot } from '@/components/MascotSlot';
 import { NoteCard } from '@/components/NoteCard';
-import { Button } from '@/components/Button';
+import { TestDayPanel } from '@/components/TestDayPanel';
+import { TopBar } from '@/components/TopBar';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
 import { plateTectonics } from '@/mock/terms';
-import { currentTerm, updateSession, useSession, type Session } from '@/mock/session';
+import { currentTerm, daysToExam, enterRound, updateSession, useSession, type Day, type Session } from '@/mock/session';
 import styles from './PlanHome.module.css';
-
-export type PlanDay = 'day1' | 'review' | 'eve';
-
-export function planDayFrom(value: string | null): PlanDay {
-  return value === 'review' || value === 'eve' ? value : 'day1';
-}
 
 type Glyph = { icon: IconName };
 const glyphs = {
@@ -71,7 +66,7 @@ type Path = { section?: string; phase?: string; steps: Step[] };
 const SECTION_ID = plateTectonics.id;
 const REVIEW_ID = 'see-what-stuck';
 
-function buildPaths(day: PlanDay, session: Session, go: (href: string) => void): Path[] {
+function buildPaths(day: Day, session: Session, go: (href: string) => void): Path[] {
   const sectionDone = day === 'review' || session.doneSections.includes(SECTION_ID);
   const reviewDone = day === 'review' && session.doneSections.includes(REVIEW_ID);
   // Review day seeds every section node as done.
@@ -89,7 +84,8 @@ function buildPaths(day: PlanDay, session: Session, go: (href: string) => void):
           caption: `${plateTectonics.terms.length} questions, ~5 mins`,
           state: sectionDone ? 'done' : 'next',
           glyph: { icon: 'microphone-01' },
-          onPress: () => go(`/plan/${SECTION_ID}/intro`),
+          // A done node is inert: replaying a finished round would reorder the rounds after it.
+          onPress: sectionDone ? undefined : () => go(`/plan/${SECTION_ID}/intro`),
         },
         { id: 'pt-2', title: 'Plate tectonics 2', caption: '3 questions, ~5 mins', state: afterVoice, glyph: { icon: 'file-question-02' } },
         { id: 'pt-3', title: 'Plate tectonics 3', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
@@ -111,7 +107,11 @@ function buildPaths(day: PlanDay, session: Session, go: (href: string) => void):
           caption: '10 questions, ~10 min',
           state: day === 'review' ? (reviewDone ? 'done' : 'next') : 'todo',
           glyph: { icon: 'refresh-cw-01' },
-          onPress: day === 'review' ? () => go('/recall/review/confidence') : undefined,
+          // A review left mid-way, practice or real, resumes; otherwise the confidence check comes first.
+          onPress:
+            day === 'review' && !reviewDone
+              ? () => go(session.resume?.round === 'review' ? `/recall/review/${session.resume.term}` : '/recall/review/confidence')
+              : undefined,
         },
         { id: 'practice-test', title: 'Practice test', caption: '12 questions, ~12 min', state: reviewDone ? 'next' : 'todo', glyph: glyphs.clipboard },
       ],
@@ -156,15 +156,17 @@ function StepRow({ step, index }: { step: Step; index: number }) {
 /* --- the screen ---------------------------------------------------------- */
 
 export type PlanHomeProps = {
-  day: PlanDay;
+  /** A seeded day for the first render, before the session has it. Left out, the session's day. */
+  day?: Day;
   /** A sheet over the plan: the scaffold's slots behind it go inert. */
   bottomSheetOnly?: ReactNode;
   showBottomSheetBackground?: boolean;
 };
 
-export function PlanHome({ day, bottomSheetOnly, showBottomSheetBackground = false }: PlanHomeProps) {
+export function PlanHome({ day: seeded, bottomSheetOnly, showBottomSheetBackground = false }: PlanHomeProps) {
   const router = useRouter();
   const session = useSession();
+  const day = seeded ?? session?.day ?? 'day1';
   const titleId = useId();
   const behindSheet = Boolean(bottomSheetOnly);
 
@@ -172,28 +174,26 @@ export function PlanHome({ day, bottomSheetOnly, showBottomSheetBackground = fal
     if (!session) return;
     // A new round starts on voice; a round left mid-way resumes as it was.
     const term = currentTerm(session, 'eve');
+    enterRound('eve');
     if (session.resume?.round !== 'eve') {
-      updateSession((s) => ({ ...s, inputMode: 'voice', practice: null }));
+      updateSession((s) => ({ ...s, inputMode: 'voice' }));
     }
     router.push(`/recall/eve/${term}`);
   };
 
-  const daysLeft = day === 'eve' ? 'Test tomorrow' : day === 'review' ? '3 days' : '6 days';
+  const daysLeft = day === 'eve' ? 'Test tomorrow' : `${daysToExam[day]} days`;
 
-  /* topBar: the plan-home bar is a kebab on the right and nothing else. The
-     menu is app chrome outside this flow, so it is decoration here. */
+  /* topBar, plan: a kebab on the right, decoration. Inert behind a sheet. */
   const topBar = (
-    <div className={styles.topBar} inert={behindSheet}>
-      <span className={styles.kebab} aria-hidden="true">
-        <IconSlot size="300" name="dots-vertical" />
-      </span>
+    <div inert={behindSheet}>
+      <TopBar variant="plan" />
     </div>
   );
 
-  /* bottomNav: app chrome, `plans` active, inert behind a sheet. */
+  /* bottomNav: `plans` active, Chat goes to the app home. Inert behind a sheet. */
   const bottomNav = (
     <div inert={behindSheet}>
-      <BottomNav active="plans" />
+      <BottomNav active="plans" hrefs={{ chat: '/', plans: '/plan' }} />
     </div>
   );
 
@@ -237,17 +237,14 @@ export function PlanHome({ day, bottomSheetOnly, showBottomSheetBackground = fal
           <NoteCard tone="outlined" badge="blue" showTitle title="Plan complete" showChevron>
             9 steps over 4 days
           </NoteCard>
-          {/* testDayPanel: the space the path left becomes the reminder. */}
-          <div className={styles.testDayPanel}>
-            <MascotSlot size="2XL" name="standby" />
-            <h2 className={styles.panelHeadline}>Your test is tomorrow</h2>
-            <p className={styles.panelBody}>Let’s review the material and make sure it’s still fresh.</p>
-            <div className={styles.panelCta}>
-              <Button variant="Primary" size="L" onClick={warmUp}>
-                Warm up now
-              </Button>
-            </div>
-          </div>
+          {/* The space the path left becomes the reminder. */}
+          <TestDayPanel
+            size="S"
+            headline="Your test is tomorrow"
+            body="Let’s review the material and make sure it’s still fresh."
+            cta="Warm up now"
+            onAction={warmUp}
+          />
         </div>
       ) : (
         <div className={styles.planBody}>

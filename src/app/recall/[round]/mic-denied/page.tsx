@@ -41,7 +41,8 @@ function MicDenied({ round }: { round: Round }) {
   const router = useRouter();
   const session = useSession();
   const params = useSearchParams();
-  const again = params.get('from') === 'typed';
+  // Reached from a turn (typed, or the ring with the mic already off), not the prompt.
+  const again = params.has('from');
   const text = again ? copy.again : copy.first;
 
   // Landing here means the prompt was refused. Record it if nothing did, so
@@ -54,7 +55,9 @@ function MicDenied({ round }: { round: Round }) {
 
   const onTypeInstead = () => {
     // Typing sticks for the rest of the session.
-    const term = session ? currentTerm(session, round) : 1;
+    // The turn passes its term, so a practice pass returns to the term it was on.
+    const passed = Number(params.get('term'));
+    const term = Number.isInteger(passed) && passed > 0 ? passed : session ? currentTerm(session, round) : 1;
     updateSession((s) => ({ ...s, inputMode: 'typed' }));
     router.push(`/recall/${round}/${term}/typed`);
   };
@@ -75,10 +78,10 @@ function MicDenied({ round }: { round: Round }) {
       }
       bottomContent={
         <div className={styles.actions}>
-          <Button variant="Primary" size="L" onClick={onTypeInstead}>
+          <Button fullWidth variant="Primary" size="L" onClick={onTypeInstead}>
             Type instead
           </Button>
-          <Button variant="Text" size="L" onClick={() => router.push('/plan')}>
+          <Button fullWidth variant="Text" size="L" onClick={() => router.push('/plan')}>
             Back to plan
           </Button>
         </div>

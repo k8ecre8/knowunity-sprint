@@ -95,6 +95,7 @@
   --primitive-radius-full: 9999px;
   --primitive-stroke-border: 1px;
   --primitive-stroke-heavy-border: 2px;
+  --primitive-stroke-bold: 4px; /** A drawn line that is the component, not an edge on one: voiceInput's ring, arc, dashes and waveform bars. Matches the shipped wavy processing ring. */
   --primitive-icon-100: 8px;
   --primitive-icon-150: 12px;
   --primitive-icon-200: 16px;
@@ -123,6 +124,11 @@
   --primitive-elevation-lip-lg: -4px;
   --primitive-elevation-lip-outlined-sm: 2px; /** The lip on an outlined control at sizes S and M, built as a heavier bottom border because there is no fill to darken. Positive because it is a border weight, not an offset. Roughly half elevation.lip.sm and tuned by eye: a solid stroke at border/strong reads far heavier than a 15% inner shadow, so matching the numbers would over-weight it. */
   --primitive-elevation-lip-outlined-lg: 3px; /** The same outlined lip at size L, against the 1px border on the other three sides. */
+  --primitive-opacity-0: 0; /** Fully transparent: an element faded out but kept in the layout. */
+  --primitive-opacity-50: 0.5; /** Half strength: the dim beat of a pulse (voiceInput's loading dots, the typed turn's thinking helper line). */
+  --primitive-opacity-55: 0.55; /** voiceInput's glow: the share of accent/brand/bold at the centre of its radial gradient, before it fades to transparent. */
+  --primitive-opacity-100: 1; /** Fully opaque: the bright beat of a pulse, or a placeholder kept at full strength against the browser's default fade. */
+  --primitive-scale-60: 0.6; /** An element shrunk to 60% while it is hidden, so it grows in as it fades in: the glyphs that swap in voiceInput's centre. */
   --primitive-focus-width: 2px; /** Thickness of the focus ring. Aliases the heavy border stroke so the ring stays in step with the system. Pair with border/focus for the colour and focus.offset for the gap. */
   --primitive-focus-offset: 2px;
   --primitive-font-size-2xs: 9px;
@@ -261,6 +267,8 @@
   --motion-duration-slow: 450ms; /** Large travel: sheets and full-screen transitions. */
   --motion-duration-exit: 170ms; /** Dismissal of anything that entered at base. */
   --motion-duration-breathing: 3500ms; /** Knowie's ambient idle loop; zero in reduced mode means do not run it. */
+  --motion-duration-spin: 1400ms; /** One turn of a working indicator: voiceInput's processing arc, and the step cycle of its dots. Zero in reduced mode means do not run it. */
+  --motion-duration-spin-slow: 4000ms; /** One turn of a long wait's second beat: voiceInput's dashes past 4 seconds. Slower than spin so the change of gear reads. Zero in reduced mode means do not run it. */
   --motion-easing-enter: cubic-bezier(0, 0, 0.2, 1); /** Decelerates; for anything arriving on screen. */
   --motion-easing-exit: cubic-bezier(0.4, 0, 1, 1); /** Accelerates; for anything leaving. */
   --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1); /** Decelerates and accelerates; for anything moving in place. */
@@ -385,5 +393,7 @@
     --motion-duration-slow: 1ms;
     --motion-duration-exit: 1ms;
     --motion-duration-breathing: 0ms;
+    --motion-duration-spin: 0ms;
+    --motion-duration-spin-slow: 0ms;
   }
 }

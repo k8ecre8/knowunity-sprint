@@ -21,6 +21,8 @@ If you need a number, a colour, a duration or a type step, read `tokens/tokens.j
 
 **`buttonIcon`** for the same four treatments with no label. Same sizes, same press rule.
 
+**`voiceInput`** for answering Knowie out loud: the push-to-talk control, its label and every state of a voice turn, from idle through the transcript to the judging wait. The way to answer.
+
 **`chatInput`** for text entry when a student chooses, or needs, to fall back from voice. Not the way to answer; voice is.
 
 **`buttonGroup`** for two buttons acting as one unit at the bottom of a screen. Note it hardcodes an icon button on the left and a primary on the right, so it does not currently do two text buttons side by side.
@@ -139,7 +141,7 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 
 - Icons go inside `iconSlot`, never placed directly. That is what makes them swappable and correctly sized.
 - Take the glyph from the swap dropdown, which lists the icons in this system. If the one you need is not there, say so — do not paste an SVG or borrow from another set.
-- Icons inherit their colour from the token on the surrounding text or the component's `on*` token. Do not give an icon its own colour token.
+- Icons inherit their colour from the token on the surrounding text or the component's `on*` token. Do not give an icon its own colour token. **One exception, decided Sep 2026:** a leading icon in a list of text rows may take an `accent/*/bold` token while its text stays `text/primary`, as the section intro tray's three rows do with `accent/brand/bold`. In code the accent goes on the slot's wrapper, never on `IconSlot`, which keeps no colour prop.
 - In Figma the colour binding lives on the glyph's vector inside the slot. Swapping the glyph drops that binding and the icon renders dark until it is rebound. After every swap, select the vector and bind its stroke to the token again. `iconSlot` has no colour property on purpose: 325 instances carry 16 different bindings, and a tone axis would multiply the set by that.
 - One stroke weight across the system. Untitled UI ships several styles; mixing them is visible.
 - In code, `@untitled-ui/icons-react` (MIT) exposes the same set, so the Figma glyph and the built glyph are the same drawing. All 69 glyphs on `iconSlot`'s swap property resolve to an export in it, and `IconSlot` carries three more (`plus`, `dots-vertical`, `share-02`) that the file cannot yet. `untitledui-js`, named here earlier, carries the same icons but is five times larger and declares peer dependencies on Vue, Solid and Qwik, so it was not used.
@@ -191,6 +193,8 @@ Each entry names the component, its axes and properties, when to reach for it, w
 
 **Built in code this sprint** as `src/components/Button.tsx`, with `Loading`, `showLeftIcon` and `showRightIcon` left out; those three are in **Known gaps**. Two token pairs were added for values the Figma set drew loose: `Control/800|1000|1200|1400` (32/40/48/56 — 56 existed on no scale at all) and `Elevation/Lip/outlined/sm|lg` (2px/3px).
 
+**`fullWidth` (added Sep 2026, code-only).** Figma's fill-container sizing on an instance: the tap target and the pill both fill the parent, height and lip unchanged. Stacked bottom actions use it (the three summaries, mic denied, the confidence check, both turns, the intro tray) in place of each screen stretching the button from its own CSS.
+
 > button: four treatments. Text does not exist yet.
 > Primary: interactive/primary fill, no stroke, lip. Secondary: interactive/secondary fill (translucent, so it takes on the colour of a tinted sheet), no stroke, lip. Tertiary: no fill, border/strong stroke, lip; the outlined variant, as shipped on the home screen. Text: no fill, no stroke, no lip. TO BUILD.
 > THE LIP. A bottom edge that makes the button read as pressable. Depth follows control height: Elevation/Lip/sm on 48px (sizes S and M), Elevation/Lip/lg on 56px (size L). Built two different ways, because a transparent button has no fill to darken. Filled variants (Primary, Secondary): an INNER_SHADOW at the lip depth, applied to the component wrapper; Figma masks it to the child's shape, so the child must have a fill or nothing renders. Outlined variant (Tertiary): a heavier bottom border, strokeBottomWeight 2px at S and M, 3px at L, against a 1px border on the other three sides. This is roughly half the lip depth, not the full depth: a solid stroke at border/strong reads far heavier than a 15% inner shadow, so matching the numbers would over-weight it. Tuned by eye, not derived.
@@ -213,7 +217,7 @@ Each entry names the component, its axes and properties, when to reach for it, w
 
 The Figma description is `button`'s description with the TONE paragraph left out, and a DON'T that points verdicts at `verdictChip` rather than at tone; it is not repeated here.
 
-**Built in code, Sep 2026,** as `src/components/ButtonIcon.tsx` on `IconSlot`. No new tokens. `name` is the glyph swap, defaulting to the masters' `check`; `label` is code-only and required. Loading swaps the glyph to `loading-01`, sets `aria-busy` and blocks presses, but **does not spin: it was decided Sep 2026 not to add a rotation duration.** The glyph inherits `interactive/onPrimary` on Primary and `text/primary` elsewhere, `text/disabled` when disabled.
+**Built in code, Sep 2026,** as `src/components/ButtonIcon.tsx` on `IconSlot`. No new tokens. `name` is the glyph swap, defaulting to the masters' `check`; `label` is code-only and required. Loading swaps the glyph to `loading-01`, sets `aria-busy` and blocks presses, but **does not spin.** A rotation duration, `motion.duration.spin`, was added Sep 2026 for `voiceInput`, reversing the earlier decision not to add one; Loading is not yet wired to it. The glyph inherits `interactive/onPrimary` on Primary and `text/primary` elsewhere, `text/disabled` when disabled.
 
 **Where the file and the description disagree.** The Primary masters carry a `border/default` stroke; the description says no stroke and wins. The Text Pressed masters sink by the lip depth; the description says no sink and wins, as on `button`. Most glyph strokes are raw black and unbound — the dropped-binding problem.
 
@@ -267,7 +271,7 @@ The Figma description is `button`'s description with the TONE paragraph left out
 
 > bottomNav: the app tab bar. Four tabs (chat, plans, trophy, profile) as 44px iconSlots, 1px divider on top (border/default), 16px vertical padding. active: which tab is text/primary; the rest are text/tertiary. Existing app chrome, rebuilt as one component so the eight screens that carry it stay in sync. Built from the hand-built bottomNav frames, Sep 2026.
 
-**Built in code, Sep 2026,** as `src/components/BottomNav.tsx`, promoted from the exam plan home's inline bar when the app home needed the same bar with `chat` active. `active` follows the Figma axis. The tabs are `Control/1200` (48) rather than a loose 44, and the bar pulls itself out of the scaffold's `bottomContent` padding to reach the edges and the home-indicator inset. The tabs are inert: the bar is app chrome outside this flow. Three of its four glyphs (`myai-chat`, `target-04`, `trophy-02`) are not in `IconSlot`, so those tabs show placeholders marked `data-placeholder-glyph`; see Known gaps.
+**Built in code, Sep 2026,** as `src/components/BottomNav.tsx`, promoted from the exam plan home's inline bar when the app home needed the same bar with `chat` active. `active` follows the Figma axis. The tabs are `Control/1200` (48) rather than a loose 44, and the bar pulls itself out of the scaffold's `bottomContent` padding to reach the edges and the home-indicator inset. `hrefs` makes a tab a link (added Sep 2026 so a tester can move between app home and plan home): the active tab and any tab left out stay inert, so trophy and profile, outside this flow, do nothing. One glyph, `myai-chat`, is not in `IconSlot`, so the Chat tab shows `send-01` as a placeholder marked `data-placeholder-glyph`; see Known gaps. `target-04` and `trophy-02` were added Sep 2026.
 
 ### `listItem`, Outlined and Outlined Compact
 
@@ -294,7 +298,7 @@ The Figma description is `button`'s description with the TONE paragraph left out
 
 **Knowunity's states, followed literally.** The description covers only Outlined. For the original three, geometry is the only source and it is uneven: Transparent Pressed fills with surface and rounds to `Radius/600`; Transparent Selected is identical to Default; Filled Pressed is identical to Default; Filled Selected flips to `background/inverse` only with trailing None (and Checkbox, not built) — Icon and Icon & Text stay surface. Text on the inverse rows uses `text/inverse`, which the file does not specify. Outlined Selected keeps an inner-shadow effect in the file that would draw a lip on the surface fill; the description says no lip and wins.
 
-**Also noted.** The leading placeholder glyph `graduation-hat-02` is not on the `iconSlot` swap list, so the code defaults both slots to `check`. The image slot's placeholder fill binds to `feedback/info`, a variable with no leaf token; with no image the box is empty.
+**Also noted.** The leading placeholder glyph `graduation-hat-02` is not on the `iconSlot` swap list, so the code defaults both slots to `check`; the glyph itself is in `IconSlot` since Sep 2026 and a screen can pass it. The image slot's placeholder fill binds to `feedback/info`, a variable with no leaf token; with no image the box is empty.
 
 ### `summaryCard`, overflow row
 
@@ -476,11 +480,13 @@ Added to the Figma set, Sep 2026.
 
 ### `bottomSheet`
 
-**Properties:** `headline`, `caption`, `showCaption` (off by default); the actions are children. No axes.
+**Properties:** `headline`, `caption`, `showCaption` (off by default), `middleSection`, `showAppBar`, `onClose`; the actions are children. No axes.
 
 **Reach for it** for a decision or a tray that rises over the current screen: the confirm on tapping X during a round, and the section intro tray. It goes in the scaffold's `bottomSheetOnly` slot with `showBottomSheetBackground` on, and the slots behind it `inert`. It is a `dialog` named by its text.
 
-**Built in code, Sep 2026,** as `src/components/BottomSheet.tsx`, promoted from the typed turn's inline leave confirm when the voice turn needed the same sheet. The Figma `bottomSheet` is not editable (its source lives elsewhere), so the geometry is the one the typed turn tuned: `background/surface`, `Radius/600` top corners, `Space/600` top padding, `Space/400` sides and bottom plus the home-indicator inset, `Space/400` between a `textBlock` and the actions, actions `Space/200` apart and stretched. It enters from below at `motion.duration.slow`, which reduced mode collapses. Put the safe action first as Primary and the escape under it as Text. No new tokens.
+**Built in code, Sep 2026,** as `src/components/BottomSheet.tsx`, promoted from the typed turn's inline leave confirm when the voice turn needed the same sheet. The Figma `bottomSheet` is not editable (its source lives elsewhere), so the geometry is the one the typed turn tuned, with the intro tray frame's corners: `background/surface`, `Radius/900` top corners, `Space/600` top padding, `Space/400` sides and bottom plus the home-indicator inset, `Space/400` between a `textBlock` and the actions, actions `Space/200` apart and stretched. It enters from below at `motion.duration.slow`, which reduced mode collapses. Put the safe action first as Primary and the escape under it as Text. No new tokens.
+
+**`middleSection` and `showAppBar` (added Sep 2026)** moved the section intro tray onto the component. `middleSection` is Figma's freeform slot between the app bar and the actions; it takes the headline block's place, scrolls if it outgrows the sheet, and `headline` then only names the dialog. `showAppBar` adds the Bottom-sheet App Bar: Control/1800, padded Space/300, the handle Space/800 by Space/100 in `background/floating` at Radius/100; with `onClose` it is a close target. The corners moved from `Radius/600` to `Radius/900` in the same pass, because the tray is the one frame drawn from Figma's `bottomSheet`; the leave confirm had no frame. The sheet is never taller than its container.
 
 ### `permissionAlert`
 
@@ -492,11 +498,49 @@ Added to the Figma set, Sep 2026.
 
 ### `textBlock`
 
-**Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level. No axes.
+**Axes:** `size` (M, S), `captionTone` (primary, secondary), both added Sep 2026. **Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level.
+
+**size.** M is Headline M with the caption Space/150 below (the summary headlines). S is Headline S with the caption Space/050 below, as the review summary's comparison draws the pair; the app home study reminder and the test-day panel use it too. **captionTone.** primary is text/primary; secondary is text/secondary, for the test-day panel's quieter line.
 
 **Reach for it** for a screen or section heading with an optional line under it. Not for body copy, and not for a label with a trailing count (the summaries' group labels are still hand-built; see `docs/component-gaps.md`).
 
 **Built in code this sprint** as `src/components/TextBlock.tsx`, promoted Sep 2026 from the inline headline in the section summary when the exam-eve repeat summary needed the same block with its caption shown. There is no Figma component: the summary frames draw a `verdict` frame of two text nodes, Headline M over Body M Regular, both `text/primary`, centred, `Space/150` apart, and that is the geometry in code. The block fills its parent, per the rows-and-cards-fill convention.
+
+### `topBar`
+
+**Axis:** `variant` (home, plan). **Properties (home only):** `xp`, `streak`.
+
+**Reach for it** for the app bar on the app home (`home`: menu, the Pro / XP / streak counters and the focus timer) and the exam plan home (`plan`: a kebab on the right). Neither fits an `appBar` variant.
+
+**Built in code, Sep 2026,** as `src/components/TopBar.tsx`, promoted from the two inline bars. Counters are Body S Bold pills at Radius/full (pro/subtle, feedback/info/subtle, accent/coral/subtle) with an `art/*` asset at Icon/250 (the Pro wordmark at Icon/500). The home icons are Control/1000 as drawn; the plan kebab sits in Control/1200. Everything on it is app chrome outside this flow, so it is decoration and nothing is a target. No Figma component exists.
+
+### `testDayPanel`
+
+**Axis:** `size` (M, S), the headline. **Properties:** `headline`, `body`, `cta`, `onAction`. Code-only: `as` sets the heading level.
+
+**Reach for it** for the reminder the day before the test: exam plan home in complete mode (`size="S"`) and the app home's exam-eve hero (`size="M"`).
+
+**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (standby), `textBlock` with `captionTone="secondary"`, and `button` Primary L. Children are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it. The frames drew the headline and its line as two text nodes Space/300 apart; as one `textBlock` they sit Space/050 (S) or Space/150 (M) apart. No Figma component exists. The screen owns the padding around it.
+
+### `voiceInput`
+
+**States:** `idle`, `listening`, `transcribing`, `transcribingSlow`, `transcript`, `judging`, `judgingSlow`, `error`. **Properties:** `state`; `helper` overrides the second line under the label; `idleActions` is a slot for idle's escapes; `transcript` is the read-only words. Code-only: `getLevel` (the voice level, sampled per frame while listening), `onStart`, `onStop`, `onSend`, `onDiscard`, `onRetry`.
+
+**Reach for it** for any turn a student answers out loud, including say it back. Put it in `middleContent`; it carries its own send, discard and retry, so none of those go in `bottomContent`. The screen owns the timing: it moves the control to the slow states at 4 seconds and to `error` at 10. Pass the escapes (`button` Tertiary M "I don't know the answer", `button` Text M "Type instead") through `idleActions`, because what they do belongs to the screen.
+
+> One `accent/brand/bold` line at `Stroke/Bold` carries every state of a voice turn, and the middle of the ring says what to do next in `text/primary` outline icons. The label sits above the ring (Body S Bold, `text/secondary`), with a quieter second line under it (Body S Regular) where a state has one; it is a live region and carries the state on its own with motion reduced.
+> IDLE: a 120 ring (`Illustration/1500`) round `microphone-01`, breathing at `motion.duration.breathing` with a soft glow and one ripple per breath. The ring is the button. The escapes sit `Space/1000` below it, the label `Space/1000` above.
+> LISTENING: tapping squeezes the middle like a press (`motion.duration.fast`) and swaps the microphone for "Tap when done". Sixty bars stand out of the ring and follow the voice, up to `Space/600` long. `trash-01` (`buttonIcon` Tertiary M) appears to the left.
+> TRANSCRIBING, JUDGING: the ring opens into an arc turning at `motion.duration.spin`, with three dots stepping on the same cycle. The trash stays through both waits; discarding returns to idle. THE 4-SECOND BEAT (`…Slow`): the arc becomes twelve dashes circling at `motion.duration.spin-slow`, and the label changes.
+> TRANSCRIPT: the ring's own line eases (`motion.duration.slow`, `motion.easing.standard`) out into the card that holds the words, read-only, under "Here's what Knowie heard", with send (`buttonIcon` Primary M `send-01`) inside it. The trash rides with the growing edge into the card's bottom-left corner. The card grows with its words. Sending eases it back into the ring, which opens straight into the judging arc.
+> ERROR: past 10 seconds the line closes and goes `border/strong`, the middle offers `refresh-cw-01` and the label reads "Tap to send again". Tapping re-runs judging on the same take. Grey, not red: red reads as a wrong answer.
+> DON'T: show a check anywhere in this control. A check means correct, and sending is not judging.
+> DON'T: say "try again" for the error. That is the miss verdict's chip.
+> DON'T: put the transcript in `responseBubble` or `noteCard`. It lives in this control's card, and there is never one after judging, or an editable one.
+
+**Built in code, Sep 2026,** as `src/components/VoiceInput.tsx`, promoted from the voice turn's inline control once the design settled (the "option D" canvas). Three tokens were added for it: `Stroke/Bold` (4), `motion.duration.spin` (1400) and `motion.duration.spin-slow` (4000), both zero in reduced mode. **Every number is read off the element at mount**, so sizes and durations come from `build/css/tokens.css` and reduced motion reaches the drawing: `spin` reads 0, the frame loop stops and each state draws one still frame. The line, the bars, the ripple and the dashes are SVG paths redrawn per frame outside React. **The glow is a shape, not an effect** (see Never). The label copy lives in `LABEL` and the second lines in `HELPER` at the top of the component; the voice turn overrides the second line for hints, start over and didn't catch that. The voice level is mocked by `createSpeechLevel()` in `src/mock/speech.ts`; no audio is read.
+
+**Where the file and the build differ.** Figma's `recordingControl` is a filled white disc in idle, a gradient blob with `send-01` while recording and a still dashed ring while thinking; the build replaces all three with the one line, decided Sep 2026 because the blob's gradient and glow were off-brand for Knowunity's flat, one-accent style. The frames draw the label and the escapes `Space/600` from the ring; the build uses `Space/1000` so the glow and the bars clear the text. The frames have no transcript, slow-beat or error state. Send is `buttonIcon` Primary M (white), not the canvas's violet circle.
 
 ## Conventions for new components
 
@@ -514,7 +558,9 @@ These are the rules the components above follow. Anything reading this file and 
 
 **Colour is bound on the thing that is coloured.** Fills and strokes bind to semantic tokens on the frame. Icon colour binds on the glyph vector inside the slot, and is rebound after every swap. Text binds to a text style and a `text/*` token. Nothing carries a hex.
 
-**No effects without an effect token.** There are none in `tokens/tokens.json`, so there are no shadows, glows or inner shadows on components. The `planNode` gloss is a filled vector inside a round clip frame, not an effect, and its colour is a token (`highlight/gloss`).
+**No effects without an effect token.** There are none in `tokens/tokens.json`, so there are no shadows, glows or inner shadows on components. The `planNode` gloss is a filled vector inside a round clip frame, not an effect, and its colour is a token (`highlight/gloss`). The same move covers `voiceInput`'s soft glow, decided Sep 2026: it is a radial gradient fill of `accent/brand/bold` fading to transparent, drawn as a shape behind the ring, not a shadow or blur, so no effect token was added for it.
+
+**Opacity and scale are tokens too (added Sep 2026).** `primitive.opacity` has `0`, `50`, `55` and `100`, and `primitive.scale` has `60`, named by percent like the other scales. Use them for fades, pulses and grow-in transforms instead of a bare number (`opacity: var(--primitive-opacity-50)`, `transform: scale(var(--primitive-scale-60))`). A colour mix that needs a percentage takes the opacity step as `calc(var(--primitive-opacity-55) * 100%)`, as `voiceInput`'s glow does. A value that is not a step gets a new step, named on the same scale.
 
 **An old element becomes a component by cloning it, not redrawing it.** `createComponentFromNode` on a clone of the hand-built frame, then bind what the frame left unbound, then `combineAsVariants`. This keeps the geometry the screens were tuned to.
 
@@ -530,15 +576,14 @@ These are the rules the components above follow. Anything reading this file and 
 
 Say these are missing rather than working around them.
 
-- **No push-to-talk control.** The most-tapped thing in the recall loop has no component. `buttonIcon` tops out well below the size needed. The name to add is **`voiceInput`**: the recording blob and its helper label ("Tap to answer", "Listening...", "Thinking...") as one unit, a sibling to `chatInput`. It carries idle, recording, transcribing, thinking, thinking past 4 seconds and error, each with a reduced-motion form where the label carries the state. It needs motion durations for the blob and the ring loop that `motion.duration` does not have.
-- **No transcript treatment.** The recall loop now shows the student's words, read-only, before judging. `responseBubble` must not carry them, so the transcript uses `noteCard` tone `neutral` — built in code since Sep 2026, but the Figma frame for the transcript step still does not exist.
+- **`voiceInput` has no Figma component.** It is built in code (see Components built this sprint); Figma's `recordingControl` still draws the earlier white disc and gradient blob, and there are no frames for the transcript, slow-beat or error states.
+- **The transcript step has no Figma frame.** In code the student's words sit in `voiceInput`'s own card, read-only, before judging (Sep 2026); `responseBubble` still must not carry them.
 - **No component for the review summary's "How you felt" reads.** The before-plan and today ratings side by side are hand-built in the screen as `confidenceReads`; see `docs/component-gaps.md`.
-- **`bottomSheet` is not editable in the file.** Its source lives elsewhere. In code it exists since Sep 2026 (see Components built this sprint), but only as headline, caption and actions: it has no `middleSection` slot for a mascot and rows, and no Bottom-sheet App Bar with the handle. The section intro tray is therefore built inline (`docs/component-gaps.md` → `introTray`). Adding those two to `BottomSheet` would let the tray use it.
-- **`thumbs-up` and `lock-01` are not on `iconSlot`'s swap list** or in `IconSlot`, though the intro tray frame uses both (swapped by hand inside slots still named `check-circle` and `pause-circle`). The tray shows those two named glyphs as placeholders, marked `data-placeholder-glyph`.
-- **The push-to-talk control is still built inline** in the voice turn (`docs/component-gaps.md` → `voiceInput`), because three values it needs are not tokens: an effect for the frame's glow, a gradient for the blob, and `motion.duration.spin` for the ring. Add those and it can become a component.
+- **`bottomSheet` is not editable in the file.** Its source lives elsewhere. In code it exists since Sep 2026, with `middleSection` and the Bottom-sheet App Bar, and the section intro tray uses it (see Components built this sprint).
+- **`thumbs-up` and `lock-01` are not on `iconSlot`'s swap list,** though the intro tray frame uses both (swapped by hand inside slots still named `check-circle` and `pause-circle`). Both are in `IconSlot` in code since Sep 2026 and the tray uses them.
 - **No `answerOption`.** The five-position confidence check before the review round uses it to match the onboarding slider. It is not in the file's component list, in code, or in `tokens/tokens.json`.
 - **No denied-mic screen** in Figma. The flow needs one between a denied mic prompt and the typed route.
-- **No `buttonGroup` in code.** Transcript send with discard beside it is the pattern it describes.
+- **No `buttonGroup` in code.** Its first use, the transcript's send with discard beside it, moved inside `voiceInput` in Sep 2026, so no screen currently needs it.
 - **`summaryCard` Skipped and `verdictChip` Skipped are unused** by the recall loop, which has no skip. Keep or retire them deliberately.
 - **No focus state on any component.** The tokens exist. This is a WCAG 2.2 gap.
 - **`chips` has no tone.** It offers Primary and pro only, so it cannot carry a verdict.
@@ -549,20 +594,21 @@ Say these are missing rather than working around them.
 - **No `sectionRow` component.** The plan-home section row (no lip, a divided trailing cell that is its own tap target) is not a `listItem` and is still hand-built, in Figma and in the exam plan home (`docs/component-gaps.md`). The same screen builds `Tabs`, the plan-home `topBar`, the winding path rows and the phase divider inline, because none exists in code.
 - **No confidence slider.**
 - **No `statusBar` component.** The scaffold's Panel Header nests `Status Bar / Mode=Night` from Knowunity's remote Bricks library. In code it is a static drawing inside `Scaffold` (09:41, full signal and battery), decided Sep 2026 as decoration; it never changes, and nothing else should use it.
-- **`appBar` has no variant for either `topBar`.** The app home bar (menu, three counters, timer) and the plan home bar (chip left, kebab right) do not fit any of its six variants. Both are built inline in their screens (`docs/component-gaps.md` → `topBar`).
-- **`bottomNav`'s glyphs are mostly missing from `IconSlot`.** `myai-chat`, `target-04` and `trophy-02` are not in the code set, so `BottomNav` shows `send-01`, `check-circle` and `star-01` in their place, marked `data-placeholder-glyph`. The app home also lacks `list` (menu), `graduation-hat-02` (Dream College), `ai-quiz`, `clipboard-check` and `upload-cloud-02` (quick actions).
+- **`appBar` has no variant for either home bar.** They are `topBar` in code since Sep 2026 (see Components built this sprint); Figma still has no component for either.
+- **Two glyphs are still missing from `IconSlot`:** `myai-chat` (`bottomNav`'s Chat tab shows `send-01`) and `ai-quiz` (the app home Quiz chip shows `file-question-02`), both marked `data-placeholder-glyph`. The rest once listed here were added Sep 2026.
 - **The `art/*` counter assets are exported on a page-colour canvas.** `pro-badge-yellow`, `bolt-blue-sm` and `flame-orange-sm` in `public/images/` carried a 140-square `#090C18` rect behind an 18-by-22 glyph; the rect was removed from those three, Sep 2026, so they can sit on a coloured pill. Six more (`bolt-blue`, `books-green`, `cards-blue`, `school-orange`, `notes-purple`, `target-green`) still carry it.
-- **`App Bar Button Icon` and `App Bar Button` have no Figma description,** and neither has Loading built in code: it needs `motion.duration.spin`, the same gap as `button`.
+- **`App Bar Button Icon` and `App Bar Button` have no Figma description,** and neither has Loading built in code: it needs wiring to `motion.duration.spin`, which exists since Sep 2026, the same as `button`.
 - **`progressIndicator` instances come in 28px tall on a 16px bar.** The wrapper does not hug. Set the instance to a fixed 16 until the master is fixed.
-- **`button`'s Loading state is not built in code,** and neither are its `showLeftIcon` and `showRightIcon` properties. The blocker is gone — `IconSlot` now exists and `@untitled-ui/icons-react` is installed — so what remains is wiring `Button` to it. Two things to settle when someone does: `Button` sets its label colour on the label, and it has to move up to the pill so the label and both icons inherit from one place; and Loading still needs a rotation duration, since `motion.duration` has instant, fast, base, slow, exit and breathing, none of which is a spinner cycle. `motion.duration.spin` is the name to add.
+- **`button`'s Loading state is not built in code,** and neither are its `showLeftIcon` and `showRightIcon` properties. The blocker is gone — `IconSlot` now exists and `@untitled-ui/icons-react` is installed — so what remains is wiring `Button` to it. Two things to settle when someone does: `Button` sets its label colour on the label, and it has to move up to the pill so the label and both icons inherit from one place; and Loading needs wiring to a rotation: `motion.duration.spin` was added Sep 2026 for `voiceInput` and is the spinner cycle to use.
 - **`iconSlot`'s 400 variant is missing its height binding.** Its nested instance binds width to `Icon/400`, but the height is a loose 32. Setting one dimension through the plugin API clears the other, so this one has to be bound by hand in Figma. Siblings 300, 200, 150 and 100 bind both dimensions, so the file supports it.
 - **`iconSlot` sizes 150 and 100 have no instances.** 12px and 8px are unused across all 350 iconSlot instances in the file. Either they are for something not built yet, or they can go.
 - **`plus` is an orphan in the file.** `summaryCard`'s overflow row uses a `plus` whose component key is not published anywhere importable — the same problem as `dots-vertical`. It cannot be added to `iconSlot`'s swap list (an attempt was made and reverted, Sep 2026), so it is on `IconSlot` in code but not on the Figma slot. Fix: import `plus` from the published Untitled UI library, re-point the four summaryCard masters at it, and add that key to the swap list.
 - **`listItem` is missing three nested components in code:** `switch` (trailing Switch, 3 variants), `Checkbox` (trailing Checkbox, 12 variants) and `illustrationSlot` (the `showIllustration` leading slot, every variant). None exist as React components; `switch` is not editable in the file either. Until they are built, `ListItem` offers trailing Icon / Icon & Text / None and no illustration slot.
 - **`chatInput`'s masters nest the retired `OLD Icon Button`,** whose radius binds `Scale 06` — a variable outside `tokens/tokens.json` — and still carry the leading plus control that code removed. Re-point send at `buttonIcon` and remove the plus. Its Recording variant's waveform bars are collapsed to 1×1.
-- **Nothing spins.** `buttonIcon` and `chatInput` Loading show a still `loading-01`; no rotation duration was added, by decision, Sep 2026.
+- **Only `voiceInput` spins.** `buttonIcon` and `chatInput` Loading still show a still `loading-01`. The Sep 2026 decision against a rotation duration was reversed once `voiceInput`'s design settled; `motion.duration.spin` exists, and the Loading states are not yet wired to it.
+- **Two kinds of number in `voiceInput` are still not tokens.** Its glow's gradient fades out at a 68% stop, and no token group covers gradient stops (`primitive.gradient.stop.68` would be the name). Its per-state drawing values in `VoiceInput.tsx` (line length, glow strength, waveform amplitude, the eased press) are animation parameters computed each frame, not design values, and have no token scale to come from.
 - **`feedback/info` is bound but not a token.** `listItem`'s image-slot placeholder fill points at a colour variable with that bare name; `tokens.json` has only `feedback/info/bold|onBold|subtle|onSubtle`. Either add a leaf or rebind the slot to one of the four.
-- **`graduation-hat-02` is not on the `iconSlot` swap list** but is `listItem`'s leading placeholder glyph (the restore notes say `-01` was unreachable). Add it to the swap list and to `IconSlot`, or swap the masters to a listed glyph.
+- **`graduation-hat-02` is not on the `iconSlot` swap list** but is `listItem`'s leading placeholder glyph (the restore notes say `-01` was unreachable). It is in `IconSlot` in code since Sep 2026; add it to the Figma swap list, or swap the masters to a listed glyph.
 - **`planNode`'s size-S `next` ring is 1.5px in Figma, unbound.** `Stroke/Border` is 1 and `Stroke/Heavy Border` is 2; nothing is 1.5. The code follows the description (2px) at both sizes. If 1.5 is the intent, add a stroke step for it and bind the four S masters to it.
 ---
 

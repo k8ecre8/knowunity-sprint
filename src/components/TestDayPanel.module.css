@@ -1,0 +1,22 @@
+/* testDayPanel — see docs/design-system.md → Components built this sprint →
+   `testDayPanel`. Every value is a token from build/css/tokens.css.
+
+   Fills its parent. Mascot, text and action are centred and Space/300
+   apart; the action keeps Space/300 above and below, as both frames' cta
+   wrapper does. The headline and its line are one `textBlock`, so they sit
+   Space/050 apart rather than Space/300. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-300);
+  box-sizing: border-box;
+  width: 100%;
+  text-align: center;
+}
+
+.cta {
+  display: flex;
+  justify-content: center;
+  padding-block: var(--primitive-space-300);
+}

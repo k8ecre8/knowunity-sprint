@@ -39,6 +39,7 @@ export default function ConfidenceCheckPage() {
       ...s,
       inputMode: 'voice',
       resume: s.resume?.round === round ? null : s.resume,
+      practice: null,
     }));
     router.push(`/recall/${round}/1`);
   };
@@ -100,7 +101,7 @@ export default function ConfidenceCheckPage() {
       }
       bottomContent={
         <div className={styles.actions}>
-          <Button variant="Primary" size="L" state={rating === null ? 'Disabled' : 'Default'} onClick={start}>
+          <Button fullWidth variant="Primary" size="L" state={rating === null ? 'Disabled' : 'Default'} onClick={start}>
             Start the review
           </Button>
         </div>

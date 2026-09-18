@@ -15,6 +15,7 @@ Scope and decisions come from `docs/sprint-context.md`. Values come from `tokens
 - `src/app/page.tsx` is the create-next-app page and contains bare hex values. It gets replaced by App home.
 - Mock data and session state live in new files: `src/mock/terms.ts` (terms, prompts, hints, answers, scripts, timestamps) and `src/mock/session.ts` (outcome rows, current rung, input mode, persisted to `sessionStorage`). See **How the mocked recall behaves**.
 - Every screen is a `Scaffold` at 390 wide. "Components" below lists only what is in Storybook. Anything else is listed as **not in the library**. Those gaps are reported, not built, per `CLAUDE.md`.
+- Quoted strings in this spec and in Figma are placeholders. The copy in code is the source of truth, including capitalisation of proper nouns such as subject and topic names. A copy rule here (for example "overconfidence is named") still applies; its wording does not.
 
 ---
 
@@ -36,12 +37,12 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - `Button` in `variant` Primary and Secondary, `size="L"`.
 
 **Not in the library**
-- `noteCard` (tone `outlined`, leading icon), used twice. This gets recreated in each screen's CSS.
+- `noteCard` (tone `outlined`, leading icon), used once. A second note was cut; its code is kept commented out.
 - The `clipboard-check` glyph is not in `IconSlot`.
 - The headline ("Here's how it went") has no `textBlock` in code.
 
 **Actions**
-- Continue → `/plan`, with the Plate Tectonics voice node marked `done` whatever the outcome.
+- Continue → `/plan`, with the Plate Tectonics voice node marked `done` whatever the outcome. The simulated day moves to review day, and the tester's section rows age three days.
 - Try the ones you missed → see Open.
 
 ### 2. Exam-eve repeat summary
@@ -63,7 +64,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **Actions**
 - One more try at the misses → see Open.
-- Finish → `/plan` in complete mode.
+- Finish → `/plan`, which is already on exam eve (complete mode).
 - Expanding an overflow row changes nothing but the view.
 
 ### 3. Review summary
@@ -89,7 +90,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - "How you felt": the before-plan and today ratings side by side, which has no component.
 
 **Actions**
-- Continue → `/plan` in complete mode.
+- Continue → `/plan`. The simulated day moves to exam eve, so the plan opens in complete mode.
 - Try the ones you missed → see Open.
 
 ### 4. Mic denied
@@ -155,7 +156,7 @@ Same ladder, script and outcomes as the voice turn, with no recording or transcr
 - `AppBar` with `variant="leftAndRightIconButton"`, `leftIcon="x-close"`, and `slot` set to `ProgressIndicator` (`thickness="16"`, `current`, `total`).
 - `MascotSlot` at `size="2XL"`.
 - `ResponseBubble`:
-  - `showVerdict` is on after judging. `verdictTone` reports what the student just did: `Correct`, `Partial` or `Incorrect`, and no chip after "I don't know" or a clarifying question.
+  - `showVerdict` is on after judging. `verdictTone` reports what the student just did: `Correct`, `Partial` or `Incorrect`, and no chip after "I don't know" or a clarifying question, and none at answer shown, because the `Incorrect` chip reads "Try again" and there is no next try.
   - `showAction={false}`, since "Explain more" is reserved.
   - `body` and `body2` carry the text.
 - `ChatInput`: `onSend`, `onValueChange`, and `Status="Loading"` while judging.
@@ -188,12 +189,12 @@ Same ladder, script and outcomes as the voice turn, with no recording or transcr
 - **Idle:** "Tap to answer", with the helper "Even a partial answer is a great start".
 - **Start over:** after a discard ("No harm done, go again").
 - **Didn't catch that:** a scripted unclear take.
-- **Recording:** "Listening...".
+- **Recording:** "Listening", with "Tap when done" in the ring.
 - **Transcribing:** about 1s.
-- **Transcript:** read-only, with Send and Discard.
+- **Transcript:** read-only, inside the control's card, with send and discard.
 - **Thinking.**
 - **Thinking, slow:** at 4s.
-- **Error:** past 10s, with retry.
+- **Error:** past 10s, with retry ("That took too long. Tap to send again").
 - **Verdict:** correct.
 - **Hint 1:** "Give it another try".
 - **Hint 2:** "Last try, two hints".
@@ -209,7 +210,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 - `AppBar` with `variant="leftAndRightIconButton"`, `leftIcon="x-close"`, and `slot` set to `ProgressIndicator` (`thickness="16"`, `current`, `total`).
 - `MascotSlot` at `size="2XL"`, using `standby` and `thinking` while judging (the other expressions are in Open).
 - `ResponseBubble`, following the same verdict rules as the typed turn.
-- `ButtonIcon` with `variant="Tertiary"`, `size="M"` and `label` for Discard. The glyph is whatever Figma's instance carries.
+- `VoiceInput` for the push-to-talk control, its label, the transcript card, send, discard (`trash-01`) and retry. The escapes go in its `idleActions` slot.
 - `Button`:
   - Tertiary M "I don't know the answer";
   - Primary L "Next question";
@@ -217,8 +218,6 @@ Every animated state has a reduced-motion form, where the helper label carries t
   - Text for "Type instead".
 
 **Not in the library**
-- **The push-to-talk control:** Figma calls it `recordingControl`, and design-system.md names the gap `voiceInput` (see Open). This blocks the screen.
-- `noteCard` for the transcript container.
 - **The leave-confirm sheet:** `bottomSheet`.
 - **`bottomNav`:** Figma shows it on idle, recording and processing only (see Open).
 
@@ -275,7 +274,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 **States**
 - **Day 1:** the Plate Tectonics voice node is `next`.
 - **Section done:** that node is `done`.
-- **Review day:** "See what stuck" is `next`, seeded by `?day=review`.
+- **Review day:** the cumulative review node is `next`, seeded by `?day=review`.
 - **Plan complete, test tomorrow:** the path collapses into the "Plan complete" card with the warm-up reminder, seeded by `?day=eve`.
 
 **Components**
@@ -294,7 +293,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 
 **Actions**
 - Plate Tectonics voice node → `/plan/plate-tectonics/intro`.
-- See what stuck node → `/recall/review/confidence`.
+- Cumulative review node → `/recall/review/confidence`, or back into the review at its resume point if the student left it mid-way (a real review or a practice pass). A `done` node is inert.
 - Warm up now → `/recall/eve/1`.
 
 ### 10. App home
@@ -322,7 +321,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 **Actions**
 - Continue studying → `/plan`.
 - Warm up now → `/recall/eve/1`. That's a shortcut straight into the repeat, not the plan.
-- Everything else on the page is inert.
+- The tab bar's Plans tab → `/plan`. Everything else on the page is inert.
 
 ---
 
@@ -380,21 +379,25 @@ Also:
 
 Every row carries `termId`, `round`, `outcome`, `mode` (voice or typed, logged but never shown) and `lastSeenAt`.
 
-**Summaries** count rows and nothing else. Say it back and the practice retries write no rows.
+**Summaries** count rows and nothing else; a round with no rows shows none. Say it back and the practice retries write no rows.
+
+**Practice retry** ("Try the ones you missed", "One more try at the misses") walks only the missed terms, in round order, with the progress bar counting those terms, then returns to the same summary unchanged.
 
 **Resume:** after X and Leave, the session stores the term and rung. Returning to that round's route reopens the same term at the same hint, idle.
 
 **Input mode:** typing sticks within a session. A new round starts on voice.
 
 **Review and exam eve** are separate entry links with seeded data:
-- `/plan?day=review` seeds 10 review terms with `lastSeenAt` three days back.
-- `/plan?day=eve` and `/?day=eve` seed 12 repeat terms.
+- `/plan?day=review` seeds 10 review terms with `lastSeenAt` three days back. If the tester has no section rows, it writes the section script's rows (1 / 1 / 1) three days back, so the review's order and comparison count real rows.
+- `/plan?day=eve` and `/?day=eve` seed 12 repeat terms. Adding `&ready` scripts all 12 correct, for the all-correct summary.
+
+**Simulated day:** the session holds the day (`day1`, `review`, `eve`), and plan home and app home read it from there. `?day=` sets it and then drops out of the URL. Finishing a round moves it on: section summary Continue → review day, review summary Continue → exam eve. The tab bar's Chat and Plans tabs link app home and plan home.
 
 The tester's own section-round rows persist in `sessionStorage` and are merged in, so their outcomes feed the review selection and the comparison.
 
-**Selection:** weakest first (needs practice, then needed a hint, then correct without help), applied over the seeded list. The exam-eve repeat uses each term's second wording (`promptB`).
+**Selection:** weakest first (needs practice, then needed a hint, then terms with no earlier row, then correct without help), by the tester's latest row from earlier rounds, applied over the seeded list and keeping its order within a rank. The review's scripted unclear take goes on whichever term is asked first. The exam-eve repeat uses each term's second wording (`promptB`).
 
-**Confidence:** the before-plan rating is a constant in mock data, and the pre-review rating comes from screen 5. The review summary picks one of nine copy versions from the direction of each change: confidence up, same or down, against performance (section-round rows vs review rows) up, same or down.
+**Confidence:** the before-plan rating is a constant in mock data ("Getting there", position 2, so confidence can go down as well as up), and the pre-review rating comes from screen 5. The review summary picks one of nine copy versions from the direction of each change: confidence up, same or down, against performance (section-round rows vs review rows) up, same or down.
 
 ---
 
@@ -449,13 +452,13 @@ Each path is walked by tapping only, with no URL typing except the seeded entry 
    - Re-enter the voice node → the same term, Hint 2, idle.
    - X → Stay closes the sheet with nothing lost.
 7. **Review.**
-   - `/plan?day=review` → See what stuck → confidence check (Start disabled until a position is chosen) → 10 terms → review summary.
+   - `/plan?day=review` → cumulative review → confidence check (Start disabled until a position is chosen) → 10 terms → review summary.
    - The headline states the count and the gap. Same-day terms show "still fresh".
    - The comparison copy matches the direction of the seeded before-plan rating vs the chosen rating, and of section vs review performance.
 8. **Exam eve.**
    - `/?day=eve` → Warm up now → 12 terms using `promptB` → repeat summary.
    - `NeedsPractice` is fully open, and `Good` shows 3 rows then "N more", which expands.
-   - Finish → `/plan` in complete mode.
+   - Finish → `/plan`, which is already on exam eve (complete mode).
 
 ### 4. Platform constraints, on every screen
 - **Targets:** every tap target is at least 44×44 (inspect the box).
@@ -475,9 +478,9 @@ After path 1, the rows in `sessionStorage` are exactly three, one per term, each
 Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 
 **Components missing from the library** (reported, not built):
-1. **Push-to-talk control.** Figma's component is `recordingControl`; `docs/design-system.md` names the gap `voiceInput`. Which name it gets, and its states. This blocks screens 7 and 8's recording path.
-2. **Idle "Tap to answer" control.** It's a bare `IconSlot` at 500 in Figma with no tap target, so it's part of 1 or separate.
-3. **Transcript container.** It's `noteCard` neutral, which isn't in code. There's no Figma frame for the transcript step, and the Send and Discard layout is undecided (`buttonGroup` isn't in code either).
+1. **Push-to-talk control.** *Decided Sep 2026:* it is `voiceInput`, built in code as `src/components/VoiceInput.tsx`; its states are in `docs/design-system.md`. Figma's `recordingControl` still draws the earlier design.
+2. **Idle "Tap to answer" control.** *Decided Sep 2026:* part of 1. The ring is the button, 120 across.
+3. **Transcript container.** *Decided Sep 2026:* the transcript sits in `voiceInput`'s own card, grown from the ring, with send and discard inside it; no `noteCard` or `buttonGroup`. There is still no Figma frame for the transcript step.
 4. **`bottomSheet`** for the intro tray and the leave confirm. Also Bottom-sheet App Bar.
 5. **`answerOption`** for the confidence check. Only three of the five labels are known: "So cooked", "Mostly solid", "Most of it".
 6. **The mocked iOS mic alert:** its component name and its copy.

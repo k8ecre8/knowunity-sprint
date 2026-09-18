@@ -16,8 +16,8 @@ import { NoteCard } from '@/components/NoteCard';
 import { MascotSlot } from '@/components/MascotSlot';
 import { IconSlot } from '@/components/IconSlot';
 import { Button } from '@/components/Button';
-import { beforePlanRating, confidenceLabels, findTerm, termsForRound } from '@/mock/terms';
-import { rowsForRound, summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { beforePlanRating, confidenceLabels, findTerm } from '@/mock/terms';
+import { advanceDay, roundTerms, rowsForRound, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import shared from './page.module.css';
 import styles from './review.module.css';
 
@@ -137,8 +137,8 @@ export function ReviewSummary() {
   const search = useSearchParams();
 
   // null until the browser has the session, so server and client markup match.
-  const rows = session ? summaryRows(session, round).rows : null;
-  const terms = termsForRound(round);
+  const rows = session ? rowsForRound(session, round) : null;
+  const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
   const good = (rows ?? []).filter((r) => r.outcome === 'correct-without-help');
@@ -187,7 +187,7 @@ export function ReviewSummary() {
 
   const rate = (list: OutcomeRow[]) =>
     list.length ? list.filter((r) => r.outcome === 'correct-without-help').length / list.length : 0;
-  const sectionRate = session ? rate(summaryRows(session, 'section').rows) : 0;
+  const sectionRate = session ? rate(rowsForRound(session, 'section')) : 0;
   const reviewRate = rate(rows ?? []);
   const performanceDir = direction(reviewRate - sectionRate, SAME_THRESHOLD);
   const verdict = comparison[confidenceDir][performanceDir];
@@ -198,20 +198,25 @@ export function ReviewSummary() {
     : 'Knowie will remind you to review this material the day before your test. You’ll see every term again, asked a new way.';
 
   const onContinue = () => {
-    // The plan opens with the review node done, whatever the outcome.
+    // The review node is done whatever the outcome, and the plan moves on to
+    // the day before the test.
     updateSession((s) => ({
       ...s,
       doneSections: Array.from(new Set([...s.doneSections, 'see-what-stuck'])),
     }));
-    router.push('/plan?day=review');
+    advanceDay('eve');
+    router.push('/plan');
   };
 
   const onPractice = () => {
     // Practice only: the turn writes no rows. Opens the first missed term.
-    const termIds = missed.map((r) => r.termId);
+    // In round order, not by outcome group; typing sticks within a session.
+    const missedIds = new Set(missed.map((r) => r.termId));
+    const termIds = terms.filter((t) => missedIds.has(t.id)).map((t) => t.id);
     const first = terms.findIndex((t) => t.id === termIds[0]);
+    const typed = session?.inputMode === 'typed' ? '/typed' : '';
     updateSession((s) => ({ ...s, practice: { round, termIds }, resume: null }));
-    router.push(`/recall/${round}/${first + 1}`);
+    router.push(`/recall/${round}/${first + 1}${typed}`);
   };
 
   return (
@@ -238,10 +243,7 @@ export function ReviewSummary() {
                     <MascotSlot size="XL" name="excited" />
                   </div>
                 )}
-                <div className={styles.verdict}>
-                  <h3 className={styles.verdictHeadline}>{verdict.headline}</h3>
-                  <p className={styles.verdictBody}>{verdict.body}</p>
-                </div>
+                <TextBlock size="S" as="h3" headline={verdict.headline} showCaption caption={verdict.body} />
               </div>
             </section>
 
@@ -253,11 +255,11 @@ export function ReviewSummary() {
       }
       bottomContent={
         <div className={shared.actions}>
-          <Button variant="Primary" size="L" className={shared.action} onClick={onContinue}>
+          <Button fullWidth variant="Primary" size="L" onClick={onContinue}>
             Continue
           </Button>
           {hasMisses && (
-            <Button variant="Secondary" size="L" className={shared.action} onClick={onPractice}>
+            <Button fullWidth variant="Secondary" size="L" onClick={onPractice}>
               Try the ones you missed
             </Button>
           )}

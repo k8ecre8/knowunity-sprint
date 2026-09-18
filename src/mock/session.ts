@@ -35,7 +35,26 @@ export type Practice = {
   termIds: string[];
 };
 
+/**
+ * The simulated day. Finishing a round moves it on: the section summary to
+ * review day, the review summary to exam eve. `?day=review|eve` on `/` or
+ * `/plan` jumps straight there.
+ */
+export type Day = 'day1' | 'review' | 'eve';
+
+/** Days between Day 1 and the review, used to age the tester's section rows. */
+const REVIEW_GAP_DAYS = 3;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export function dayFrom(value: string | null): Day | null {
+  return value === 'day1' || value === 'review' || value === 'eve' ? value : null;
+}
+
+/** Days left to the exam, by simulated day. */
+export const daysToExam: Record<Day, number> = { day1: 6, review: 3, eve: 1 };
+
 export type Session = {
+  day: Day;
   rows: OutcomeRow[];
   inputMode: InputMode;
   micPermission: 'unasked' | 'granted' | 'denied';
@@ -45,6 +64,8 @@ export type Session = {
   doneSections: string[];
   /** The pre-review confidence rating, one of five positions. */
   preReviewRating: number | null;
+  /** `/?day=eve&ready`: every exam-eve term is scripted correct, so the all-correct summary is reachable. */
+  eveReady: boolean;
 };
 
 const KEY = 'knowie.session';
@@ -53,6 +74,7 @@ const MIC_KEY = 'knowie.mic';
 type MicPermission = Session['micPermission'];
 
 export const emptySession: Session = {
+  day: 'day1',
   rows: [],
   inputMode: 'voice',
   micPermission: 'unasked',
@@ -60,6 +82,7 @@ export const emptySession: Session = {
   practice: null,
   doneSections: [],
   preReviewRating: null,
+  eveReady: false,
 };
 
 function storage(kind: 'sessionStorage' | 'localStorage' = 'sessionStorage'): Storage | null {
@@ -168,20 +191,115 @@ export function recordOutcome(row: OutcomeRow): void {
   }));
 }
 
+/**
+ * Moves the simulated day on. Going to review day ages the tester's own
+ * section rows by the review gap, so the review summary's days-later claim
+ * counts real rows.
+ */
+export function advanceDay(day: Day): void {
+  updateSession((s) => {
+    if (s.day === day) return s;
+    const rows =
+      day === 'review'
+        ? s.rows.map((r) =>
+            r.round === 'section'
+              ? { ...r, lastSeenAt: new Date(Date.parse(r.lastSeenAt) - REVIEW_GAP_DAYS * DAY_MS).toISOString() }
+              : r,
+          )
+        : s.rows;
+    return { ...s, day, rows };
+  });
+}
+
 export function rowsForRound(session: Session, round: Round): OutcomeRow[] {
   return session.rows.filter((r) => r.round === round);
 }
 
+/* --- the order a round asks in -------------------------------------------- */
+
+/** Weakest first. A term with no earlier row sits between the misses and the ones already got. */
+const RANK: Record<Outcome | 'unseen', number> = {
+  'needs-practice': 0,
+  'needed-a-hint': 1,
+  unseen: 2,
+  'correct-without-help': 3,
+};
+
+/** The rounds whose rows feed each round's order. */
+const EARLIER: Record<Round, Round[]> = { section: [], review: ['section'], eve: ['section', 'review'] };
+
+/**
+ * The terms a round asks, in order. The section round is fixed. Review and
+ * exam eve put the seeded list weakest first by the tester's latest earlier
+ * row, keeping the seeded order within a rank. Earlier rounds are finished
+ * by the time a round starts, so the order holds for the whole round.
+ */
+export function roundTerms(session: Session, round: Round): Term[] {
+  const seeded = termsForRound(round);
+  const scripted =
+    round === 'eve' && session.eveReady
+      ? seeded.map((t): Term => ({ ...t, script: [{ kind: 'correct', transcript: t.answer }] }))
+      : seeded;
+  if (EARLIER[round].length === 0) return scripted;
+  const latest = new Map<string, Outcome>();
+  for (const r of session.rows) if (EARLIER[round].includes(r.round)) latest.set(r.termId, r.outcome);
+  // Rows are appended in the order they end, so the last one per term wins.
+  const rank = (t: Term) => RANK[latest.get(t.id) ?? 'unseen'];
+  const ordered = scripted.map((t, i) => ({ t, i })).sort((a, b) => rank(a.t) - rank(b.t) || a.i - b.i).map(({ t }) => t);
+  if (round !== 'review') return ordered;
+  // The review's first take lands on "didn't catch that" (SPEC.md →
+  // Verification → path 2), whichever term the order puts first.
+  const [first, ...rest] = ordered;
+  return [{ ...first, script: [{ kind: 'unclear', transcript: '' }, ...first.script] }, ...rest];
+}
+
+/* --- practice passes ---------------------------------------------------- */
+
+/** The missed terms of a practice pass on this round, or null when it is a real round. */
+export function practiceFor(session: Session, round: Round): string[] | null {
+  return session.practice?.round === round ? session.practice.termIds : null;
+}
+
+/**
+ * Entering a round from the plan or home. A practice pass on it survives only
+ * if the student left it mid-way (a resume point is stored); otherwise it is
+ * stale and the round runs for real.
+ */
+export function enterRound(round: Round): void {
+  updateSession((s) =>
+    s.practice?.round === round && s.resume?.round !== round ? { ...s, practice: null } : s,
+  );
+}
+
+/* --- seeding --------------------------------------------------------------- */
+
+/**
+ * A `?day=` entry link. Sets the day, and on review day writes the section
+ * round's scripted rows, three days back, if the tester has none, so the
+ * review's order and comparison count rows that are really in the session.
+ */
+export function seedDay(day: Day): void {
+  updateSession((s) => {
+    const hasSection = s.rows.some((r) => r.round === 'section');
+    if (day !== 'review' || hasSection) return { ...s, day };
+    const at = new Date(Date.now() - REVIEW_GAP_DAYS * DAY_MS).toISOString();
+    const rows = termsForRound('section').map(
+      (t): OutcomeRow => ({ termId: t.id, round: 'section', outcome: scriptedOutcome(t.script), mode: 'voice', lastSeenAt: at }),
+    );
+    return { ...s, day, rows: [...s.rows, ...rows] };
+  });
+}
+
 /**
  * The 1-based term a round is on right now: a left-off term if there is one,
- * otherwise the first term without a row, otherwise the last term.
+ * otherwise the first term without a row. A finished round starts again at 1.
  */
 export function currentTerm(session: Session, round: Round): number {
   if (session.resume?.round === round) return session.resume.term;
-  const terms = termsForRound(round);
+  const terms = roundTerms(session, round);
   const done = new Set(rowsForRound(session, round).map((r) => r.termId));
   const next = terms.findIndex((t) => !done.has(t.id));
-  return next === -1 ? Math.max(terms.length, 1) : next + 1;
+  return next === -1 ? 1 : next + 1;
 }
 
 /* --- outcomes from the script -------------------------------------------- */
@@ -198,24 +316,4 @@ export function scriptedOutcome(script: ScriptStep[]): Outcome {
   if (hints === 0) return 'correct-without-help';
   if (hints === 1) return 'needed-a-hint';
   return 'needs-practice';
-}
-
-/**
- * The rows a summary counts. Until the turn screens have written rows for
- * this round, the summary falls back to what the script would have produced,
- * so it renders the scripted state rather than an empty screen.
- */
-export function summaryRows(session: Session, round: Round): { rows: OutcomeRow[]; fromScript: boolean } {
-  const real = rowsForRound(session, round);
-  if (real.length > 0) return { rows: real, fromScript: false };
-  const rows = termsForRound(round).map(
-    (t: Term): OutcomeRow => ({
-      termId: t.id,
-      round,
-      outcome: scriptedOutcome(t.script),
-      mode: 'voice',
-      lastSeenAt: t.lastSeenAt,
-    }),
-  );
-  return { rows, fromScript: true };
 }

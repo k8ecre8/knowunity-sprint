@@ -4,35 +4,36 @@
    Figma, Exam Section 1 - Claude (Core Flow): "App home / Default (study
    reminder)" and "App home / Reminder state".
 
-   Two states, from the `?day` seed:
-   - Default: the hero is the study reminder ("…exam is in 6 days") and
-     "Continue studying" goes into the plan.
-   - Exam-eve reminder (`?day=eve`): "Your test is tomorrow", and "Warm up now"
-     is a shortcut straight into the repeat, not the plan.
+   Two states, from the simulated day in the session (seeded by `?day=eve`):
+   - Default (Day 1 and review day): the hero is the study reminder
+     ("…exam is in N days") and "Continue studying" goes into the plan.
+   - Exam-eve reminder: "Your test is tomorrow", and "Warm up now" is a
+     shortcut straight into the repeat, not the plan.
 
-   Everything else on the page (top bar, counters, Dream College, quick
-   actions, Ask Knowie, the tab bar) is the existing app as built, and inert. */
+   The tab bar's Plans tab goes to the plan. Everything else on the page (top
+   bar, counters, Dream College, quick actions, Ask Knowie, the other tabs) is
+   the existing app as built, and inert. */
 
 import { Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { MascotSlot } from '@/components/MascotSlot';
 import { Button } from '@/components/Button';
+import { TextBlock } from '@/components/TextBlock';
+import { TestDayPanel } from '@/components/TestDayPanel';
+import { TopBar } from '@/components/TopBar';
 import { ListItem } from '@/components/ListItem';
 import { Chips } from '@/components/Chips';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
-import { currentTerm, updateSession, useSession } from '@/mock/session';
+import { currentTerm, daysToExam, enterRound, updateSession, useSession, type Day } from '@/mock/session';
+import { useEntryLink } from '@/mock/useEntryLink';
 import styles from './page.module.css';
-
-type Day = 'default' | 'eve';
 
 /* `ai-quiz` is not in IconSlot. Its placeholder is marked so it can be
    swapped when the glyph is added. */
 type Glyph = { icon: IconName; placeholderFor?: string };
 const glyphs = {
-  menu: { icon: 'list' },
-  focus: { icon: 'clock' },
   college: { icon: 'graduation-hat-02' },
   quiz: { icon: 'file-question-02', placeholderFor: 'ai-quiz' },
   practiceTest: { icon: 'clipboard-check' },
@@ -41,84 +42,49 @@ const glyphs = {
   mic: { icon: 'microphone-01' },
 } satisfies Record<string, Glyph>;
 
-/* The three counters: a Body S Bold number and an `art/*` asset from
-   public/images. XP, streaks and Pro are outside this flow, so the row is
-   decoration. */
-type Counter = { id: string; label: string; art: string; tone: string; wide?: boolean };
-const counters: readonly Counter[] = [
-  { id: 'pro', label: 'Get', art: '/images/pro-badge-yellow.svg', tone: styles.counterPro, wide: true },
-  { id: 'xp', label: '48', art: '/images/bolt-blue-sm.svg', tone: styles.counterInfo },
-  { id: 'streak', label: '1', art: '/images/flame-orange-sm.svg', tone: styles.counterCoral },
-];
-
 const quickActions: readonly { id: string; label: string; glyph: Glyph }[] = [
   { id: 'quiz', label: 'Quiz', glyph: glyphs.quiz },
   { id: 'practice-test', label: 'Practice test', glyph: glyphs.practiceTest },
   { id: 'upload', label: 'Upload', glyph: glyphs.upload },
 ];
 
-function AppHome({ day }: { day: Day }) {
+function AppHome({ seeded }: { seeded: Day | null }) {
   const router = useRouter();
   const session = useSession();
+  const day = seeded ?? session?.day ?? 'day1';
 
   const warmUp = () => {
     if (!session) return;
     // A new round starts on voice; a round left mid-way resumes as it was.
     const term = currentTerm(session, 'eve');
+    enterRound('eve');
     if (session.resume?.round !== 'eve') {
-      updateSession((s) => ({ ...s, inputMode: 'voice', practice: null }));
+      updateSession((s) => ({ ...s, inputMode: 'voice' }));
     }
     router.push(`/recall/eve/${term}`);
   };
 
-  /* topBar: menu, the three counters, and the focus timer. All decoration. */
-  const topBar = (
-    <div className={styles.topBar}>
-      <span className={styles.barIcon} aria-hidden="true">
-        <IconSlot size="300" name={glyphs.menu.icon} />
-      </span>
-      <ul className={styles.counters} aria-label="Account">
-        {counters.map((counter) => (
-          <li key={counter.id} className={[styles.counter, counter.tone].join(' ')}>
-            <span>{counter.label}</span>
-            {/* Decorative art; the number beside it is the content. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={[styles.counterArt, counter.wide && styles.counterArtWide].filter(Boolean).join(' ')}
-              src={counter.art}
-              alt=""
-            />
-          </li>
-        ))}
-      </ul>
-      <span className={styles.barIcon} aria-hidden="true">
-        <IconSlot size="300" name={glyphs.focus.icon} />
-      </span>
-    </div>
-  );
+  /* topBar, home: menu, the three counters and the focus timer. Decoration. */
+  const topBar = <TopBar variant="home" xp={48} streak={1} />;
 
   const hero =
     day === 'eve' ? (
       /* reminderHero: Knowie, one line, one action. */
-      <section className={[styles.hero, styles.heroEve].join(' ')} aria-labelledby="home-headline">
-        <MascotSlot size="2XL" name="standby" />
-        <h1 className={styles.headlineM} id="home-headline">
-          Your test is tomorrow
-        </h1>
-        <p className={styles.body}>Let’s review the material and make sure it’s still fresh.</p>
-        <div className={styles.cta}>
-          <Button variant="Primary" size="L" onClick={warmUp}>
-            Warm up now
-          </Button>
-        </div>
+      <section className={[styles.hero, styles.heroEve].join(' ')} aria-label="Test reminder">
+        <TestDayPanel
+          size="M"
+          as="h1"
+          headline="Your test is tomorrow"
+          body="Let’s review the material and make sure it’s still fresh."
+          cta="Warm up now"
+          onAction={warmUp}
+        />
       </section>
     ) : (
       /* hero: the ordinary study reminder. */
-      <section className={styles.hero} aria-labelledby="home-headline">
+      <section className={styles.hero} aria-label="Study reminder">
         <MascotSlot size="2XL" name="standby" />
-        <h1 className={styles.headlineS} id="home-headline">
-          Your Earth and Space Science exam is in 6 days
-        </h1>
+        <TextBlock size="S" headline={`Your Earth and Space Science exam is in ${daysToExam[day]} days`} />
         <div className={styles.cta}>
           <Button variant="Primary" size="M" onClick={() => router.push('/plan')}>
             Continue studying
@@ -170,12 +136,18 @@ function AppHome({ day }: { day: Day }) {
     </div>
   );
 
-  return <Scaffold topNavigation={topBar} middleContent={middle} bottomContent={<BottomNav active="chat" />} />;
+  return (
+    <Scaffold
+      topNavigation={topBar}
+      middleContent={middle}
+      bottomContent={<BottomNav active="chat" hrefs={{ chat: '/', plans: '/plan' }} />}
+    />
+  );
 }
 
 function Home() {
-  const params = useSearchParams();
-  return <AppHome day={params.get('day') === 'eve' ? 'eve' : 'default'} />;
+  const seeded = useEntryLink('/');
+  return <AppHome seeded={seeded} />;
 }
 
 export default function HomePage() {

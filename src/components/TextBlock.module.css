@@ -34,3 +34,22 @@
   letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
   overflow-wrap: anywhere;
 }
+
+/* size S: Headline S, and the caption Space/050 below it, as the review
+   summary's comparison draws the pair. */
+.sizeS {
+  gap: var(--primitive-space-050);
+}
+
+.sizeS .headline {
+  font-family: var(--typeScale-headline-s-fontFamily);
+  font-weight: var(--typeScale-headline-s-fontWeight);
+  font-size: var(--typeScale-headline-s-fontSize);
+  line-height: var(--typeScale-headline-s-lineHeight);
+  letter-spacing: var(--typeScale-headline-s-letterSpacing);
+}
+
+/* captionTone secondary: the quieter line under a test-day headline. */
+.captionSecondary .caption {
+  color: var(--semantic-text-secondary);
+}

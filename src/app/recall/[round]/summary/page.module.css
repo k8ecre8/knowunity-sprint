@@ -22,13 +22,3 @@
   flex-direction: column;
   gap: var(--primitive-space-200);
 }
-
-/* The frame stretches each button to the content width. `button` hugs, so
-   both the wrapper and its pill are stretched here. */
-.action {
-  width: 100%;
-}
-
-.action > * {
-  width: 100%;
-}

@@ -21,10 +21,3 @@
   flex-direction: column;
   gap: var(--primitive-space-200);
 }
-
-/* The tray stretches each button to the content width. `button` hugs, so
-   both the wrapper and its pill are stretched here. */
-.actions > *,
-.actions > * > * {
-  width: 100%;
-}

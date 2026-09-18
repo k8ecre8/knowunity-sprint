@@ -20,6 +20,12 @@ export type ButtonProps = {
    */
   state?: ButtonState;
   tone?: ButtonTone;
+  /**
+   * Code-only. Fill the parent's width instead of hugging the label: Figma's
+   * fill-container sizing on an instance. Both the tap target and the pill
+   * stretch; the height and lip do not change.
+   */
+  fullWidth?: boolean;
   /** The label. Figma calls this property `CTA`. Sentence case. */
   children: ReactNode;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'disabled'>;
@@ -29,6 +35,7 @@ export function Button({
   size = 'S',
   state = 'Default',
   tone = 'Default',
+  fullWidth = false,
   children,
   className,
   ...rest
@@ -39,6 +46,7 @@ export function Button({
     styles[`size${size}`],
     // tone is Primary-only in the Figma set, so it is not applied elsewhere.
     variant === 'Primary' ? styles[`tone${tone}`] : undefined,
+    fullWidth ? styles.fullWidth : undefined,
     className,
   ]
     .filter(Boolean)

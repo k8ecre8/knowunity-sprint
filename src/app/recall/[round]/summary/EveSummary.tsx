@@ -8,13 +8,13 @@
    then "N more". Every number is a count of outcome rows. */
 
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { SummaryCard, type SummaryCardTone } from '@/components/SummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { Button } from '@/components/Button';
-import { findTerm, termsForRound } from '@/mock/terms';
-import { summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { findTerm } from '@/mock/terms';
+import { advanceDay, roundTerms, rowsForRound, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import shared from './page.module.css';
 import styles from './eve.module.css';
 
@@ -63,17 +63,12 @@ function Card({ tone, names, open }: { tone: SummaryCardTone; names: string[]; o
 export function EveSummary() {
   const router = useRouter();
   const session = useSession();
-  const search = useSearchParams();
 
   // null until the browser has the session, so server and client markup match.
-  const scripted = session ? summaryRows(session, round).rows : null;
-  // `?ready` shows the all-correct state, which the seeded script cannot
-  // reach by tapping: the seeds are written to produce the misses state.
-  const rows =
-    scripted && search.has('ready')
-      ? scripted.map((r): OutcomeRow => ({ ...r, outcome: 'correct-without-help' }))
-      : scripted;
-  const terms = termsForRound(round);
+  // The all-correct state comes from `/?day=eve&ready`, which scripts every
+  // term correct; the default seeds produce the misses state.
+  const rows = session ? rowsForRound(session, round) : null;
+  const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
   const good = (rows ?? []).filter((r) => r.outcome === 'correct-without-help');
@@ -96,15 +91,19 @@ export function EveSummary() {
       ...s,
       doneSections: Array.from(new Set([...s.doneSections, 'exam-eve-repeat'])),
     }));
-    router.push('/plan?day=eve');
+    advanceDay('eve');
+    router.push('/plan');
   };
 
   const onPractice = () => {
     // Practice only: the turn writes no rows. Opens the first missed term.
-    const termIds = missed.map((r) => r.termId);
+    // In round order, not by outcome group; typing sticks within a session.
+    const missedIds = new Set(missed.map((r) => r.termId));
+    const termIds = terms.filter((t) => missedIds.has(t.id)).map((t) => t.id);
     const first = terms.findIndex((t) => t.id === termIds[0]);
+    const typed = session?.inputMode === 'typed' ? '/typed' : '';
     updateSession((s) => ({ ...s, practice: { round, termIds }, resume: null }));
-    router.push(`/recall/${round}/${first + 1}`);
+    router.push(`/recall/${round}/${first + 1}${typed}`);
   };
 
   return (
@@ -137,15 +136,15 @@ export function EveSummary() {
         <div className={shared.actions}>
           {hasMisses ? (
             <>
-              <Button variant="Primary" size="L" className={shared.action} onClick={onPractice}>
+              <Button fullWidth variant="Primary" size="L" onClick={onPractice}>
                 One more try at the misses
               </Button>
-              <Button variant="Text" size="L" className={shared.action} onClick={onFinish}>
+              <Button fullWidth variant="Text" size="L" onClick={onFinish}>
                 Finish
               </Button>
             </>
           ) : (
-            <Button variant="Primary" size="L" className={shared.action} onClick={onFinish}>
+            <Button fullWidth variant="Primary" size="L" onClick={onFinish}>
               Finish
             </Button>
           )}

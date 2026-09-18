@@ -233,12 +233,9 @@ const eveById = (id: string): Term => {
 };
 
 export const reviewTerms: Term[] = [
-  // The one scripted unclear take (SPEC.md → Verification → path 2): the
-  // first take lands on "didn't catch that", uses no hint and is not judged.
-  reviewTerm(plateTectonics.terms[0], [
-    { kind: 'unclear', transcript: '' },
-    { kind: 'correct', transcript: 'Convection currents in the mantle drag the plates along as hot rock rises, spreads, cools and sinks.' },
-  ]),
+  // The one scripted unclear take (SPEC.md → Verification → path 2) goes on
+  // whichever term the review asks first; see roundTerms in session.ts.
+  reviewTerm(plateTectonics.terms[0], correct('Convection currents in the mantle drag the plates along as hot rock rises, spreads, cools and sinks.')),
   reviewTerm(plateTectonics.terms[1], hinted('They move apart.', 'They move apart and magma rises into the gap and hardens into new crust, making a mid-ocean ridge.')),
   reviewTerm(plateTectonics.terms[2], [
     { kind: 'miss', transcript: 'One plate sinks under the other.' },
@@ -257,13 +254,15 @@ export const reviewTerms: Term[] = [
 /* --- confidence (Open 5 and Open 24, decided here) -------------------------
    One whole-plan rating on five positions. Figma names three labels ("So
    cooked", "Mostly solid", "Most of it"); the other two are decided here.
-   Position 1 is the lowest. The before-plan rating is mocked: the student
-   said "So cooked" at onboarding, as the review summary frame draws it. */
+   Position 1 is the lowest. The before-plan rating is mocked at position 2,
+   "Getting there", not the frame's "So cooked": from the lowest position
+   confidence could never go down, and three of the nine comparison versions
+   would be unreachable. */
 
 export const confidenceLabels = ['So cooked', 'Getting there', 'Most of it', 'Mostly solid', 'Ready'] as const;
 
 /** 1-based position on `confidenceLabels`. */
-export const beforePlanRating = 1;
+export const beforePlanRating = 2;
 
 export const sections: Section[] = [plateTectonics];
 

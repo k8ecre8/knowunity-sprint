@@ -14,21 +14,20 @@
    text only. There is never a transcript after judging, and never an
    editable one. */
 
-import { use, useEffect, useRef, useState } from 'react';
+import { use, useEffect, useMemo, useRef, useState } from 'react';
 import { notFound, useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { AppBar } from '@/components/AppBar';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
 import { MascotSlot, type MascotName } from '@/components/MascotSlot';
 import { ResponseBubble } from '@/components/ResponseBubble';
-import { IconSlot } from '@/components/IconSlot';
-import { ButtonIcon } from '@/components/ButtonIcon';
 import { Button } from '@/components/Button';
-import { NoteCard } from '@/components/NoteCard';
+import { VoiceInput, type VoiceInputState } from '@/components/VoiceInput';
 import { BottomSheet } from '@/components/BottomSheet';
 import { PermissionAlert } from '@/components/PermissionAlert';
-import { termsForRound, plateTectonics, type Round, type ScriptStep } from '@/mock/terms';
-import { recordOutcome, updateSession, useSession, type Outcome } from '@/mock/session';
+import { termsForRound, plateTectonics, type Round, type ScriptStep, type Term } from '@/mock/terms';
+import { practiceFor, recordOutcome, roundTerms, updateSession, useSession, type Outcome } from '@/mock/session';
+import { createSpeechLevel } from '@/mock/speech';
 import styles from './page.module.css';
 
 const rounds: Round[] = ['section', 'review', 'eve'];
@@ -67,22 +66,33 @@ type Phase =
 
 type Chip = 'Correct' | 'Partial' | 'Incorrect' | null;
 
-/* The helper under Knowie carries the state, so reduced motion loses nothing.
-   Frames give idle, start over, recording, thinking and the hints; the rest
-   is Open 19, decided here. */
-const helper: Record<string, { lead?: string; body: string }> = {
-  idle: { lead: 'Tap to answer', body: 'Even a partial answer is a great start' },
-  hint1: { body: 'Give it another try' },
-  hint2: { body: 'Last try, two hints' },
-  'start-over': { body: 'No harm done, go again' },
-  unclear: { lead: 'Didn’t catch that', body: 'No hint used, tap to try again' },
-  recording: { body: 'Listening…' },
-  transcribing: { body: 'Writing that down…' },
-  transcript: { body: 'Here’s what Knowie heard' },
-  thinking: { body: 'Thinking…' },
-  'thinking-slow': { body: 'Still thinking, nearly there' },
-  error: { body: 'That took too long. Nothing was lost.' },
+/* The turn's phases, as voiceInput draws them. Its label carries the state,
+   so reduced motion loses nothing. The resting variants of idle keep the
+   control in idle and change only its quieter second line. */
+const controlState: Record<Phase, VoiceInputState | null> = {
+  idle: 'idle',
+  'start-over': 'idle',
+  unclear: 'idle',
+  prompt: 'idle',
+  recording: 'listening',
+  'sayback-recording': 'listening',
+  transcribing: 'transcribing',
+  transcript: 'transcript',
+  thinking: 'judging',
+  'thinking-slow': 'judgingSlow',
+  error: 'error',
+  verdict: null,
+  'sayback-done': null,
 };
+
+/** The second line under the label, where a resting phase needs its own. Frames give the hints and start over; didn't catch that is Open 19, decided here. */
+function restingHelper(phase: Phase, rung: Rung): string | undefined {
+  if (phase === 'start-over') return 'No harm done, go again';
+  if (phase === 'unclear') return 'Didn’t catch that. No hint used';
+  if (rung === 1) return 'Give it another try';
+  if (rung === 2) return 'Last try, two hints';
+  return undefined;
+}
 
 function outcomeFor(rung: Rung): Outcome {
   if (rung === 0) return 'correct-without-help';
@@ -107,22 +117,36 @@ function VoiceTurn({ round, term }: { round: Round; term: number }) {
     resume && resume.round === round && resume.term === term
       ? (Math.min(3, Math.max(0, resume.rung)) as Rung)
       : 0;
-  return <Turn round={round} term={term} startRung={startRung} micPermission={session.micPermission} />;
+  return (
+    <Turn
+      round={round}
+      term={term}
+      terms={roundTerms(session, round)}
+      practice={practiceFor(session, round)}
+      startRung={startRung}
+      micPermission={session.micPermission}
+    />
+  );
 }
 
 function Turn({
   round,
   term,
+  terms,
+  practice,
   startRung,
   micPermission,
 }: {
   round: Round;
   term: number;
+  /** The round in the order it is asked; see roundTerms. */
+  terms: Term[];
+  /** The missed terms, on a practice pass. A practice pass writes no rows. */
+  practice: string[] | null;
   startRung: Rung;
   micPermission: 'unasked' | 'granted' | 'denied';
 }) {
   const router = useRouter();
-  const terms = termsForRound(round);
   const current = terms[term - 1];
 
   const [rung, setRung] = useState<Rung>(startRung);
@@ -136,6 +160,12 @@ function Turn({
      equal the hints used. */
   const pointer = useRef(Math.min(startRung, current.script.length));
   const timers = useRef<number[]>([]);
+  /* The leave sheet pauses a wait: its timers stop when the sheet opens, and
+     the step in flight runs again at normal speed on Stay. */
+  const inFlight = useRef<ScriptStep | null>(null);
+  const paused = useRef<Phase | null>(null);
+  // The mocked voice level the control's waveform follows. Nothing listens.
+  const getLevel = useMemo(() => createSpeechLevel(), []);
 
   const clearTimers = () => {
     timers.current.forEach((t) => window.clearTimeout(t));
@@ -147,6 +177,7 @@ function Turn({
   /* --- the mocked recorder and judge ------------------------------------- */
 
   const finish = (outcome: Outcome) => {
+    if (practice) return;
     recordOutcome({
       termId: current.id,
       round,
@@ -179,6 +210,7 @@ function Turn({
 
   const judge = (step: ScriptStep, atNormalSpeed = false) => {
     clearTimers();
+    inFlight.current = step;
     setPhase('thinking');
     const delay = atNormalSpeed ? 'none' : (step.delay ?? 'none');
     timers.current.push(window.setTimeout(() => setPhase('thinking-slow'), SLOW_BEAT_MS));
@@ -195,6 +227,17 @@ function Turn({
     );
   };
 
+  const transcribe = (step: ScriptStep) => {
+    inFlight.current = step;
+    setPhase('transcribing');
+    timers.current.push(
+      window.setTimeout(() => {
+        setTake(step);
+        setPhase('transcript');
+      }, TRANSCRIBE_MS),
+    );
+  };
+
   const startRecording = () => setPhase('recording');
 
   /** Tap the control. What it does depends on the state it is in. */
@@ -202,6 +245,8 @@ function Turn({
     if (phase === 'idle' || phase === 'start-over' || phase === 'unclear') {
       // The mocked iOS prompt comes first on the first mic use in the app.
       if (micPermission === 'unasked') setPhase('prompt');
+      // Denied is permanent: the mic can't start, so the ring goes to mic denied.
+      else if (micPermission === 'denied') router.push(`/recall/${round}/mic-denied?from=voice&term=${term}`);
       else startRecording();
       return;
     }
@@ -214,13 +259,7 @@ function Turn({
         setPhase('unclear');
         return;
       }
-      setPhase('transcribing');
-      timers.current.push(
-        window.setTimeout(() => {
-          setTake(step);
-          setPhase('transcript');
-        }, TRANSCRIBE_MS),
-      );
+      transcribe(step);
       return;
     }
     if (phase === 'sayback-recording') {
@@ -237,7 +276,7 @@ function Turn({
   const denyMic = () => {
     clearTimers();
     updateSession((s) => ({ ...s, micPermission: 'denied' }));
-    router.push(`/recall/${round}/mic-denied`);
+    router.push(`/recall/${round}/mic-denied?term=${term}`);
   };
 
   /** From recording, the transcript or the wait: back to idle, nothing used. */
@@ -278,8 +317,35 @@ function Turn({
 
   const nextQuestion = () => {
     updateSession((s) => ({ ...s, resume: s.resume?.round === round ? null : s.resume }));
-    if (term < terms.length) router.push(`/recall/${round}/${term + 1}`);
-    else router.push(`/recall/${round}/summary`);
+    // A practice pass walks only the missed terms, then back to the summary.
+    const next = practice
+      ? terms.findIndex((t) => t.id === practice[practice.indexOf(current.id) + 1]) + 1
+      : term < terms.length
+        ? term + 1
+        : 0;
+    if (next > 0) {
+      router.push(`/recall/${round}/${next}`);
+      return;
+    }
+    updateSession((s) => ({ ...s, practice: null }));
+    router.push(`/recall/${round}/summary`);
+  };
+
+  const openSheet = () => {
+    if (phase === 'transcribing' || phase === 'thinking' || phase === 'thinking-slow') {
+      clearTimers();
+      paused.current = phase;
+    }
+    setSheetOpen(true);
+  };
+
+  const stay = () => {
+    setSheetOpen(false);
+    const was = paused.current;
+    paused.current = null;
+    if (!was || !inFlight.current) return;
+    if (was === 'transcribing') transcribe(inFlight.current);
+    else judge(inFlight.current, true);
   };
 
   const leave = () => {
@@ -290,6 +356,7 @@ function Turn({
 
   /* --- what Knowie says -------------------------------------------------- */
 
+  const progress = practice ? practice.indexOf(current.id) : term - 1;
   const prompt = round === 'eve' ? current.promptB : current.prompt;
   const intro =
     round === 'section'
@@ -316,6 +383,7 @@ function Turn({
       body: 'Nice, that’s the shape of it. Nothing here is scored, and this one comes back in your review.',
     };
   } else if (rung === 3) {
+    // No chip: the Incorrect chip reads "Try again", and at answer shown there is no next try.
     bubble = { showVerdict: false, body: 'Here is a complete answer:', body2: current.answer };
   } else if (rung === 0) {
     bubble = { showVerdict: false, body: intro, body2: prompt };
@@ -331,11 +399,6 @@ function Turn({
   const answering = phase !== 'verdict' && phase !== 'sayback-done' && !answerShown;
   const restingPhase = phase === 'idle' || phase === 'start-over' || phase === 'unclear' || phase === 'prompt';
   const waiting = phase === 'thinking' || phase === 'thinking-slow';
-  const recording = phase === 'recording' || phase === 'sayback-recording';
-
-  const helperKey =
-    phase === 'idle' ? (rung === 1 ? 'hint1' : rung === 2 ? 'hint2' : 'idle') : phase === 'prompt' ? 'idle' : phase;
-  const label = helper[helperKey] ?? helper.recording;
 
   const mascot: MascotName =
     phase === 'verdict' || phase === 'sayback-done'
@@ -346,84 +409,26 @@ function Turn({
           ? 'thinking'
           : 'standby';
 
-  /* --- the push-to-talk control (voiceInput, not in the library) --------- */
-
-  let control: React.ReactNode;
-  if (phase === 'transcript' && take) {
-    // The student's words never go in Knowie's bubble: noteCard neutral.
-    control = <NoteCard tone="neutral">{take.transcript}</NoteCard>;
-  } else if (restingPhase) {
-    control = (
-      <button type="button" className={styles.micButton} onClick={tapControl} aria-label="Start recording">
-        <IconSlot size="500" name="microphone-01" />
-      </button>
-    );
-  } else {
-    const blob = recording ? (
-      <button
-        type="button"
-        className={styles.blob}
-        data-phase={phase}
-        onClick={tapControl}
-        aria-label={phase === 'sayback-recording' ? undefined : 'Stop and send'}
-      >
-        {phase === 'sayback-recording' ? <span className={styles.blobLabel}>Tap to send</span> : <IconSlot size="500" name="send-01" />}
-      </button>
-    ) : phase === 'transcribing' ? (
-      <div className={styles.blob} data-phase={phase} aria-hidden="true" />
-    ) : (
-      <div className={styles.ring} data-phase={phase} aria-hidden="true" />
-    );
-    const canDiscard = recording || waiting;
-    control = (
-      <div className={styles.recordRow}>
-        {canDiscard ? (
-          <ButtonIcon variant="Tertiary" size="M" name="trash-01" label="Discard" onClick={discard} />
-        ) : (
-          <span className={styles.spacer} />
-        )}
-        {blob}
-        <span className={styles.spacer} />
-      </div>
-    );
-  }
-
   const blocked = sheetOpen || phase === 'prompt';
 
-  /* --- bottomContent: only ever the action the state calls for ----------- */
+  /* --- bottomContent: only ever the action the state calls for. Send,
+     discard and retry are part of voiceInput itself. ----------------------- */
 
   let actions: React.ReactNode = null;
-  if (phase === 'transcript') {
+  if (answerShown) {
     actions = (
       <>
-        <Button variant="Primary" size="L" onClick={send}>
-          Send
-        </Button>
-        <Button variant="Text" size="L" onClick={discard}>
-          Discard
-        </Button>
-      </>
-    );
-  } else if (phase === 'error') {
-    actions = (
-      <Button variant="Primary" size="L" onClick={retry}>
-        Retry
-      </Button>
-    );
-  } else if (answerShown) {
-    actions = (
-      <>
-        <Button variant="Primary" size="L" onClick={nextQuestion}>
+        <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
           Next question
         </Button>
-        <Button variant="Text" size="L" onClick={() => setPhase('sayback-recording')}>
+        <Button fullWidth variant="Text" size="L" onClick={() => setPhase('sayback-recording')}>
           Practice in my own words
         </Button>
       </>
     );
   } else if (phase === 'verdict' || phase === 'sayback-done') {
     actions = (
-      <Button variant="Primary" size="L" onClick={nextQuestion}>
+      <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
         Next question
       </Button>
     );
@@ -437,10 +442,10 @@ function Turn({
           variant="leftAndRightIconButton"
           leftIcon="x-close"
           leftLabel="Leave this round"
-          onLeftPress={() => setSheetOpen(true)}
+          onLeftPress={openSheet}
           rightIcon="zap"
           rightLabel="Streak"
-          slot={<ProgressIndicator thickness="16" current={term - 1} total={terms.length} />}
+          slot={<ProgressIndicator thickness="16" current={progress} total={practice?.length ?? terms.length} />}
         />
       }
       middleContent={
@@ -455,23 +460,29 @@ function Turn({
               body2={bubble.body2}
             />
           </div>
-          {answering && (
-            <div className={styles.stage} data-phase={phase}>
-              <div className={styles.helper} aria-live="polite">
-                {label.lead && <p className={styles.helperLead}>{label.lead}</p>}
-                <p className={styles.helperBody}>{label.body}</p>
-              </div>
-              {control}
-              {restingPhase && (
-                <div className={styles.escapes}>
-                  <Button variant="Tertiary" size="M" onClick={dontKnow}>
-                    I don’t know the answer
-                  </Button>
-                  <Button variant="Text" size="M" onClick={typeInstead}>
-                    Type instead
-                  </Button>
-                </div>
-              )}
+          {answering && controlState[phase] && (
+            <div className={styles.stage}>
+              <VoiceInput
+                state={controlState[phase]}
+                helper={restingPhase ? restingHelper(phase, rung) : undefined}
+                transcript={take?.transcript}
+                getLevel={getLevel}
+                onStart={tapControl}
+                onStop={tapControl}
+                onSend={send}
+                onDiscard={discard}
+                onRetry={retry}
+                idleActions={
+                  <>
+                    <Button variant="Tertiary" size="M" onClick={dontKnow}>
+                      I don’t know the answer
+                    </Button>
+                    <Button variant="Text" size="M" onClick={typeInstead}>
+                      Type instead
+                    </Button>
+                  </>
+                }
+              />
             </div>
           )}
         </div>
@@ -492,7 +503,7 @@ function Turn({
             showCaption
             caption="You’ll pick up this question at the same step when you come back."
           >
-            <Button variant="Primary" size="L" onClick={() => setSheetOpen(false)}>
+            <Button variant="Primary" size="L" onClick={stay}>
               Stay
             </Button>
             <Button variant="Text" size="L" onClick={leave}>
