@@ -498,9 +498,9 @@ Added to the Figma set, Sep 2026.
 
 ### `textBlock`
 
-**Axes:** `size` (M, S), `captionTone` (primary, secondary), both added Sep 2026. **Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level.
+**Axis:** `size` (M, S), added Sep 2026. **Properties:** `headline`, `caption`, `showCaption` (off by default). Code-only: `as` sets the heading level.
 
-**size.** M is Headline M with the caption Space/150 below (the summary headlines). S is Headline S with the caption Space/050 below, as the review summary's comparison draws the pair; the app home study reminder and the test-day panel use it too. **captionTone.** primary is text/primary; secondary is text/secondary, for the test-day panel's quieter line.
+**size.** M is Headline M with the caption Space/150 below (the summary headlines). S is Headline S with the caption Space/050 below, as the review summary's comparison draws the pair; the app home study reminder and the test-day panel's headline use it too.
 
 **Reach for it** for a screen or section heading with an optional line under it. Not for body copy, and not for a label with a trailing count (the summaries' group labels are still hand-built; see `docs/component-gaps.md`).
 
@@ -520,7 +520,7 @@ Added to the Figma set, Sep 2026.
 
 **Reach for it** for the reminder the day before the test: exam plan home in complete mode (`size="S"`) and the app home's exam-eve hero (`size="M"`).
 
-**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (standby), `textBlock` with `captionTone="secondary"`, and `button` Primary L. Children are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it. The frames drew the headline and its line as two text nodes Space/300 apart; as one `textBlock` they sit Space/050 (S) or Space/150 (M) apart. No Figma component exists. The screen owns the padding around it.
+**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (standby), a `textBlock` headline, a Body M Regular line in `text/secondary` and `button` Primary L. All four are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it (checked against the frames Sep 2026). No Figma component exists. The screen owns the padding around it.
 
 ### `voiceInput`
 

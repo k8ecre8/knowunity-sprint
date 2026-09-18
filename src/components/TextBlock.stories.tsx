@@ -14,7 +14,7 @@ const description = `
 
 **Properties:** \`headline\`, \`caption\`, \`showCaption\` (off by default, as the section summary hides its subhead). Code-only: \`as\` picks the heading level for the document outline; the look does not change.
 
-**size S and captionTone (added Sep 2026).** \`size="S"\` sets Headline S with the caption Space/050 below, as the review summary's comparison draws it; the app home hero and the test-day panel use it too. \`captionTone="secondary"\` sets the caption in text/secondary, for the test-day panel's quieter line.
+**size S (added Sep 2026).** \`size="S"\` sets Headline S with the caption Space/050 below, as the review summary's comparison draws it; the app home hero and the test-day panel's headline use it too.
 
 **Fills its parent.** The screen's padding decides the margin, per the "rows and cards fill" convention.
 `;
@@ -81,26 +81,5 @@ export const SizeS: Story = {
     const gap = caption.getBoundingClientRect().top - heading.getBoundingClientRect().bottom;
     await expect(Math.round(gap)).toBe(2);
     await expect(getComputedStyle(heading).fontSize).toBe(getComputedStyle(document.documentElement).getPropertyValue('--typeScale-headline-s-fontSize').trim());
-  },
-};
-
-/** Test-day panel: Headline S over a text/secondary line. */
-export const SizeSSecondary: Story = {
-  name: 'size=S, captionTone=secondary',
-  args: {
-    size: 'S',
-    captionTone: 'secondary',
-    headline: 'Your test is tomorrow',
-    caption: 'Let’s review the material and make sure it’s still fresh.',
-    showCaption: true,
-  },
-  play: async ({ canvas }) => {
-    const caption = canvas.getByText(/still fresh/);
-    const secondary = getComputedStyle(document.documentElement).getPropertyValue('--semantic-text-secondary').trim();
-    const probe = document.createElement('span');
-    probe.style.color = secondary;
-    document.body.append(probe);
-    await expect(getComputedStyle(caption).color).toBe(getComputedStyle(probe).color);
-    probe.remove();
   },
 };

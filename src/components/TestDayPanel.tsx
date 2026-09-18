@@ -32,7 +32,8 @@ export function TestDayPanel({ size = 'S', headline, body, cta, onAction, as = '
   return (
     <div className={[styles.panel, className].filter(Boolean).join(' ')}>
       <MascotSlot size="2XL" name="standby" />
-      <TextBlock size={size} as={as} headline={headline} showCaption caption={body} captionTone="secondary" />
+      <TextBlock size={size} as={as} headline={headline} />
+      <p className={styles.body}>{body}</p>
       <div className={styles.cta}>
         <Button variant="Primary" size="L" onClick={onAction}>
           {cta}
