@@ -109,7 +109,7 @@ function IntroTray() {
                 <ul className={styles.rows}>
                   {rows.map((row) => (
                     <li key={row.icon} className={styles.row}>
-                      <span>
+                      <span className={styles.rowIcon}>
                         <IconSlot size="300" name={row.icon} />
                       </span>
                       <span className={styles.rowText}>{row.text}</span>

@@ -119,6 +119,13 @@
   flex-shrink: 0;
 }
 
+/* The frame binds the row glyphs to accent/brand/bold while the text stays
+   text/primary. An accented leading icon in a list is allowed; see
+   design-system.md → Icons. */
+.rowIcon {
+  color: var(--semantic-accent-brand-bold);
+}
+
 .rowText {
   font-family: var(--typeScale-body-m-regular-fontFamily);
   font-weight: var(--typeScale-body-m-regular-fontWeight);
