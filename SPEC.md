@@ -379,21 +379,23 @@ Also:
 
 Every row carries `termId`, `round`, `outcome`, `mode` (voice or typed, logged but never shown) and `lastSeenAt`.
 
-**Summaries** count rows and nothing else. Say it back and the practice retries write no rows.
+**Summaries** count rows and nothing else; a round with no rows shows none. Say it back and the practice retries write no rows.
+
+**Practice retry** ("Try the ones you missed", "One more try at the misses") walks only the missed terms, in round order, with the progress bar counting those terms, then returns to the same summary unchanged.
 
 **Resume:** after X and Leave, the session stores the term and rung. Returning to that round's route reopens the same term at the same hint, idle.
 
 **Input mode:** typing sticks within a session. A new round starts on voice.
 
 **Review and exam eve** are separate entry links with seeded data:
-- `/plan?day=review` seeds 10 review terms with `lastSeenAt` three days back.
-- `/plan?day=eve` and `/?day=eve` seed 12 repeat terms.
+- `/plan?day=review` seeds 10 review terms with `lastSeenAt` three days back. If the tester has no section rows, it writes the section script's rows (1 / 1 / 1) three days back, so the review's order and comparison count real rows.
+- `/plan?day=eve` and `/?day=eve` seed 12 repeat terms. Adding `&ready` scripts all 12 correct, for the all-correct summary.
 
 **Simulated day:** the session holds the day (`day1`, `review`, `eve`), and plan home and app home read it from there. `?day=` sets it and then drops out of the URL. Finishing a round moves it on: section summary Continue → review day, review summary Continue → exam eve. The tab bar's Chat and Plans tabs link app home and plan home.
 
 The tester's own section-round rows persist in `sessionStorage` and are merged in, so their outcomes feed the review selection and the comparison.
 
-**Selection:** weakest first (needs practice, then needed a hint, then correct without help), applied over the seeded list. The exam-eve repeat uses each term's second wording (`promptB`).
+**Selection:** weakest first (needs practice, then needed a hint, then terms with no earlier row, then correct without help), by the tester's latest row from earlier rounds, applied over the seeded list and keeping its order within a rank. The review's scripted unclear take goes on whichever term is asked first. The exam-eve repeat uses each term's second wording (`promptB`).
 
 **Confidence:** the before-plan rating is a constant in mock data, and the pre-review rating comes from screen 5. The review summary picks one of nine copy versions from the direction of each change: confidence up, same or down, against performance (section-round rows vs review rows) up, same or down.
 

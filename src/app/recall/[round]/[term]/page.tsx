@@ -25,8 +25,8 @@ import { Button } from '@/components/Button';
 import { VoiceInput, type VoiceInputState } from '@/components/VoiceInput';
 import { BottomSheet } from '@/components/BottomSheet';
 import { PermissionAlert } from '@/components/PermissionAlert';
-import { termsForRound, plateTectonics, type Round, type ScriptStep } from '@/mock/terms';
-import { recordOutcome, updateSession, useSession, type Outcome } from '@/mock/session';
+import { termsForRound, plateTectonics, type Round, type ScriptStep, type Term } from '@/mock/terms';
+import { practiceFor, recordOutcome, roundTerms, updateSession, useSession, type Outcome } from '@/mock/session';
 import { createSpeechLevel } from '@/mock/speech';
 import styles from './page.module.css';
 
@@ -117,22 +117,36 @@ function VoiceTurn({ round, term }: { round: Round; term: number }) {
     resume && resume.round === round && resume.term === term
       ? (Math.min(3, Math.max(0, resume.rung)) as Rung)
       : 0;
-  return <Turn round={round} term={term} startRung={startRung} micPermission={session.micPermission} />;
+  return (
+    <Turn
+      round={round}
+      term={term}
+      terms={roundTerms(session, round)}
+      practice={practiceFor(session, round)}
+      startRung={startRung}
+      micPermission={session.micPermission}
+    />
+  );
 }
 
 function Turn({
   round,
   term,
+  terms,
+  practice,
   startRung,
   micPermission,
 }: {
   round: Round;
   term: number;
+  /** The round in the order it is asked; see roundTerms. */
+  terms: Term[];
+  /** The missed terms, on a practice pass. A practice pass writes no rows. */
+  practice: string[] | null;
   startRung: Rung;
   micPermission: 'unasked' | 'granted' | 'denied';
 }) {
   const router = useRouter();
-  const terms = termsForRound(round);
   const current = terms[term - 1];
 
   const [rung, setRung] = useState<Rung>(startRung);
@@ -159,6 +173,7 @@ function Turn({
   /* --- the mocked recorder and judge ------------------------------------- */
 
   const finish = (outcome: Outcome) => {
+    if (practice) return;
     recordOutcome({
       termId: current.id,
       round,
@@ -290,8 +305,18 @@ function Turn({
 
   const nextQuestion = () => {
     updateSession((s) => ({ ...s, resume: s.resume?.round === round ? null : s.resume }));
-    if (term < terms.length) router.push(`/recall/${round}/${term + 1}`);
-    else router.push(`/recall/${round}/summary`);
+    // A practice pass walks only the missed terms, then back to the summary.
+    const next = practice
+      ? terms.findIndex((t) => t.id === practice[practice.indexOf(current.id) + 1]) + 1
+      : term < terms.length
+        ? term + 1
+        : 0;
+    if (next > 0) {
+      router.push(`/recall/${round}/${next}`);
+      return;
+    }
+    updateSession((s) => ({ ...s, practice: null }));
+    router.push(`/recall/${round}/summary`);
   };
 
   const leave = () => {
@@ -302,6 +327,7 @@ function Turn({
 
   /* --- what Knowie says -------------------------------------------------- */
 
+  const progress = practice ? practice.indexOf(current.id) : term - 1;
   const prompt = round === 'eve' ? current.promptB : current.prompt;
   const intro =
     round === 'section'
@@ -389,7 +415,7 @@ function Turn({
           onLeftPress={() => setSheetOpen(true)}
           rightIcon="zap"
           rightLabel="Streak"
-          slot={<ProgressIndicator thickness="16" current={term - 1} total={terms.length} />}
+          slot={<ProgressIndicator thickness="16" current={progress} total={practice?.length ?? terms.length} />}
         />
       }
       middleContent={

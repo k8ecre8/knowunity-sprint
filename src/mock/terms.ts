@@ -233,12 +233,9 @@ const eveById = (id: string): Term => {
 };
 
 export const reviewTerms: Term[] = [
-  // The one scripted unclear take (SPEC.md → Verification → path 2): the
-  // first take lands on "didn't catch that", uses no hint and is not judged.
-  reviewTerm(plateTectonics.terms[0], [
-    { kind: 'unclear', transcript: '' },
-    { kind: 'correct', transcript: 'Convection currents in the mantle drag the plates along as hot rock rises, spreads, cools and sinks.' },
-  ]),
+  // The one scripted unclear take (SPEC.md → Verification → path 2) goes on
+  // whichever term the review asks first; see roundTerms in session.ts.
+  reviewTerm(plateTectonics.terms[0], correct('Convection currents in the mantle drag the plates along as hot rock rises, spreads, cools and sinks.')),
   reviewTerm(plateTectonics.terms[1], hinted('They move apart.', 'They move apart and magma rises into the gap and hardens into new crust, making a mid-ocean ridge.')),
   reviewTerm(plateTectonics.terms[2], [
     { kind: 'miss', transcript: 'One plate sinks under the other.' },

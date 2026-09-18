@@ -16,8 +16,8 @@ import { NoteCard } from '@/components/NoteCard';
 import { MascotSlot } from '@/components/MascotSlot';
 import { IconSlot } from '@/components/IconSlot';
 import { Button } from '@/components/Button';
-import { beforePlanRating, confidenceLabels, findTerm, termsForRound } from '@/mock/terms';
-import { advanceDay, rowsForRound, summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { beforePlanRating, confidenceLabels, findTerm } from '@/mock/terms';
+import { advanceDay, roundTerms, rowsForRound, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import shared from './page.module.css';
 import styles from './review.module.css';
 
@@ -137,8 +137,8 @@ export function ReviewSummary() {
   const search = useSearchParams();
 
   // null until the browser has the session, so server and client markup match.
-  const rows = session ? summaryRows(session, round).rows : null;
-  const terms = termsForRound(round);
+  const rows = session ? rowsForRound(session, round) : null;
+  const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
   const good = (rows ?? []).filter((r) => r.outcome === 'correct-without-help');
@@ -187,7 +187,7 @@ export function ReviewSummary() {
 
   const rate = (list: OutcomeRow[]) =>
     list.length ? list.filter((r) => r.outcome === 'correct-without-help').length / list.length : 0;
-  const sectionRate = session ? rate(summaryRows(session, 'section').rows) : 0;
+  const sectionRate = session ? rate(rowsForRound(session, 'section')) : 0;
   const reviewRate = rate(rows ?? []);
   const performanceDir = direction(reviewRate - sectionRate, SAME_THRESHOLD);
   const verdict = comparison[confidenceDir][performanceDir];

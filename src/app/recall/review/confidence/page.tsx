@@ -39,6 +39,7 @@ export default function ConfidenceCheckPage() {
       ...s,
       inputMode: 'voice',
       resume: s.resume?.round === round ? null : s.resume,
+      practice: null,
     }));
     router.push(`/recall/${round}/1`);
   };

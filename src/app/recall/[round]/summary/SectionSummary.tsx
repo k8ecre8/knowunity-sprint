@@ -10,8 +10,8 @@ import { SummaryCard } from '@/components/SummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { Button } from '@/components/Button';
 import { NoteCard } from '@/components/NoteCard';
-import { findTerm, termsForRound } from '@/mock/terms';
-import { advanceDay, summaryRows, updateSession, useSession, type OutcomeRow } from '@/mock/session';
+import { findTerm } from '@/mock/terms';
+import { advanceDay, roundTerms, rowsForRound, updateSession, useSession, type OutcomeRow } from '@/mock/session';
 import styles from './page.module.css';
 
 const round = 'section';
@@ -26,8 +26,8 @@ export function SectionSummary() {
   const session = useSession();
 
   // null until the browser has the session, so server and client markup match.
-  const rows = session ? summaryRows(session, round).rows : null;
-  const terms = termsForRound(round);
+  const rows = session ? rowsForRound(session, round) : null;
+  const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
   const good = (rows ?? []).filter((r) => r.outcome === 'correct-without-help');
