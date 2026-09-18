@@ -455,7 +455,8 @@ Each path is walked by tapping only, with no URL typing except the seeded entry 
    - X → Stay closes the sheet with nothing lost.
 7. **Review.**
    - `/plan?day=review` → cumulative review → confidence check (Start disabled until a position is chosen) → 10 terms → review summary.
-   - The headline states the count and the gap. Same-day terms show "still fresh".
+   - The summary states the count and the gap.
+   - `/recall/review/summary?fresh` shows the same-day state ("still fresh"). Tapping cannot reach it: `?day=review` seeds the section rows three days back, and finishing the section round ages them three days.
    - The comparison copy matches the direction of the seeded before-plan rating vs the chosen rating, and of section vs review performance.
 8. **Exam eve.**
    - `/?day=eve` → Warm up now → 12 terms using `promptB` → repeat summary.
@@ -464,7 +465,10 @@ Each path is walked by tapping only, with no URL typing except the seeded entry 
 
 ### 4. Platform constraints, on every screen
 - **Targets:** every tap target is at least 44×44 (inspect the box).
-- **Thumb zone:** primary actions are in `bottomContent`.
+- **Thumb zone:** primary actions are in `bottomContent`. Three exceptions, decided Sep 2026:
+  - Plan home and app home, where `bottomContent` holds `bottomNav`.
+  - The typed turn's input, which sits under the bubble so the keyboard pushes nothing off-screen.
+  - The voice turn's `VoiceInput` ring, which sits mid-screen under Knowie's bubble as the frames draw it.
 - **Safe areas:** nothing sits under the status bar or home indicator.
 - **Reduced motion:** with `prefers-reduced-motion: reduce` emulated, recording, transcribing, thinking and the slow beat are still distinguishable by label, with no motion.
 - **String expansion:** with every mock string temporarily 40% longer, nothing clips or overlaps and `middleContent` scrolls.

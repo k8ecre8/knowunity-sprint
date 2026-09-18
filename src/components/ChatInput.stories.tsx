@@ -163,3 +163,17 @@ export const Derived: Story = {
     await expect(field).toHaveValue('');
   },
 };
+
+/** The whole box is the tap target, not only the one-line field inside it. */
+export const TapTarget: Story = {
+  name: 'tap anywhere on the box',
+  play: async ({ canvas }) => {
+    const field = canvas.getByRole('textbox', { name: 'Your answer' });
+    const box = field.closest('[class*=container]') as HTMLElement;
+    await expect(box.getBoundingClientRect().height).toBeGreaterThanOrEqual(44);
+    // A tap on the box itself, away from the one-line field.
+    await userEvent.click(box);
+    await expect(field).toHaveFocus();
+  },
+};
+

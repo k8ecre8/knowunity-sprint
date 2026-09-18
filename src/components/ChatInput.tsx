@@ -100,7 +100,15 @@ export function ChatInput({
       data-status={status}
       aria-busy={loading || undefined}
     >
-      <div className={styles.container}>
+      {/* The whole 56-tall box is the tap target: the field inside is one
+          line tall, so a tap anywhere on the box that is not a button
+          focuses it. Keyboard users reach the field directly. */}
+      <div
+        className={styles.container}
+        onClick={(event) => {
+          if (!(event.target as HTMLElement).closest('button')) fieldRef.current?.focus();
+        }}
+      >
         <div className={styles.fieldWrap}>
           <textarea
             ref={fieldRef}
