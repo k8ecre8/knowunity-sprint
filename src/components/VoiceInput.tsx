@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { ButtonIcon } from './ButtonIcon';
 import { IconSlot } from './IconSlot';
 import styles from './VoiceInput.module.css';
@@ -21,6 +21,17 @@ export type VoiceInputState =
 
 export type VoiceInputProps = {
   state: VoiceInputState;
+  /**
+   * A second, quieter line under the label, as the idle frame draws it ("Even a partial
+   * answer is a great start"). The screen decides when to pass it. Sentence case.
+   */
+  helper?: string;
+  /**
+   * Idle only: what sits under the ring, placed `Space/600` below it. The screen passes the
+   * escapes (`button` Tertiary M "I don't know the answer", "Type instead"), because what they
+   * do belongs to the screen. They fade out and keep their space in every other state.
+   */
+  idleActions?: ReactNode;
   /** The read-only words shown at the transcript step. */
   transcript?: string;
   /**
@@ -90,7 +101,7 @@ function readTokens(el: HTMLElement): Tokens {
     bold: px('--primitive-stroke-bold'),
     nudge: px('--primitive-space-100'),
     breath: px('--primitive-space-050'),
-    barMax: px('--primitive-space-600'),
+    barMax: px('--primitive-space-400'),
     ripple: px('--primitive-space-800'),
     inset: px('--primitive-space-300'),
     target: px('--primitive-control-1200') / 2,
@@ -114,7 +125,7 @@ const f2 = (v: number) => v.toFixed(2);
  * `voiceInput`: the push-to-talk control and its helper label as one unit.
  * One `accent/brand/bold` line carries every state; the middle says what to do.
  */
-export function VoiceInput({ state, transcript = '', getLevel, onStart, onStop, onSend, onDiscard, onRetry, className }: VoiceInputProps) {
+export function VoiceInput({ state, helper, idleActions, transcript = '', getLevel, onStart, onStop, onSend, onDiscard, onRetry, className }: VoiceInputProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<SVGPathElement>(null);
@@ -328,12 +339,18 @@ export function VoiceInput({ state, transcript = '', getLevel, onStart, onStop, 
 
   return (
     <div ref={rootRef} className={[styles.root, className].filter(Boolean).join(' ')} data-state={state}>
+      <div className={styles.labels}>
+        <p className={styles.label} role="status">
+          {LABEL[state]}
+        </p>
+        {helper ? <p className={styles.helper}>{helper}</p> : null}
+      </div>
       <div
         ref={stageRef}
         className={styles.stage}
         style={
           cardOn && cardHeight
-            ? { height: `max(calc(var(--primitive-illustration-2500) + var(--primitive-space-1200)), calc(${cardHeight}px + 2 * var(--primitive-space-400)))` }
+            ? { height: `max(calc(var(--primitive-illustration-1500) + 2 * var(--primitive-space-400)), calc(${cardHeight}px + 2 * var(--primitive-space-400)))` }
             : undefined
         }
       >
@@ -388,9 +405,16 @@ export function VoiceInput({ state, transcript = '', getLevel, onStart, onStop, 
         </div>
       </div>
 
-      <p className={styles.label} role="status">
-        {LABEL[state]}
-      </p>
+      {idleActions ? (
+        <div
+          className={styles.idleActions}
+          data-on={state === 'idle'}
+          inert={state !== 'idle' || undefined}
+          aria-hidden={state !== 'idle' || undefined}
+        >
+          {idleActions}
+        </div>
+      ) : null}
     </div>
   );
 }

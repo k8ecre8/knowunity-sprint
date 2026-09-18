@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { expect, fn, userEvent, waitFor } from 'storybook/test';
+import { Button } from './Button';
 import { VoiceInput, type VoiceInputState } from './VoiceInput';
 import { createSpeechLevel } from '../mock/speech';
 
@@ -15,9 +16,11 @@ const description = `
 
 ### What each state means
 
+**The label sits above the ring,** with an optional quieter \`helper\` line under it, as the frames draw it. It is a live region, so a screen reader hears each state.
+
 **idle.** A 120 ring (\`Illustration/1500\`) round the microphone, breathing at \`motion.duration.breathing\` with a soft glow and one ripple per breath. The ring is the button.
 
-**listening.** Tapping squeezes the middle like a press and swaps the microphone for "Tap when done". Waveform bars stand out of the ring and follow the voice, up to \`Space/600\` long. The trash appears to the left.
+**listening.** Tapping squeezes the middle like a press and swaps the microphone for "Tap when done". Waveform bars stand out of the ring and follow the voice, up to \`Space/400\` long, inside the stage's inset so they never reach the label. The trash appears to the left.
 
 **transcribing.** The ring opens into an arc turning at \`motion.duration.spin\`, with three dots stepping in the middle. **transcribingSlow** is the 4-second beat: the arc becomes twelve dashes circling at \`motion.duration.spin-slow\`.
 
@@ -26,6 +29,8 @@ const description = `
 **judging.** Sending eases the card back into the ring, which opens straight into the same arc and dots; **judgingSlow** is the same 4-second beat.
 
 **error.** Past 10 seconds the wait stops: the line closes and goes \`border/strong\`, and the middle offers \`refresh-cw-01\`. Tapping retries judging without re-recording. Grey, not red: red reads as a wrong answer in this app, and nothing has been judged.
+
+**idleActions** is a slot for idle's escapes, \`Space/600\` under the ring: the screen passes \`button\` Tertiary M "I don't know the answer" (and "Type instead"), because what they do belongs to the screen. They fade out and keep their space in every other state, so the ring never moves.
 
 ### Don't
 
@@ -80,13 +85,27 @@ type Story = StoryObj<typeof meta>;
 
 export const Idle: Story = {
   name: 'state=idle',
-  args: { state: 'idle' },
+  args: {
+    state: 'idle',
+    helper: 'Even a partial answer is a great start',
+    idleActions: (
+      <Button variant="Tertiary" size="M">
+        I don&rsquo;t know the answer
+      </Button>
+    ),
+  },
   play: async ({ canvas, args }) => {
     await expect(canvas.getByRole('status')).toHaveTextContent('Tap to answer');
+    await expect(canvas.getByText('Even a partial answer is a great start')).toBeVisible();
     const ring = canvas.getByRole('button', { name: 'Start answering' });
     const box = ring.getBoundingClientRect();
     await expect(box.width).toBeGreaterThanOrEqual(44);
     await expect(box.height).toBeGreaterThanOrEqual(44);
+    // The label is above the ring and the escape below it.
+    const label = canvas.getByRole('status').getBoundingClientRect();
+    const escape = canvas.getByRole('button', { name: 'I don’t know the answer' }).getBoundingClientRect();
+    await expect(label.bottom).toBeLessThanOrEqual(box.top);
+    await expect(escape.top).toBeGreaterThanOrEqual(box.bottom);
     await expect(canvas.queryByRole('button', { name: 'Discard and start over' })).toBeNull();
     await userEvent.click(ring);
     await expect(args.onStart).toHaveBeenCalledOnce();
@@ -95,13 +114,22 @@ export const Idle: Story = {
 
 export const Listening: Story = {
   name: 'state=listening',
-  args: { state: 'listening' },
+  args: {
+    state: 'listening',
+    idleActions: (
+      <Button variant="Tertiary" size="M">
+        I don&rsquo;t know the answer
+      </Button>
+    ),
+  },
   render: function Render(args) {
     const getLevel = useMemo(() => createSpeechLevel(), []);
     return <VoiceInput {...args} getLevel={getLevel} />;
   },
   play: async ({ canvas, args }) => {
     await expect(canvas.getByRole('status')).toHaveTextContent('Listening');
+    // Idle's escape keeps its space but is out of reach while listening.
+    await expect(canvas.queryByRole('button', { name: 'I don’t know the answer' })).toBeNull();
     await userEvent.click(canvas.getByRole('button', { name: 'Discard and start over' }));
     await expect(args.onDiscard).toHaveBeenCalledOnce();
     await userEvent.click(canvas.getByRole('button', { name: 'Stop recording' }));

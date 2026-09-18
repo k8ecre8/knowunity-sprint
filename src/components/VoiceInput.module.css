@@ -11,13 +11,21 @@
   width: 100%;
 }
 
-/* The stage holds the ring at its centre. At the transcript step it grows to
-   fit the card, so a longer transcript pushes the layout rather than
-   overflowing it. */
+/* The label sits above the ring, as the frames draw it: Space/600 from the
+   ring is the root's Space/200 gap plus the stage's Space/400 inset. */
+.labels {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The stage is the ring plus a Space/400 inset above and below, which the
+   listening bars stand in. At the transcript step it grows to fit the card,
+   so a longer transcript pushes the layout rather than overflowing it. */
 .stage {
   position: relative;
   width: 100%;
-  height: calc(var(--primitive-illustration-2500) + var(--primitive-space-1200));
+  height: calc(var(--primitive-illustration-1500) + 2 * var(--primitive-space-400));
   transition: height var(--motion-duration-slow) var(--motion-easing-standard);
 }
 
@@ -199,7 +207,7 @@
   margin-top: var(--primitive-space-100);
 }
 
-/* The helper label under the ring. It carries the state on its own when
+/* The helper label above the ring. It carries the state on its own when
    motion is reduced. */
 .label {
   margin: var(--primitive-space-0);
@@ -213,11 +221,37 @@
   text-align: center;
 }
 
+.helper {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+  text-align: center;
+}
+
+/* Idle's escapes, under the ring. They keep their space when hidden so the
+   ring does not move between states. */
+.idleActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-100);
+  transition: opacity var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+.idleActions[data-on='false'] {
+  opacity: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stage,
   .line,
   .item,
-  .dot {
+  .dot,
+  .idleActions {
     animation: none;
     transition: none;
   }
