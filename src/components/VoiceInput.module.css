@@ -1,0 +1,224 @@
+/* voiceInput — see docs/design-system.md → Components built this sprint →
+   `voiceInput`. Every value is a token from build/css/tokens.css. No bare hex,
+   no loose px, no fallbacks. The line's geometry is drawn per frame in
+   VoiceInput.tsx from the same tokens, read off this element. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--primitive-space-200);
+  width: 100%;
+}
+
+/* The stage holds the ring at its centre. At the transcript step it grows to
+   fit the card, so a longer transcript pushes the layout rather than
+   overflowing it. */
+.stage {
+  position: relative;
+  width: 100%;
+  height: calc(var(--primitive-illustration-2500) + var(--primitive-space-1200));
+  transition: height var(--motion-duration-slow) var(--motion-easing-standard);
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* The glow is a shape, not an effect: a radial fill of the brand colour that
+   fades to nothing. Decided Sep 2026 in place of an effect token. */
+.glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--primitive-illustration-2500);
+  height: var(--primitive-illustration-2500);
+  border-radius: var(--primitive-radius-full);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--semantic-accent-brand-bold) 55%, transparent) 0%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.line {
+  fill: none;
+  stroke: var(--semantic-accent-brand-bold);
+  stroke-width: var(--primitive-stroke-bold);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+/* Past 10 seconds the wait stops and goes grey. Not an error colour: red
+   reads as a wrong answer in this app, and nothing has been judged. */
+.root[data-state='error'] .line {
+  stroke: var(--semantic-border-strong);
+}
+
+.ripple {
+  stroke-width: var(--primitive-stroke-heavy-border);
+}
+
+/* The middle. It is the button in idle, listening and error; the card takes
+   over at the transcript step. */
+.core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: var(--primitive-illustration-1500);
+  height: var(--primitive-illustration-1500);
+  padding: var(--primitive-space-0);
+  border: none;
+  border-radius: var(--primitive-radius-full);
+  background: none;
+  color: var(--semantic-text-primary);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+.core:disabled {
+  cursor: default;
+}
+
+.item {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  transition:
+    opacity var(--motion-duration-base) var(--motion-easing-standard),
+    transform var(--motion-duration-base) var(--motion-easing-standard);
+}
+
+.item[data-on='false'] {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.word {
+  max-width: calc(var(--primitive-illustration-1500) - var(--primitive-space-600));
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+  text-align: center;
+}
+
+.dots {
+  display: flex;
+  gap: var(--primitive-space-150);
+}
+
+.dot {
+  display: block;
+  width: var(--primitive-space-200);
+  height: var(--primitive-space-200);
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-text-primary);
+  animation: step var(--motion-duration-spin) var(--motion-easing-standard) infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: calc(var(--motion-duration-spin) / 8);
+}
+
+.dot:nth-child(3) {
+  animation-delay: calc(var(--motion-duration-spin) / 4);
+}
+
+@keyframes step {
+  0%,
+  60%,
+  100% {
+    transform: translateY(var(--primitive-space-0));
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(var(--primitive-space-negative-100));
+    opacity: 1;
+  }
+}
+
+/* The one trash control. It travels from beside the ring into the card's
+   bottom-left corner as the card grows. Position and opacity are set per
+   frame. */
+.trash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+}
+
+/* The transcript card: the ring's own line stretched round the words. */
+.card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-200);
+  box-sizing: border-box;
+  width: calc(100% - 2 * var(--primitive-space-400));
+  padding: var(--primitive-space-400) var(--primitive-space-400) var(--primitive-space-300);
+  transform: translate(-50%, -50%);
+}
+
+.cardTitle {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+.cardText {
+  margin: var(--primitive-space-0);
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--primitive-space-100);
+}
+
+/* The helper label under the ring. It carries the state on its own when
+   motion is reduced. */
+.label {
+  margin: var(--primitive-space-0);
+  min-height: var(--typeScale-body-s-bold-lineHeight);
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .line,
+  .item,
+  .dot {
+    animation: none;
+    transition: none;
+  }
+}
