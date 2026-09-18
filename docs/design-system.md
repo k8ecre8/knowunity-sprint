@@ -371,6 +371,8 @@ A single component, not a set. **Properties:** `showVerdict`, `showAction`, `bod
 
 **Where the file and the description disagree.** The M-size icon is a 16px glyph scaled to 20, giving a 2.5px stroke — the same fault the 32px `iconSlot` had; `IconSlot` renders one weight. Caption S Bold at XXS and XS is 12px, which the type token itself flags as below the readable minimum; the code follows the file.
 
+**`iconTone` (added Sep 2026, code-only).** `label` (default) gives the icons the label colour. `info` makes them `feedback/info/onSubtle` while the label keeps its colour, as the app home quick actions draw them (checked against "App home / Default"). The colour is set on a wrapper around each nested `iconSlot`, never on `iconSlot`, following the leading-icon exception in Icons.
+
 ### `iconSlot`
 
 **Axes:** `Size (IGNORE)` (100, 150, 200, 250, 300, 400, 500 — 8 to 40px on the Icon ramp). 7 variants, default 400. **Properties:** one instance-swap holding the glyph, default `check`, offering 69 icons. `IconSlot` in code offers 72: `plus` was added Sep 2026 for `summaryCard`'s overflow row, and `dots-vertical` and `share-02` for `appBar`, but none of the three is on the swap list — see Known gaps. Ten more — `globe-01`, `target-04`, `book-open-02`, `clipboard-check`, `thumbs-up`, `lock-01`, `trophy-02`, `list`, `graduation-hat-02`, `upload-cloud-02` — were added to the swap list and to `IconSlot` together, Sep 2026, linked to the published Untitled UI library.

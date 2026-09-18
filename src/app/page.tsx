@@ -116,7 +116,7 @@ function AppHome({ seeded }: { seeded: Day | null }) {
       <ul className={styles.quickActions} aria-label="Quick actions">
         {quickActions.map((action) => (
           <li key={action.id} className={styles.quickAction} data-placeholder-glyph={action.glyph.placeholderFor}>
-            <Chips size="M" color="Primary" active="False" showRightIcon={false} leftIcon={action.glyph.icon}>
+            <Chips size="M" color="Primary" active="False" showRightIcon={false} leftIcon={action.glyph.icon} iconTone="info">
               {action.label}
             </Chips>
           </li>

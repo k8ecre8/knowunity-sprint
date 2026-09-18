@@ -8,6 +8,8 @@ export type ChipsSize = 'XXS' | 'XS' | 'S' | 'M';
 export type ChipsColor = 'Primary' | 'pro';
 /** Figma axis `active`. The file's values are the strings False and True, kept as they arrived. */
 export type ChipsActive = 'False' | 'True';
+/** Code-only. The icons' colour: the label's, or feedback/info/onSubtle as the app home quick actions draw them. */
+export type ChipsIconTone = 'label' | 'info';
 
 /** The nested iconSlot steps down with the chip: 150 at XXS and XS, 200 at S, 250 at M. */
 const slotSize: Record<ChipsSize, IconSlotSize> = { XXS: '150', XS: '150', S: '200', M: '250' };
@@ -21,6 +23,13 @@ export type ChipsProps = {
   /** The glyphs swapped on the two nested iconSlots. Both default to `check`, as the masters do. */
   leftIcon?: IconName;
   rightIcon?: IconName;
+  /**
+   * Code-only. `label` (default): the icons take the label colour. `info`:
+   * the icons are feedback/info/onSubtle while the label stays as it is, as
+   * the app home quick actions draw them. Set on the icon's wrapper, never
+   * on `IconSlot`, per docs/design-system.md → Icons.
+   */
+  iconTone?: ChipsIconTone;
   /** The label. Figma calls this property `Text`. Sentence case. */
   children: ReactNode;
   /**
@@ -40,6 +49,7 @@ export function Chips({
   showRightIcon = true,
   leftIcon = 'check',
   rightIcon = 'check',
+  iconTone = 'label',
   children,
   onClick,
   className,
@@ -54,15 +64,21 @@ export function Chips({
     .filter(Boolean)
     .join(' ');
 
+  const icon = (name: IconName) => (
+    <span className={[styles.icon, iconTone === 'info' && styles.iconInfo].filter(Boolean).join(' ')}>
+      <IconSlot size={slotSize[size]} name={name} />
+    </span>
+  );
+
   const content = (
     <>
-      {showLeftIcon && <IconSlot size={slotSize[size]} name={leftIcon} />}
+      {showLeftIcon && icon(leftIcon)}
       {children}
-      {showRightIcon && <IconSlot size={slotSize[size]} name={rightIcon} />}
+      {showRightIcon && icon(rightIcon)}
     </>
   );
 
-  const data = { 'data-size': size, 'data-color': color, 'data-active': active };
+  const data = { 'data-size': size, 'data-color': color, 'data-active': active, 'data-icon-tone': iconTone };
 
   return onClick ? (
     <button type="button" className={classNames} onClick={onClick} aria-pressed={active === 'True'} {...data}>
