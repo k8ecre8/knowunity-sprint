@@ -22,8 +22,8 @@ export type VoiceInputState =
 export type VoiceInputProps = {
   state: VoiceInputState;
   /**
-   * A second, quieter line under the label, as the idle frame draws it ("Even a partial
-   * answer is a great start"). The screen decides when to pass it. Sentence case.
+   * Overrides the second, quieter line under the label for this state. Leave it out to use
+   * the default in `HELPER` below; pass an empty string to hide it. Sentence case.
    */
   helper?: string;
   /**
@@ -61,6 +61,14 @@ const LABEL: Record<VoiceInputState, string> = {
   judging: 'Knowie is reading your answer',
   judgingSlow: 'Still reading, nearly there',
   error: 'That took too long. Tap to try again',
+};
+
+/**
+ * The second, quieter line under the label, per state. Edit the copy here; a state with no
+ * entry shows no second line.
+ */
+const HELPER: Partial<Record<VoiceInputState, string>> = {
+  idle: 'Even a partial answer is a great start',
 };
 
 /** What each state asks of the drawing. Every part eases toward these. */
@@ -345,7 +353,7 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
         <p className={styles.label} role="status">
           {LABEL[state]}
         </p>
-        {helper ? <p className={styles.helper}>{helper}</p> : null}
+        {(helper ?? HELPER[state]) ? <p className={styles.helper}>{helper ?? HELPER[state]}</p> : null}
       </div>
       <div
         ref={stageRef}

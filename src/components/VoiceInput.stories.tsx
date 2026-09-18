@@ -16,7 +16,7 @@ const description = `
 
 ### What each state means
 
-**The label sits above the ring,** with an optional quieter \`helper\` line under it, as the frames draw it. It is a live region, so a screen reader hears each state.
+**The label sits above the ring,** with a quieter second line under it (defaults in \`HELPER\` in the component, overridable with \`helper\`), as the frames draw it. It is a live region, so a screen reader hears each state.
 
 **idle.** A 120 ring (\`Illustration/1500\`) round the microphone, breathing at \`motion.duration.breathing\` with a soft glow and one ripple per breath. The ring is the button.
 
@@ -87,7 +87,6 @@ export const Idle: Story = {
   name: 'state=idle',
   args: {
     state: 'idle',
-    helper: 'Even a partial answer is a great start',
     idleActions: (
       <Button variant="Tertiary" size="M">
         I don&rsquo;t know the answer
