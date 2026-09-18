@@ -260,6 +260,17 @@ export function practiceFor(session: Session, round: Round): string[] | null {
   return session.practice?.round === round ? session.practice.termIds : null;
 }
 
+/**
+ * Entering a round from the plan or home. A practice pass on it survives only
+ * if the student left it mid-way (a resume point is stored); otherwise it is
+ * stale and the round runs for real.
+ */
+export function enterRound(round: Round): void {
+  updateSession((s) =>
+    s.practice?.round === round && s.resume?.round !== round ? { ...s, practice: null } : s,
+  );
+}
+
 /* --- seeding --------------------------------------------------------------- */
 
 /**
@@ -281,14 +292,14 @@ export function seedDay(day: Day): void {
 
 /**
  * The 1-based term a round is on right now: a left-off term if there is one,
- * otherwise the first term without a row, otherwise the last term.
+ * otherwise the first term without a row. A finished round starts again at 1.
  */
 export function currentTerm(session: Session, round: Round): number {
   if (session.resume?.round === round) return session.resume.term;
   const terms = roundTerms(session, round);
   const done = new Set(rowsForRound(session, round).map((r) => r.termId));
   const next = terms.findIndex((t) => !done.has(t.id));
-  return next === -1 ? Math.max(terms.length, 1) : next + 1;
+  return next === -1 ? 1 : next + 1;
 }
 
 /* --- outcomes from the script -------------------------------------------- */

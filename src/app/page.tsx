@@ -23,7 +23,7 @@ import { ListItem } from '@/components/ListItem';
 import { Chips } from '@/components/Chips';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
-import { currentTerm, daysToExam, updateSession, useSession, type Day } from '@/mock/session';
+import { currentTerm, daysToExam, enterRound, updateSession, useSession, type Day } from '@/mock/session';
 import { useEntryLink } from '@/mock/useEntryLink';
 import styles from './page.module.css';
 
@@ -66,8 +66,9 @@ function AppHome({ seeded }: { seeded: Day | null }) {
     if (!session) return;
     // A new round starts on voice; a round left mid-way resumes as it was.
     const term = currentTerm(session, 'eve');
+    enterRound('eve');
     if (session.resume?.round !== 'eve') {
-      updateSession((s) => ({ ...s, inputMode: 'voice', practice: null }));
+      updateSession((s) => ({ ...s, inputMode: 'voice' }));
     }
     router.push(`/recall/eve/${term}`);
   };

@@ -239,7 +239,7 @@ function Turn({
   const useVoice = () => {
     clearTimers();
     if (micPermission === 'denied') {
-      router.push(`/recall/${round}/mic-denied?from=typed`);
+      router.push(`/recall/${round}/mic-denied?from=typed&term=${term}`);
       return;
     }
     updateSession((s) => ({ ...s, inputMode: 'voice' }));

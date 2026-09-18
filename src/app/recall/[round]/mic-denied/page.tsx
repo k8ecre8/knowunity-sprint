@@ -54,7 +54,9 @@ function MicDenied({ round }: { round: Round }) {
 
   const onTypeInstead = () => {
     // Typing sticks for the rest of the session.
-    const term = session ? currentTerm(session, round) : 1;
+    // The turn passes its term, so a practice pass returns to the term it was on.
+    const passed = Number(params.get('term'));
+    const term = Number.isInteger(passed) && passed > 0 ? passed : session ? currentTerm(session, round) : 1;
     updateSession((s) => ({ ...s, inputMode: 'typed' }));
     router.push(`/recall/${round}/${term}/typed`);
   };

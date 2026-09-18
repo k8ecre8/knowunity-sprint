@@ -23,7 +23,8 @@ export function useEntryLink(path: string): Day | null {
     if (!reset && !day && !ready) return;
     if (reset) resetPrototype();
     if (day) seedDay(day);
-    if (ready) updateSession((s) => ({ ...s, eveReady: true }));
+    // `&ready` lasts until the next entry link without it.
+    if (day || ready) updateSession((s) => ({ ...s, eveReady: ready }));
     router.replace(path);
   }, [reset, day, ready, path, router]);
 

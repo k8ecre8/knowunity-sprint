@@ -18,7 +18,7 @@ import { IconSlot, type IconName } from '@/components/IconSlot';
 import { Button } from '@/components/Button';
 import { PermissionAlert } from '@/components/PermissionAlert';
 import { sections } from '@/mock/terms';
-import { currentTerm, updateSession, useSession } from '@/mock/session';
+import { currentTerm, enterRound, updateSession, useSession } from '@/mock/session';
 import { PlanHome } from '../../PlanHome';
 import styles from './page.module.css';
 
@@ -54,7 +54,10 @@ function IntroTray() {
   const round = 'section';
   const term = currentTerm(session, round);
 
-  const openVoice = () => router.push(`/recall/${round}/${term}`);
+  const openVoice = () => {
+    enterRound(round);
+    router.push(`/recall/${round}/${term}`);
+  };
 
   const start = () => {
     // One OS prompt per session, on the first mic use.
@@ -74,6 +77,7 @@ function IntroTray() {
 
   const cantTalk = () => {
     // Typing sticks for the rest of the session.
+    enterRound(round);
     updateSession((s) => ({ ...s, inputMode: 'typed' }));
     router.push(`/recall/${round}/${term}/typed`);
   };

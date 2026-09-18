@@ -8,7 +8,7 @@ Prototype is a web app that looks like iOS, 390px, dark mode only, recall mocked
 **Where it lives:** three rounds on the same loop.
 
 - **Section round:** 3 to 5 terms after each section's quiz. The plan node is done whatever the outcome, because completion is not mastery and the misses return in the review.
-- **Review round:** 10 terms inside the comprehensive review node ("See what stuck"), preceded by a confidence check.
+- **Review round:** 10 terms inside the comprehensive review node (the cumulative review, formerly "See what stuck"), preceded by a confidence check.
 - **Exam-eve repeat:** 12 terms, reached from the day-before reminder, every term asked with a second wording.
 
 Review and repeat pick terms weakest first: needs practice, then needed a hint, then correct without help.

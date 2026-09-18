@@ -264,7 +264,7 @@ function Turn({
   const denyMic = () => {
     clearTimers();
     updateSession((s) => ({ ...s, micPermission: 'denied' }));
-    router.push(`/recall/${round}/mic-denied`);
+    router.push(`/recall/${round}/mic-denied?term=${term}`);
   };
 
   /** From recording, the transcript or the wait: back to idle, nothing used. */

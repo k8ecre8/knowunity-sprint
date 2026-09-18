@@ -10,8 +10,8 @@
    on by the summaries, or seeded by `?day=`):
    - Day 1: the Plate tectonics voice node is `next`.
    - Section done: that node is `done` (the section summary marks it).
-   - Review day: every section node is done and "See what stuck" is `next`,
-     or `done` once the review summary has marked it.
+   - Review day: every section node is done and the cumulative review is
+     `next`, or `done` once the review summary has marked it.
    - Plan complete, test tomorrow (eve): the path collapses into the
      "Plan complete" card and the warm-up reminder.
 
@@ -28,7 +28,7 @@ import { Button } from '@/components/Button';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
 import { plateTectonics } from '@/mock/terms';
-import { currentTerm, daysToExam, updateSession, useSession, type Day, type Session } from '@/mock/session';
+import { currentTerm, daysToExam, enterRound, updateSession, useSession, type Day, type Session } from '@/mock/session';
 import styles from './PlanHome.module.css';
 
 type Glyph = { icon: IconName };
@@ -66,7 +66,7 @@ type Path = { section?: string; phase?: string; steps: Step[] };
 const SECTION_ID = plateTectonics.id;
 const REVIEW_ID = 'see-what-stuck';
 
-function buildPaths(day: Day,session: Session, go: (href: string) => void): Path[] {
+function buildPaths(day: Day, session: Session, go: (href: string) => void): Path[] {
   const sectionDone = day === 'review' || session.doneSections.includes(SECTION_ID);
   const reviewDone = day === 'review' && session.doneSections.includes(REVIEW_ID);
   // Review day seeds every section node as done.
@@ -84,7 +84,8 @@ function buildPaths(day: Day,session: Session, go: (href: string) => void): Path
           caption: `${plateTectonics.terms.length} questions, ~5 mins`,
           state: sectionDone ? 'done' : 'next',
           glyph: { icon: 'microphone-01' },
-          onPress: () => go(`/plan/${SECTION_ID}/intro`),
+          // A done node is inert: replaying a finished round would reorder the rounds after it.
+          onPress: sectionDone ? undefined : () => go(`/plan/${SECTION_ID}/intro`),
         },
         { id: 'pt-2', title: 'Plate tectonics 2', caption: '3 questions, ~5 mins', state: afterVoice, glyph: { icon: 'file-question-02' } },
         { id: 'pt-3', title: 'Plate tectonics 3', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
@@ -106,7 +107,11 @@ function buildPaths(day: Day,session: Session, go: (href: string) => void): Path
           caption: '10 questions, ~10 min',
           state: day === 'review' ? (reviewDone ? 'done' : 'next') : 'todo',
           glyph: { icon: 'refresh-cw-01' },
-          onPress: day === 'review' ? () => go('/recall/review/confidence') : undefined,
+          // A review left mid-way, practice or real, resumes; otherwise the confidence check comes first.
+          onPress:
+            day === 'review' && !reviewDone
+              ? () => go(session.resume?.round === 'review' ? `/recall/review/${session.resume.term}` : '/recall/review/confidence')
+              : undefined,
         },
         { id: 'practice-test', title: 'Practice test', caption: '12 questions, ~12 min', state: reviewDone ? 'next' : 'todo', glyph: glyphs.clipboard },
       ],
@@ -169,8 +174,9 @@ export function PlanHome({ day: seeded, bottomSheetOnly, showBottomSheetBackgrou
     if (!session) return;
     // A new round starts on voice; a round left mid-way resumes as it was.
     const term = currentTerm(session, 'eve');
+    enterRound('eve');
     if (session.resume?.round !== 'eve') {
-      updateSession((s) => ({ ...s, inputMode: 'voice', practice: null }));
+      updateSession((s) => ({ ...s, inputMode: 'voice' }));
     }
     router.push(`/recall/eve/${term}`);
   };

@@ -210,10 +210,13 @@ export function ReviewSummary() {
 
   const onPractice = () => {
     // Practice only: the turn writes no rows. Opens the first missed term.
-    const termIds = missed.map((r) => r.termId);
+    // In round order, not by outcome group; typing sticks within a session.
+    const missedIds = new Set(missed.map((r) => r.termId));
+    const termIds = terms.filter((t) => missedIds.has(t.id)).map((t) => t.id);
     const first = terms.findIndex((t) => t.id === termIds[0]);
+    const typed = session?.inputMode === 'typed' ? '/typed' : '';
     updateSession((s) => ({ ...s, practice: { round, termIds }, resume: null }));
-    router.push(`/recall/${round}/${first + 1}`);
+    router.push(`/recall/${round}/${first + 1}${typed}`);
   };
 
   return (

@@ -274,7 +274,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 **States**
 - **Day 1:** the Plate Tectonics voice node is `next`.
 - **Section done:** that node is `done`.
-- **Review day:** "See what stuck" is `next`, seeded by `?day=review`.
+- **Review day:** the cumulative review node is `next`, seeded by `?day=review`.
 - **Plan complete, test tomorrow:** the path collapses into the "Plan complete" card with the warm-up reminder, seeded by `?day=eve`.
 
 **Components**
@@ -293,7 +293,7 @@ Every animated state has a reduced-motion form, where the helper label carries t
 
 **Actions**
 - Plate Tectonics voice node → `/plan/plate-tectonics/intro`.
-- See what stuck node → `/recall/review/confidence`.
+- Cumulative review node → `/recall/review/confidence`, or back into the review at its resume point if the student left it mid-way (a real review or a practice pass). A `done` node is inert.
 - Warm up now → `/recall/eve/1`.
 
 ### 10. App home
@@ -452,7 +452,7 @@ Each path is walked by tapping only, with no URL typing except the seeded entry 
    - Re-enter the voice node → the same term, Hint 2, idle.
    - X → Stay closes the sheet with nothing lost.
 7. **Review.**
-   - `/plan?day=review` → See what stuck → confidence check (Start disabled until a position is chosen) → 10 terms → review summary.
+   - `/plan?day=review` → cumulative review → confidence check (Start disabled until a position is chosen) → 10 terms → review summary.
    - The headline states the count and the gap. Same-day terms show "still fresh".
    - The comparison copy matches the direction of the seeded before-plan rating vs the chosen rating, and of section vs review performance.
 8. **Exam eve.**
