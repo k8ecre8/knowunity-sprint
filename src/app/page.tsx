@@ -51,11 +51,11 @@ const counters: readonly Counter[] = [
   { id: 'streak', label: '1', art: '/images/flame-orange-sm.svg', tone: styles.counterCoral },
 ];
 
-const quickActions = [
+const quickActions: readonly { id: string; label: string; glyph: Glyph }[] = [
   { id: 'quiz', label: 'Quiz', glyph: glyphs.quiz },
   { id: 'practice-test', label: 'Practice test', glyph: glyphs.practiceTest },
   { id: 'upload', label: 'Upload', glyph: glyphs.upload },
-] as const;
+];
 
 function AppHome({ day }: { day: Day }) {
   const router = useRouter();
