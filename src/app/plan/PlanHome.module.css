@@ -4,26 +4,6 @@
    edge to edge) while the scaffold pads Space/400, so the content pulls
    itself back out by that step and each block pads itself as the frame does. */
 
-/* --- topBar ----------------------------------------------------------- */
-/* Space/200 vertical and Space/400 horizontal padding around a 40 kebab in
-   the frame. The kebab box is Control/1200 here to clear 44, so the vertical
-   padding drops to Space/100 and the bar stays 56. */
-.topBar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: var(--primitive-space-100) var(--primitive-space-400);
-}
-
-.kebab {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--primitive-control-1200);
-  height: var(--primitive-control-1200);
-  color: var(--semantic-text-primary);
-}
-
 .glyph {
   display: inline-flex;
   flex-shrink: 0;

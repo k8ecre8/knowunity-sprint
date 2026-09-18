@@ -21,6 +21,7 @@ import { MascotSlot } from '@/components/MascotSlot';
 import { Button } from '@/components/Button';
 import { TextBlock } from '@/components/TextBlock';
 import { TestDayPanel } from '@/components/TestDayPanel';
+import { TopBar } from '@/components/TopBar';
 import { ListItem } from '@/components/ListItem';
 import { Chips } from '@/components/Chips';
 import { IconSlot, type IconName } from '@/components/IconSlot';
@@ -33,8 +34,6 @@ import styles from './page.module.css';
    swapped when the glyph is added. */
 type Glyph = { icon: IconName; placeholderFor?: string };
 const glyphs = {
-  menu: { icon: 'list' },
-  focus: { icon: 'clock' },
   college: { icon: 'graduation-hat-02' },
   quiz: { icon: 'file-question-02', placeholderFor: 'ai-quiz' },
   practiceTest: { icon: 'clipboard-check' },
@@ -42,16 +41,6 @@ const glyphs = {
   plus: { icon: 'plus' },
   mic: { icon: 'microphone-01' },
 } satisfies Record<string, Glyph>;
-
-/* The three counters: a Body S Bold number and an `art/*` asset from
-   public/images. XP, streaks and Pro are outside this flow, so the row is
-   decoration. */
-type Counter = { id: string; label: string; art: string; tone: string; wide?: boolean };
-const counters: readonly Counter[] = [
-  { id: 'pro', label: 'Get', art: '/images/pro-badge-yellow.svg', tone: styles.counterPro, wide: true },
-  { id: 'xp', label: '48', art: '/images/bolt-blue-sm.svg', tone: styles.counterInfo },
-  { id: 'streak', label: '1', art: '/images/flame-orange-sm.svg', tone: styles.counterCoral },
-];
 
 const quickActions: readonly { id: string; label: string; glyph: Glyph }[] = [
   { id: 'quiz', label: 'Quiz', glyph: glyphs.quiz },
@@ -75,31 +64,8 @@ function AppHome({ seeded }: { seeded: Day | null }) {
     router.push(`/recall/eve/${term}`);
   };
 
-  /* topBar: menu, the three counters, and the focus timer. All decoration. */
-  const topBar = (
-    <div className={styles.topBar}>
-      <span className={styles.barIcon} aria-hidden="true">
-        <IconSlot size="300" name={glyphs.menu.icon} />
-      </span>
-      <ul className={styles.counters} aria-label="Account">
-        {counters.map((counter) => (
-          <li key={counter.id} className={[styles.counter, counter.tone].join(' ')}>
-            <span>{counter.label}</span>
-            {/* Decorative art; the number beside it is the content. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={[styles.counterArt, counter.wide && styles.counterArtWide].filter(Boolean).join(' ')}
-              src={counter.art}
-              alt=""
-            />
-          </li>
-        ))}
-      </ul>
-      <span className={styles.barIcon} aria-hidden="true">
-        <IconSlot size="300" name={glyphs.focus.icon} />
-      </span>
-    </div>
-  );
+  /* topBar, home: menu, the three counters and the focus timer. Decoration. */
+  const topBar = <TopBar variant="home" xp={48} streak={1} />;
 
   const hero =
     day === 'eve' ? (

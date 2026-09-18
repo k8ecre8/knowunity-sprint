@@ -504,6 +504,14 @@ Added to the Figma set, Sep 2026.
 
 **Built in code this sprint** as `src/components/TextBlock.tsx`, promoted Sep 2026 from the inline headline in the section summary when the exam-eve repeat summary needed the same block with its caption shown. There is no Figma component: the summary frames draw a `verdict` frame of two text nodes, Headline M over Body M Regular, both `text/primary`, centred, `Space/150` apart, and that is the geometry in code. The block fills its parent, per the rows-and-cards-fill convention.
 
+### `topBar`
+
+**Axis:** `variant` (home, plan). **Properties (home only):** `xp`, `streak`.
+
+**Reach for it** for the app bar on the app home (`home`: menu, the Pro / XP / streak counters and the focus timer) and the exam plan home (`plan`: a kebab on the right). Neither fits an `appBar` variant.
+
+**Built in code, Sep 2026,** as `src/components/TopBar.tsx`, promoted from the two inline bars. Counters are Body S Bold pills at Radius/full (pro/subtle, feedback/info/subtle, accent/coral/subtle) with an `art/*` asset at Icon/250 (the Pro wordmark at Icon/500). The home icons are Control/1000 as drawn; the plan kebab sits in Control/1200. Everything on it is app chrome outside this flow, so it is decoration and nothing is a target. No Figma component exists.
+
 ### `testDayPanel`
 
 **Axis:** `size` (M, S), the headline. **Properties:** `headline`, `body`, `cta`, `onAction`. Code-only: `as` sets the heading level.
@@ -582,7 +590,7 @@ Say these are missing rather than working around them.
 - **No `sectionRow` component.** The plan-home section row (no lip, a divided trailing cell that is its own tap target) is not a `listItem` and is still hand-built, in Figma and in the exam plan home (`docs/component-gaps.md`). The same screen builds `Tabs`, the plan-home `topBar`, the winding path rows and the phase divider inline, because none exists in code.
 - **No confidence slider.**
 - **No `statusBar` component.** The scaffold's Panel Header nests `Status Bar / Mode=Night` from Knowunity's remote Bricks library. In code it is a static drawing inside `Scaffold` (09:41, full signal and battery), decided Sep 2026 as decoration; it never changes, and nothing else should use it.
-- **`appBar` has no variant for either `topBar`.** The app home bar (menu, three counters, timer) and the plan home bar (chip left, kebab right) do not fit any of its six variants. Both are built inline in their screens (`docs/component-gaps.md` → `topBar`).
+- **`appBar` has no variant for either home bar.** They are `topBar` in code since Sep 2026 (see Components built this sprint); Figma still has no component for either.
 - **Two glyphs are still missing from `IconSlot`:** `myai-chat` (`bottomNav`'s Chat tab shows `send-01`) and `ai-quiz` (the app home Quiz chip shows `file-question-02`), both marked `data-placeholder-glyph`. The rest once listed here were added Sep 2026.
 - **The `art/*` counter assets are exported on a page-colour canvas.** `pro-badge-yellow`, `bolt-blue-sm` and `flame-orange-sm` in `public/images/` carried a 140-square `#090C18` rect behind an 18-by-22 glyph; the rect was removed from those three, Sep 2026, so they can sit on a coloured pill. Six more (`bolt-blue`, `books-green`, `cards-blue`, `school-orange`, `notes-purple`, `target-green`) still carry it.
 - **`App Bar Button Icon` and `App Bar Button` have no Figma description,** and neither has Loading built in code: it needs wiring to `motion.duration.spin`, which exists since Sep 2026, the same as `button`.

@@ -1,0 +1,101 @@
+/* topBar — see docs/design-system.md → Components built this sprint →
+   `topBar`. Every value is a token from build/css/tokens.css. */
+
+.bar {
+  display: flex;
+  align-items: center;
+}
+
+/* home: menu, counters and timer spread across, Space/200 by Space/400. */
+.variantHome {
+  justify-content: space-between;
+  padding: var(--primitive-space-200) var(--primitive-space-400);
+}
+
+/* plan: the kebab alone on the right, Space/100 by Space/400. */
+.variantPlan {
+  justify-content: flex-end;
+  padding: var(--primitive-space-100) var(--primitive-space-400);
+}
+
+/* The menu and timer are Control/1000 (40) as drawn: decoration, not targets. */
+.barIcon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1000);
+  height: var(--primitive-control-1000);
+  color: var(--semantic-text-primary);
+}
+
+/* The kebab's box is Control/1200, not the frame's loose 40. */
+.kebab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--primitive-control-1200);
+  height: var(--primitive-control-1200);
+  color: var(--semantic-text-primary);
+}
+
+/* counters: three pills Space/200 apart, each Space/300 by Space/400 padding
+   at Radius/full, Body S Bold, Space/150 before the art. The row may scroll
+   if strings grow. */
+.counters {
+  display: flex;
+  flex-shrink: 1;
+  align-items: center;
+  gap: var(--primitive-space-200);
+  min-width: var(--primitive-space-0);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: none;
+}
+
+.counter {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--primitive-space-150);
+  padding: var(--primitive-space-300) var(--primitive-space-400);
+  border-radius: var(--primitive-radius-full);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
+}
+
+.counterPro {
+  background-color: var(--semantic-pro-subtle);
+  color: var(--semantic-pro-onsubtle);
+}
+
+.counterInfo {
+  background-color: var(--semantic-feedback-info-subtle);
+  color: var(--semantic-feedback-info-onsubtle);
+}
+
+.counterCoral {
+  background-color: var(--semantic-accent-coral-subtle);
+  color: var(--semantic-accent-coral-onsubtle);
+}
+
+/* The art assets are exported on a 140-square canvas with the glyph drawn at
+   its natural size (about 18 by 22) in the centre. `object-fit: none` keeps
+   that size and the Icon/250 box clips the empty canvas around it. */
+.counterArt {
+  display: block;
+  width: var(--primitive-icon-250);
+  height: var(--primitive-icon-250);
+  object-fit: none;
+  object-position: center;
+}
+
+/* The Pro badge is a wordmark, 39 wide in the frame: Icon/500 (40) here. */
+.counterArtWide {
+  width: var(--primitive-icon-500);
+}

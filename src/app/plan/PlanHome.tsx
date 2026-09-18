@@ -24,6 +24,7 @@ import { Scaffold } from '@/components/Scaffold';
 import { PlanNode, type PlanNodeState } from '@/components/PlanNode';
 import { NoteCard } from '@/components/NoteCard';
 import { TestDayPanel } from '@/components/TestDayPanel';
+import { TopBar } from '@/components/TopBar';
 import { IconSlot, type IconName } from '@/components/IconSlot';
 import { BottomNav } from '@/components/BottomNav';
 import { plateTectonics } from '@/mock/terms';
@@ -182,13 +183,10 @@ export function PlanHome({ day: seeded, bottomSheetOnly, showBottomSheetBackgrou
 
   const daysLeft = day === 'eve' ? 'Test tomorrow' : `${daysToExam[day]} days`;
 
-  /* topBar: the plan-home bar is a kebab on the right and nothing else. The
-     menu is app chrome outside this flow, so it is decoration here. */
+  /* topBar, plan: a kebab on the right, decoration. Inert behind a sheet. */
   const topBar = (
-    <div className={styles.topBar} inert={behindSheet}>
-      <span className={styles.kebab} aria-hidden="true">
-        <IconSlot size="300" name="dots-vertical" />
-      </span>
+    <div inert={behindSheet}>
+      <TopBar variant="plan" />
     </div>
   );
 
