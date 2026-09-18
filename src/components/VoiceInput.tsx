@@ -101,7 +101,7 @@ function readTokens(el: HTMLElement): Tokens {
     bold: px('--primitive-stroke-bold'),
     nudge: px('--primitive-space-100'),
     breath: px('--primitive-space-050'),
-    barMax: px('--primitive-space-400'),
+    barMax: px('--primitive-space-600'),
     ripple: px('--primitive-space-800'),
     inset: px('--primitive-space-300'),
     target: px('--primitive-control-1200') / 2,
@@ -299,7 +299,9 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
       if (glowRef.current) {
         const g = Math.min(1, p.glow * (1 - 0.5 * p.breathe * (1 - breath)) + a * 0.4);
         glowRef.current.style.setProperty('opacity', g.toFixed(3));
-        glowRef.current.style.setProperty('transform', `translate(-50%, -50%) scale(${(0.85 + 0.35 * breath * p.breathe + a * 0.25).toFixed(3)})`);
+        // Breathes and swells up to its full size, never past it.
+        const gs = Math.min(1, 0.8 + 0.2 * breath * p.breathe + a * 0.2 + 0.1 * (1 - p.breathe));
+        glowRef.current.style.setProperty('transform', `translate(-50%, -50%) scale(${gs.toFixed(3)})`);
       }
 
       const press = 0.06 * Math.sin(Math.PI * since(L.pressAt, T.fast));
@@ -350,7 +352,7 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
         className={styles.stage}
         style={
           cardOn && cardHeight
-            ? { height: `max(calc(var(--primitive-illustration-1500) + 2 * var(--primitive-space-400)), calc(${cardHeight}px + 2 * var(--primitive-space-400)))` }
+            ? { height: `max(calc(var(--primitive-illustration-1500) + 2 * var(--primitive-space-800)), calc(${cardHeight}px + 2 * var(--primitive-space-400)))` }
             : undefined
         }
       >

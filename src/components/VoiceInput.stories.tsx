@@ -20,7 +20,7 @@ const description = `
 
 **idle.** A 120 ring (\`Illustration/1500\`) round the microphone, breathing at \`motion.duration.breathing\` with a soft glow and one ripple per breath. The ring is the button.
 
-**listening.** Tapping squeezes the middle like a press and swaps the microphone for "Tap when done". Waveform bars stand out of the ring and follow the voice, up to \`Space/400\` long, inside the stage's inset so they never reach the label. The trash appears to the left.
+**listening.** Tapping squeezes the middle like a press and swaps the microphone for "Tap when done". Waveform bars stand out of the ring and follow the voice, up to \`Space/600\` long, inside the stage's \`Space/800\` inset so they never reach the label. The trash appears to the left.
 
 **transcribing.** The ring opens into an arc turning at \`motion.duration.spin\`, with three dots stepping in the middle. **transcribingSlow** is the 4-second beat: the arc becomes twelve dashes circling at \`motion.duration.spin-slow\`.
 
