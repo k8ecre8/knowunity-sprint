@@ -1,0 +1,123 @@
+/* Tour harness — every value is a token from build/css/tokens.css. No Figma
+   frame: a tester tool, composed from the library in the rhythm of the
+   other text-led screens (Space/400 between blocks, Space/600 between
+   groups). */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-600);
+  padding-block: var(--primitive-space-400) var(--primitive-space-800);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-300);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-200);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  list-style: none;
+}
+
+/* --- the sheet -------------------------------------------------------- */
+
+/* As the section intro tray: the viewport below the status bar, a tap on
+   the scrim closes, the sheet sits at the bottom and scrolls inside. */
+.layer {
+  position: fixed;
+  inset: var(--primitive-space-0);
+  top: var(--primitive-size-status-bar);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.scrimTap {
+  flex: 1;
+  padding: var(--primitive-space-0);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-600);
+  padding: var(--primitive-space-200) var(--primitive-space-400) var(--primitive-space-400);
+}
+
+/* tourSteps: a numbered list, one step per row. The number sits in an
+   Icon/300 column in accent/brand/bold, as the intro tray's row glyphs do;
+   the action in Body M Regular text/primary, what should happen under it
+   in Body S Regular text/secondary. Top-aligned so wrapped lines hang under
+   the text. */
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-400);
+  margin: var(--primitive-space-0);
+  padding: var(--primitive-space-0);
+  list-style: none;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--primitive-space-300);
+}
+
+.stepNumber {
+  flex-shrink: 0;
+  width: var(--primitive-icon-300);
+  text-align: center;
+  color: var(--semantic-accent-brand-bold);
+  font-family: var(--typeScale-body-m-bold-fontFamily);
+  font-weight: var(--typeScale-body-m-bold-fontWeight);
+  font-size: var(--typeScale-body-m-bold-fontSize);
+  line-height: var(--typeScale-body-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-m-bold-letterSpacing);
+}
+
+.stepText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-050);
+  min-width: var(--primitive-space-0);
+}
+
+.action,
+.result {
+  margin: var(--primitive-space-0);
+  overflow-wrap: anywhere;
+}
+
+.action {
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-m-regular-fontFamily);
+  font-weight: var(--typeScale-body-m-regular-fontWeight);
+  font-size: var(--typeScale-body-m-regular-fontSize);
+  line-height: var(--typeScale-body-m-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-m-regular-letterSpacing);
+}
+
+.result {
+  color: var(--semantic-text-secondary);
+  font-family: var(--typeScale-body-s-regular-fontFamily);
+  font-weight: var(--typeScale-body-s-regular-fontWeight);
+  font-size: var(--typeScale-body-s-regular-fontSize);
+  line-height: var(--typeScale-body-s-regular-lineHeight);
+  letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
+}
+
+.resultLabel {
+  color: var(--semantic-text-primary);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+}
