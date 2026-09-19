@@ -7,7 +7,7 @@
    always fully open; Needed a hint and Correct without help show three rows
    then "N more". Every number is a count of outcome rows. */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { SummaryCard, type SummaryCardTone } from '@/components/SummaryCard';
@@ -68,6 +68,12 @@ export function EveSummary() {
   // The all-correct state comes from `/?day=eve&ready`, which scripts every
   // term correct; the default seeds produce the misses state.
   const rows = session ? rowsForRound(session, round) : null;
+
+  // Nothing answered yet (a direct URL): there is no summary to show, so start the round.
+  const empty = rows !== null && rows.length === 0;
+  useEffect(() => {
+    if (empty) router.replace(`/recall/${round}/1`);
+  }, [empty, router]);
   const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
@@ -78,7 +84,10 @@ export function EveSummary() {
   const total = rows?.length ?? 0;
   const hasMisses = missed.length > 0;
 
-  const headline = hasMisses ? 'You’re almost ready.' : 'You’re ready!';
+  // Lead with the work left, not a readiness claim.
+  const headline = hasMisses
+    ? `${missed.length} ${missed.length === 1 ? 'term' : 'terms'} to look at tonight.`
+    : 'You’re ready!';
   const caption = !hasMisses
     ? `You got all ${total} correct without help, asked a new way, the day before your test.`
     : practice.length > 0
@@ -110,7 +119,7 @@ export function EveSummary() {
     <Scaffold
       showTopNavSlot={false}
       middleContent={
-        rows && (
+        rows && !empty && (
           <div className={styles.content}>
             <TextBlock headline={headline} caption={caption} showCaption />
 

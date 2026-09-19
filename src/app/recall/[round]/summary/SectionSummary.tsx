@@ -4,6 +4,7 @@
    Figma: "Section summary / Mixed" in Exam Section 1 - Claude (Core Flow).
    Every number on this screen is a count of outcome rows and nothing else. */
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { SummaryCard } from '@/components/SummaryCard';
@@ -27,6 +28,12 @@ export function SectionSummary() {
 
   // null until the browser has the session, so server and client markup match.
   const rows = session ? rowsForRound(session, round) : null;
+
+  // Nothing answered yet (a direct URL): there is no summary to show, so start the round.
+  const empty = rows !== null && rows.length === 0;
+  useEffect(() => {
+    if (empty) router.replace(`/recall/${round}/1`);
+  }, [empty, router]);
   const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
@@ -70,7 +77,7 @@ export function SectionSummary() {
     <Scaffold
       showTopNavSlot={false}
       middleContent={
-        rows && (
+        rows && !empty && (
           <div className={styles.content}>
             {/* The frame hides the "1 of 3 without help" subhead on this screen;
                 the cards carry the count. */}

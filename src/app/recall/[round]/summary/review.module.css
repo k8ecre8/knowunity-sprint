@@ -62,11 +62,11 @@
 
 .readLabel {
   color: var(--semantic-text-secondary);
-  font-family: var(--typeScale-caption-m-bold-fontFamily);
-  font-weight: var(--typeScale-caption-m-bold-fontWeight);
-  font-size: var(--typeScale-caption-m-bold-fontSize);
-  line-height: var(--typeScale-caption-m-bold-lineHeight);
-  letter-spacing: var(--typeScale-caption-m-bold-letterSpacing);
+  font-family: var(--typeScale-body-s-bold-fontFamily);
+  font-weight: var(--typeScale-body-s-bold-fontWeight);
+  font-size: var(--typeScale-body-s-bold-fontSize);
+  line-height: var(--typeScale-body-s-bold-lineHeight);
+  letter-spacing: var(--typeScale-body-s-bold-letterSpacing);
   overflow-wrap: anywhere;
 }
 

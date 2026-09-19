@@ -183,6 +183,34 @@ export const LongTranscript: Story = {
   },
 };
 
+const LONGER_TRANSCRIPT = `${TRANSCRIPT} Where two plates pull apart, new crust forms along the ridge.`;
+
+export const TranscriptGrowsAfterSizing: Story = {
+  name: 'state=transcript, text grows after sizing',
+  args: { state: 'transcript' },
+  render: function Render(args) {
+    // Half again as long (past the 40% expansion rule), swapped in after the card has already sized itself.
+    const [text, setText] = useState(TRANSCRIPT);
+    useEffect(() => {
+      const t = setTimeout(() => setText(LONGER_TRANSCRIPT), 300);
+      return () => clearTimeout(t);
+    }, []);
+    return <VoiceInput {...args} transcript={text} />;
+  },
+  play: async ({ canvas }) => {
+    const text = await canvas.findByText(/new crust forms/);
+    const card = text.parentElement!;
+    const stage = card.parentElement!;
+    await waitFor(
+      async () => {
+        await expect(card.scrollHeight).toBeLessThanOrEqual(card.clientHeight);
+        await expect(card.getBoundingClientRect().bottom).toBeLessThanOrEqual(stage.getBoundingClientRect().bottom);
+      },
+      { timeout: 2000 },
+    );
+  },
+};
+
 export const Judging: Story = {
   name: 'state=judging',
   args: { state: 'judging' },

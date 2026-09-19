@@ -110,9 +110,13 @@
     transform var(--motion-duration-base) var(--motion-easing-standard);
 }
 
+/* Leaving runs on the exit pair, a third faster than the base entrance. */
 .item[data-on='false'] {
   opacity: var(--primitive-opacity-0);
   transform: scale(var(--primitive-scale-60));
+  transition:
+    opacity var(--motion-duration-exit) var(--motion-easing-exit),
+    transform var(--motion-duration-exit) var(--motion-easing-exit);
 }
 
 .word {
@@ -250,14 +254,17 @@
 
 .idleActions[data-on='false'] {
   opacity: var(--primitive-opacity-0);
+  transition: opacity var(--motion-duration-exit) var(--motion-easing-exit);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .stage,
   .line,
   .item,
+  .item[data-on='false'],
   .dot,
-  .idleActions {
+  .idleActions,
+  .idleActions[data-on='false'] {
     animation: none;
     transition: none;
   }

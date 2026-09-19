@@ -51,7 +51,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **States**
 - All correct ("You're ready!", one `Good` card).
-- With misses ("You're almost ready.", with `NeedsPractice`, `Partial` and `Good` cards).
+- With misses (headline leads with the count, "3 terms to look at tonight.", with `NeedsPractice`, `Partial` and `Good` cards).
 
 **Components**
 - `Scaffold`.

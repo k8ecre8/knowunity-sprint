@@ -369,7 +369,9 @@ function Turn({
   const intro =
     round === 'section'
       ? `Let’s see what you remember from ${plateTectonics.name}. In your own words:`
-      : 'Let’s see what stuck. In your own words:';
+      : round === 'eve'
+        ? 'Last look before tomorrow. In your own words:'
+        : 'Let’s see what stuck. In your own words:';
 
   let bubble: { body: string; body2?: string; showVerdict: boolean; verdictTone?: Exclude<Chip, null> };
   if (phase === 'verdict') {
@@ -396,8 +398,10 @@ function Turn({
   } else if (rung === 0) {
     bubble = { showVerdict: false, body: intro, body2: prompt };
   } else {
+    // The chip judges the last answer, so it clears while the next one is judged.
+    const judging = phase === 'thinking' || phase === 'thinking-slow' || phase === 'error';
     bubble = {
-      showVerdict: chip !== null,
+      showVerdict: chip !== null && !judging,
       verdictTone: chip ?? undefined,
       body: current.hints[(rung - 1) as 0 | 1],
     };
@@ -408,6 +412,11 @@ function Turn({
   const restingPhase = phase === 'idle' || phase === 'start-over' || phase === 'unclear' || phase === 'prompt';
   const waiting = phase === 'thinking' || phase === 'thinking-slow';
 
+  // Named only where the expression says something the text beside it doesn't.
+  const mascotLabel: Partial<Record<MascotName, string>> = {
+    approving: 'Knowie, approving',
+    thinking: 'Knowie, thinking',
+  };
   const mascot: MascotName =
     phase === 'verdict' || phase === 'sayback-done'
       ? 'approving'
@@ -459,7 +468,7 @@ function Turn({
       middleContent={
         <div className={styles.content} inert={blocked}>
           <div className={styles.knowiePrompt}>
-            <MascotSlot size="2XL" name={mascot} />
+            <MascotSlot size="2XL" name={mascot} label={mascotLabel[mascot]} />
             <ResponseBubble
               showVerdict={bubble.showVerdict}
               verdictTone={bubble.verdictTone}

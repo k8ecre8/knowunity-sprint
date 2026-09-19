@@ -7,7 +7,7 @@
    student last revised more than a day ago. Every number is a count of
    outcome rows; the gap is the time since the term was last revised. */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { SummaryCard, type SummaryCardTone } from '@/components/SummaryCard';
@@ -139,6 +139,12 @@ export function ReviewSummary() {
 
   // null until the browser has the session, so server and client markup match.
   const rows = session ? rowsForRound(session, round) : null;
+
+  // Nothing answered yet (a direct URL): there is no summary to show, so start the round.
+  const empty = rows !== null && rows.length === 0;
+  useEffect(() => {
+    if (empty) router.replace('/recall/review/confidence');
+  }, [empty, router]);
   const terms = session ? roundTerms(session, round) : [];
   const nameOf = (row: OutcomeRow) => findTerm(row.termId)?.name ?? row.termId;
 
@@ -191,7 +197,16 @@ export function ReviewSummary() {
   const sectionRate = session ? rate(rowsForRound(session, 'section')) : 0;
   const reviewRate = rate(rows ?? []);
   const performanceDir = direction(reviewRate - sectionRate, SAME_THRESHOLD);
-  const verdict = comparison[confidenceDir][performanceDir];
+  /* Same-day: answers from a fresh revision can't confirm or contradict the
+     feeling, so only the confidence half is said and the rest waits. */
+  const verdict =
+    settled.length === 0
+      ? {
+          headline: comparison[confidenceDir].same.headline,
+          body: 'Today’s answers are still fresh, so they can’t tell you yet whether that feeling is right. Tomorrow’s will.',
+          celebrate: false,
+        }
+      : comparison[confidenceDir][performanceDir];
 
   const firstPractice = practice[0] ? nameOf(practice[0]) : partial[0] ? nameOf(partial[0]) : null;
   const note = firstPractice
@@ -224,7 +239,7 @@ export function ReviewSummary() {
     <Scaffold
       showTopNavSlot={false}
       middleContent={
-        rows && (
+        rows && !empty && (
           <div className={styles.content}>
             <section className={styles.group}>
               <TextBlock as="h1" headline="How it went" caption={caption} showCaption />
