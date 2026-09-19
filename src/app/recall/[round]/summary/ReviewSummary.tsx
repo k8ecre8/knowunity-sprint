@@ -13,7 +13,6 @@ import { Scaffold } from '@/components/Scaffold';
 import { ExpandableSummaryCard } from '@/components/ExpandableSummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { NoteCard } from '@/components/NoteCard';
-import { MascotSlot } from '@/components/MascotSlot';
 import { IconSlot } from '@/components/IconSlot';
 import { Button } from '@/components/Button';
 import { beforePlanRating, confidenceLabels, findTerm } from '@/mock/terms';
@@ -45,9 +44,9 @@ function direction(delta: number, threshold: number): Direction {
 
 /* The nine copy versions (Open 23, decided here). Confidence direction, then
    performance direction. Overconfidence is named where the feeling ran ahead
-   of the evidence; underconfidence gets the evidence and a celebratory Knowie
-   where the evidence ran ahead of the feeling. */
-const comparison: Record<Direction, Record<Direction, { headline: string; body: string; celebrate?: boolean }>> = {
+   of the evidence; underconfidence gets the evidence where the evidence ran
+   ahead of the feeling. */
+const comparison: Record<Direction, Record<Direction, { headline: string; body: string }>> = {
   up: {
     up: { headline: 'You felt more confident.', body: 'Your answers back that up.' },
     same: {
@@ -63,7 +62,6 @@ const comparison: Record<Direction, Record<Direction, { headline: string; body: 
     up: {
       headline: 'You felt about the same.',
       body: 'Your answers got better than you think. That’s underconfidence, and the cards below are the evidence.',
-      celebrate: true,
     },
     same: { headline: 'You felt about the same.', body: 'Your answers say the same. Your read on yourself is accurate.' },
     down: {
@@ -75,12 +73,10 @@ const comparison: Record<Direction, Record<Direction, { headline: string; body: 
     up: {
       headline: 'You felt less confident, but your answers got better.',
       body: 'That’s underconfidence. Look at the cards below: the evidence says you know more than you feel.',
-      celebrate: true,
     },
     same: {
       headline: 'You felt less confident.',
       body: 'Your answers stayed about where they were, so nothing has actually slipped. You know more than you feel.',
-      celebrate: true,
     },
     down: {
       headline: 'You felt less confident, and your answers agree.',
@@ -181,7 +177,6 @@ export function ReviewSummary() {
       ? {
           headline: comparison[confidenceDir].same.headline,
           body: 'Today’s answers are still fresh, so they can’t tell you yet whether that feeling is right. Tomorrow’s will.',
-          celebrate: false,
         }
       : comparison[confidenceDir][performanceDir];
 
@@ -226,11 +221,6 @@ export function ReviewSummary() {
               <TextBlock as="h2" headline="How you felt" />
               <div className={styles.confidence}>
                 <ConfidenceReads before={beforeLabel} today={todayLabel} />
-                {verdict.celebrate && (
-                  <div className={styles.mascot}>
-                    <MascotSlot size="XL" name="excited" />
-                  </div>
-                )}
                 <TextBlock size="S" as="h3" headline={verdict.headline} showCaption caption={verdict.body} />
               </div>
             </section>

@@ -4,6 +4,11 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Explain it to Knowie',
   description: 'Voice active recall prototype for Knowunity.',
+  appleWebApp: {
+    capable: true,
+    title: 'Knowie',
+    statusBarStyle: 'black-translucent',
+  },
 };
 
 export const viewport: Viewport = {

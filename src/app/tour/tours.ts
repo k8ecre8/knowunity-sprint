@@ -194,7 +194,7 @@ export const tourGroups: TourGroup[] = [
           {
             action: 'Read “How you felt”.',
             result:
-              '“Getting there” before the plan, “So cooked” today, then “You felt less confident, but your answers got better.” Knowie celebrates.',
+              '“Getting there” before the plan, “So cooked” today, then “You felt less confident, but your answers got better.”',
           },
         ],
         done: 'You’ve seen the underconfident version. The rest of the summary is the same as “Felt more ready”.',

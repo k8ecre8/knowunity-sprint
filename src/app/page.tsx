@@ -83,7 +83,7 @@ function AppHome({ seeded }: { seeded: Day | null }) {
     ) : (
       /* hero: the ordinary study reminder. */
       <section className={styles.hero} aria-label="Study reminder">
-        <MascotSlot size="2XL" name="standby" />
+        <MascotSlot size="2XL" name="standby" /* decorative */ />
         <TextBlock size="S" headline={`Your Earth and Space Science exam is in ${daysToExam[day]} days`} />
         <div className={styles.cta}>
           <Button variant="Primary" size="M" onClick={() => router.push('/plan')}>

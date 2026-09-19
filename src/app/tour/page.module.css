@@ -38,6 +38,13 @@
   justify-content: flex-end;
 }
 
+/* On a real phone the status-bar row shrinks to the device inset; follow it. */
+@media (hover: none) and (pointer: coarse) {
+  .layer {
+    top: env(safe-area-inset-top);
+  }
+}
+
 .scrimTap {
   flex: 1;
   padding: var(--primitive-space-0);

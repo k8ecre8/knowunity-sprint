@@ -44,6 +44,20 @@
   mask-size: auto 100%;
 }
 
+/* On a real phone the device draws its own status bar, so the drawing would
+   show a second clock. The row shrinks to the device's top inset: 0 in a
+   browser tab, the notch height when opened from the home screen. */
+@media (hover: none) and (pointer: coarse) {
+  .panelHeader {
+    height: env(safe-area-inset-top);
+    border-bottom: none;
+  }
+
+  .panelHeader::before {
+    display: none;
+  }
+}
+
 /* Hugs its child, Space/100 gap, clips. */
 .topNavigation {
   display: flex;

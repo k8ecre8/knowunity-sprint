@@ -63,7 +63,7 @@ export default function ConfidenceCheckPage() {
               body2="Be honest, it helps Knowie choose which questions to ask."
             />
             <div className={styles.stage}>
-              <MascotSlot size="3XL" name="giggling" />
+              <MascotSlot size="3XL" name="standby" label="Knowie, standing by" />
               <p className={styles.label} data-selected={rating !== null} aria-live="polite">
                 {rating === null ? unselectedLabel : confidenceLabels[rating - 1]}
               </p>

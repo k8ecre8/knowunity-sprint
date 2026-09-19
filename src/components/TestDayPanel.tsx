@@ -31,7 +31,7 @@ export type TestDayPanelProps = {
 export function TestDayPanel({ size = 'S', headline, body, cta, onAction, as = 'h2', className }: TestDayPanelProps) {
   return (
     <div className={[styles.panel, className].filter(Boolean).join(' ')}>
-      <MascotSlot size="2XL" name="standby" />
+      <MascotSlot size="2XL" name="thinking" label="Knowie, thinking" />
       <TextBlock size={size} as={as} headline={headline} />
       <p className={styles.body}>{body}</p>
       <div className={styles.cta}>

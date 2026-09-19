@@ -86,9 +86,3 @@
   align-items: center;
   color: var(--semantic-text-tertiary);
 }
-
-/* The celebratory Knowie, underconfidence only: mascotSlot XL, centred. */
-.mascot {
-  display: flex;
-  justify-content: center;
-}

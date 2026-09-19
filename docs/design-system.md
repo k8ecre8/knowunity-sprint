@@ -534,7 +534,7 @@ Added to the Figma set, Sep 2026.
 
 **Reach for it** for the reminder the day before the test: exam plan home in complete mode (`size="S"`) and the app home's exam-eve hero (`size="M"`).
 
-**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (standby), a `textBlock` headline, a Body M Regular line in `text/secondary` and `button` Primary L. All four are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it (checked against the frames Sep 2026). No Figma component exists. The screen owns the padding around it.
+**Built in code, Sep 2026,** as `src/components/TestDayPanel.tsx`, promoted from the plan home's inline panel when the app home's eve hero turned out to be a copy. It composes `mascotSlot` 2XL (thinking, labelled), a `textBlock` headline, a Body M Regular line in `text/secondary` and `button` Primary L. All four are Space/300 apart and the action keeps Space/300 above and below, as both frames draw it (checked against the frames Sep 2026). No Figma component exists. The screen owns the padding around it.
 
 ### `voiceInput`
 

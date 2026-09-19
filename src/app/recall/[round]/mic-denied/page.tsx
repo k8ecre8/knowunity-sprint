@@ -68,7 +68,7 @@ function MicDenied({ round }: { round: Round }) {
       middleContent={
         session && (
           <div className={styles.content}>
-            <MascotSlot size="2XL" name="confused" className={styles.mascot} />
+            <MascotSlot size="2XL" name="approving" label="Knowie, approving" className={styles.mascot} />
             <TextBlock headline={text.headline} showCaption caption={text.caption} />
             <NoteCard tone="neutral" icon="microphone-off-01">
               To turn it back on: open Settings, find Knowunity, and switch on Microphone.

@@ -122,7 +122,7 @@ function IntroTray() {
               onClose={dismiss}
               middleSection={
                 <div className={styles.intro}>
-                  <MascotSlot size="2XL" name="standby" />
+                  <MascotSlot size="2XL" name="excited" label="Knowie, excited" />
                   <TextBlock as="h1" headline="Explain it to Knowie" />
                   <ul className={styles.rows}>
                     {rows.map((row) => (

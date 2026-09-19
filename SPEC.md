@@ -76,13 +76,12 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - Same-day: terms seen less than a day ago say "still fresh, come back tomorrow" instead of claiming learning.
 - The confidence comparison has nine copy versions: confidence up, same or down, crossed with performance up, same or down.
   - The copy reflects the change in the student's confidence (up, the same or down) and whether their answers back it up. It needn't use the word "confident".
-  - Underconfidence gets the evidence and a celebratory `MascotSlot` expression.
+  - Underconfidence gets the evidence. Knowie is not on this screen in any version (cut Sep 2026).
 - Order (Sep 2026): the "How it went" headline and caption, then "How you felt", then the cards, then the come-back note. The comparison sits above the cards so it is on screen on arrival whatever the counts; its copy points to the cards below.
 
 **Components**
 - `Scaffold`.
 - `ExpandableSummaryCard` for the three tones: `Good` and `Partial` collapsed to "N terms", `NeedsPractice` three then "N more" (Sep 2026). A group of one is shown by name.
-- `MascotSlot`, underconfidence only.
 - `IconSlot` at `size="250"`.
 - `Button`: Primary L and Secondary L.
 
