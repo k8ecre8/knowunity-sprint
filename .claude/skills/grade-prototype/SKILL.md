@@ -31,6 +31,7 @@ The critics have no terminal. Run these one after another, never in parallel, si
 | Command | Needed by | Keep |
 |---|---|---|
 | `node scripts/check-tokens.mjs` | system | exit code and full output |
+| `node scripts/check-mascot-labels.mjs` | craft | exit code and full output |
 | `npm run lint` | system | exit code and full output |
 | `npm run build` | system | exit code and last 30 lines |
 | `npm run tokens` (see below) | system | "unchanged", the diff stat, or why it was not run |
@@ -76,6 +77,9 @@ npx vitest run --project=storybook: exit <code>
 Grade the prototype.
 
 Command results, run before you started:
+
+node scripts/check-mascot-labels.mjs: exit <code>
+<output>
 
 npx vitest run --project=storybook: exit <code>
 <summary and a11y lines>

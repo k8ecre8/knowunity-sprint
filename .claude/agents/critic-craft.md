@@ -44,6 +44,7 @@ You cannot change any file. There is no Write, Edit or Bash, and a hook guards t
   - Clear `sessionStorage` with `browser_evaluate` before each path, so an earlier walk does not leak into the next.
   - Screenshots save automatically to `/tmp/knowie-critics/critic-craft/`. Never pass `filename`; it is blocked. Cite the path each screenshot returns, and open it with Read to compare pairs for gate 4.
 - **The Storybook test run, already done.** The `grade-prototype` skill runs `npx vitest run --project=storybook` before launching you and puts its output in your prompt. The a11y addon is set to `test: 'todo'`, so a pass does not mean zero violations; read the todo lines. If the output is not there, list it under Could not check.
+- **The mascot label check, already done.** The skill also runs `node scripts/check-mascot-labels.mjs` and puts its output in your prompt. It fails on any `MascotSlot` with neither a `label` nor a `/* decorative */` marker. A pass means every Knowie was decided, not that each decision is right: a labelled Knowie still needs a label that says what the face means, and a decorative one must add nothing the text does not. If the output is not there, list it under Could not check.
 
 If the app or Storybook does not respond, say so under Could not check and grade from code, with a ceiling of 7. In that case a gate you could only infer from source is "unverified", not "pass".
 
