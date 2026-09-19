@@ -7,10 +7,10 @@
    always fully open; Needed a hint and Correct without help show three rows
    then "N more". Every number is a count of outcome rows. */
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
-import { SummaryCard, type SummaryCardTone } from '@/components/SummaryCard';
+import { ExpandableSummaryCard } from '@/components/ExpandableSummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { Button } from '@/components/Button';
 import { findTerm } from '@/mock/terms';
@@ -19,7 +19,6 @@ import shared from './page.module.css';
 import styles from './eve.module.css';
 
 const round = 'eve';
-const ROW_LIMIT = 3;
 
 function joinNames(names: string[]): string {
   if (names.length <= 1) return names[0] ?? '';
@@ -35,28 +34,6 @@ function GroupLabel({ label, count, total }: { label: string; count: number; tot
       <h2 className={styles.groupTitle}>{label}</h2>
       <span className={styles.groupCount}>{`${count} of ${total}`}</span>
     </div>
-  );
-}
-
-/* One card whose row count the screen decides: everything when `open`, else
-   three rows and an overflow row that opens it. Opening changes only the view. */
-function Card({ tone, names, open }: { tone: SummaryCardTone; names: string[]; open: boolean }) {
-  const [expanded, setExpanded] = useState(false);
-  const showAll = open || expanded || names.length <= ROW_LIMIT;
-  if (showAll) return <SummaryCard tone={tone} terms={names} showOverflowRow={false} />;
-  return (
-    <SummaryCard
-      tone={tone}
-      showRow1
-      showRow2
-      showRow3
-      term1={names[0]}
-      term2={names[1]}
-      term3={names[2]}
-      showOverflowRow
-      overflowText={`${names.length - ROW_LIMIT} more`}
-      onOverflowPress={() => setExpanded(true)}
-    />
   );
 }
 
@@ -127,14 +104,14 @@ export function EveSummary() {
               {hasMisses && (
                 <section className={styles.group}>
                   <GroupLabel label="Look at these before your test" count={missed.length} total={total} />
-                  {practice.length > 0 && <Card tone="NeedsPractice" names={practice.map(nameOf)} open />}
-                  {partial.length > 0 && <Card tone="Partial" names={partial.map(nameOf)} open={false} />}
+                  {practice.length > 0 && <ExpandableSummaryCard tone="NeedsPractice" names={practice.map(nameOf)} view="open" />}
+                  {partial.length > 0 && <ExpandableSummaryCard tone="Partial" names={partial.map(nameOf)} view="overflow" />}
                 </section>
               )}
               {good.length > 0 && (
                 <section className={styles.group}>
                   <GroupLabel label="You’ve got these" count={good.length} total={total} />
-                  <Card tone="Good" names={good.map(nameOf)} open={false} />
+                  <ExpandableSummaryCard tone="Good" names={good.map(nameOf)} view="overflow" />
                 </section>
               )}
             </div>

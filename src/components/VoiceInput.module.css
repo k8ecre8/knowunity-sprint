@@ -27,6 +27,11 @@
   position: relative;
   width: 100%;
   height: calc(var(--primitive-illustration-1500) + 2 * var(--primitive-space-800));
+  transition: height var(--motion-duration-exit-slow) var(--motion-easing-exit);
+}
+
+/* Growing into the card takes slow; collapsing back (above) takes exit-slow. */
+.root[data-state='transcript'] .stage {
   transition: height var(--motion-duration-slow) var(--motion-easing-standard);
 }
 
@@ -259,6 +264,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .stage,
+  .root[data-state='transcript'] .stage,
   .line,
   .item,
   .item[data-on='false'],

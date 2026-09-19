@@ -33,7 +33,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 
 **Components**
 - `Scaffold`, with `showTopNavSlot` as Figma has it (off).
-- `SummaryCard` with `tone` `Good`, `Partial` and `NeedsPractice`, using `showRow1`–`3` and `term1`–`3`. There's no overflow row, because the section summary shows everything.
+- `ExpandableSummaryCard` with `tone` `Good` and `Partial` `collapsed` (header and "N terms", tap to open) and `NeedsPractice` `open`. Changed Sep 2026 from showing everything, so a first pass reads as a list to come back to rather than a score.
 - `Button` in `variant` Primary and Secondary, `size="L"`.
 
 **Not in the library**
@@ -77,10 +77,11 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - The confidence comparison has nine copy versions: confidence up, same or down, crossed with performance up, same or down.
   - The copy reflects the change in the student's confidence (up, the same or down) and whether their answers back it up. It needn't use the word "confident".
   - Underconfidence gets the evidence and a celebratory `MascotSlot` expression.
+- Order (Sep 2026): the "How it went" headline and caption, then "How you felt", then the cards, then the come-back note. The comparison sits above the cards so it is on screen on arrival whatever the counts; its copy points to the cards below.
 
 **Components**
 - `Scaffold`.
-- `SummaryCard` for the three tones, with overflow on `Good`.
+- `ExpandableSummaryCard` for the three tones: `Good` and `Partial` collapsed to "N terms", `NeedsPractice` three then "N more" (Sep 2026). A group of one is shown by name.
 - `MascotSlot`, underconfidence only.
 - `IconSlot` at `size="250"`.
 - `Button`: Primary L and Secondary L.

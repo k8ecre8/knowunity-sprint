@@ -291,6 +291,22 @@ export function seedDay(day: Day): void {
 }
 
 /**
+ * A tour shortcut (`/tour`). Writes the rows a round's script produces, as if
+ * the tester had just answered every term, so its summary opens without
+ * playing the round. Replaces any rows the round already has. Seed the day
+ * first: the order, and the exam-eve `ready` script, come from the session.
+ */
+export function seedFinishedRound(round: Round): void {
+  updateSession((s) => {
+    const at = new Date().toISOString();
+    const rows = roundTerms(s, round).map(
+      (t): OutcomeRow => ({ termId: t.id, round, outcome: scriptedOutcome(t.script), mode: 'voice', lastSeenAt: at }),
+    );
+    return { ...s, rows: [...s.rows.filter((r) => r.round !== round), ...rows], resume: null, practice: null };
+  });
+}
+
+/**
  * The 1-based term a round is on right now: a left-off term if there is one,
  * otherwise the first term without a row. A finished round starts again at 1.
  */

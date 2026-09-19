@@ -41,6 +41,8 @@ If you need a number, a colour, a duration or a type step, read `tokens/tokens.j
 
 **`summaryCard`** for the per-category breakdown at the end of a session. One card per outcome, up to three terms shown, with an overflow row that doubles as the collapse affordance. The screen decides how many rows show, not the card.
 
+**`expandableSummaryCard`** when a summary starts a card closed and the student can open it. It wraps `summaryCard` and remembers the opening; the screen still picks the starting view.
+
 ### Structure
 
 **`appBar`** as the top edge of a screen. Its slot carries whatever the screen needs across the middle.
@@ -105,9 +107,9 @@ bottomSheetOnly   home indicator area
 
 **Press is geometry, not colour.** Anything with a lip presses by the lip collapsing to zero and the control sinking by the lip depth. The fill does not change. `Text`, which has no lip, presses by filling with `background/surface` instead. Transition at `motion.duration.instant`.
 
-**The lip is built two ways.** On a filled control it is an inner shadow at `Elevation/Lip/sm` or `/lg`, in `color/alpha/dark-15`. On an outlined control there is no fill to darken, so it is a heavier bottom border instead, at `Elevation/Lip/outlined/sm` or `/lg`. Same idea, different mechanism, and the outlined depth is tuned by eye rather than matched to the number — which is why it has its own pair of tokens rather than reusing the stroke scale.
+**The lip is built two ways.** On a filled control it is an inner shadow at `Elevation/Lip/sm` or `/lg`, in `elevation/lip` (added Sep 2026, aliasing `color/alpha/dark-15`, so components never read the primitive colour). On an outlined control there is no fill to darken, so it is a heavier bottom border instead, at `Elevation/Lip/outlined/sm` or `/lg`. Same idea, different mechanism, and the outlined depth is tuned by eye rather than matched to the number — which is why it has its own pair of tokens rather than reusing the stroke scale.
 
-**Exits run faster than entrances.** About a third faster. Someone dismissing a thing has already decided.
+**Exits run faster than entrances.** About a third faster. Someone dismissing a thing has already decided. Anything that entered at `motion.duration.base` leaves at `exit` (170); anything that entered at `slow` leaves at `exit-slow` (300, added Sep 2026). Both take `motion.easing.exit`.
 
 **Reduced motion is a mode, not a second set of tokens.** See the `$extensions` block on each duration in `tokens/tokens.json`.
 
@@ -161,7 +163,7 @@ This is the set the app already uses. The `loading-01` and `x-close` naming in t
 
 **Never put an appearance word in a semantic name.** A word describing how a colour looks belongs in the primitive layer. `feedback/partial`, not `feedback/yellow`.
 
-**Never read a primitive directly.** Components consume the semantic layer; the semantic layer references the primitives. The primitives are scoped to nothing in Figma for exactly this reason.
+**Never read a primitive colour directly.** Colour has two layers: components consume the semantic layer, and the semantic layer references the primitives. The primitive colours are scoped to nothing in Figma for exactly this reason. The other scales (space, radius, control, stroke, icon, illustration, elevation depth, opacity, scale, size, font) are one layer by design, so components read them directly, which is how every spec in this file names them (`Space/1000`, `Radius/400`, `Control/1200`). Clarified Sep 2026.
 
 **Never build something new when a component already does the job.** Read the list above first. Most of what looks missing is a variant or a property on something that exists.
 
@@ -310,7 +312,7 @@ Three properties were added to the existing set: `showRow1`, `showOverflowRow` a
 
 > OVERFLOW / COLLAPSE (added Sep 2026): Row overflow (showOverflowRow, overflowText) is the collapse affordance, not just overflow handling. Plus icon in the row-icon position, chevron-down trailing; both take the tone colour. showRow1 lets a card collapse to header + count row ("8 terms").
 > The component never decides how many rows to show; the screen does:
-> - Section summary (3 to 5 items): everything open, no overflow row.
+> - Section summary (3 to 5 items): everything open, no overflow row. (Superseded Sep 2026: see `expandableSummaryCard`.)
 > - Repeat summary: two groups only, right and wrong. Wrong is always fully open (that is the work). Right shows up to 3 then "N more", or collapses to header + "N terms" when the list is long. No grouping by history or by how the term was tested.
 > Expanded is the same card with rows on and the overflow row off; build it as a second frame for the prototype.
 
@@ -319,6 +321,16 @@ Three properties were added to the existing set: `showRow1`, `showOverflowRow` a
 **Exception to the sentence-case rule, decided Sep 2026.** The four headers render in capitals as the masters draw them — `CORRECT WITHOUT HELP` (was `GOOD EXPLANATIONS` in code until the review summary build, Sep 2026; SPEC.md Open 13), `NEEDED A HINT`, `NEEDS PRACTICE`, `SKIPPED`. This is the one place in the system that does, and it was chosen over the Never rule deliberately. The strings are stored in capitals, not transformed, so the DOM matches the screen.
 
 **Where the file and the description disagree.** The description says "header … swap the text", but the set has no `header` property; each tone bakes its string in, and so does the code. The masters place their icons as raw instances rather than through `iconSlot`, against the icon rule — the code goes through `IconSlot`. Skipped's row icon is `text/tertiary`, which the description omits. The overflow `plus` and `chevron` are drawn filled at 0.75 stroke where the row icons are 2px line; `IconSlot` renders all at one weight. The OUTSTANDING note about placeholder squares is stale: the masters now carry the glyphs it asked for.
+
+### `expandableSummaryCard`
+
+**Axis `view`:** `open` (every term), `overflow` (three, then "N more"; a list of three or fewer is shown whole), `collapsed` (header and "N terms"; a single term is shown whole, since the count row would take the same height). Pressing the overflow row opens the card, and it stays open. **Properties:** `tone` (passed through to `summaryCard`), `names` (every term in the outcome, in round order).
+
+**Where the screen sets the view (Sep 2026).** Section summary: Good and Partial `collapsed`, Needs practice `open`, so a first pass reads as a list to come back to, not a score. Review summary: Good and Partial `collapsed`, Needs practice `overflow`, so "How you felt" is on screen on arrival however many terms were missed. Exam-eve repeat summary: Needs practice `open`, Partial and Good `overflow`, as before.
+
+**Don't** close a card again, and don't collapse Needs practice to a count: at least its first three terms are always shown.
+
+**Built in code, Sep 2026,** as `src/components/ExpandableSummaryCard.tsx`, promoted from the `Card` wrapper the review and exam-eve summaries each built inline, when the section summary became the third screen to need it. `view` replaces that wrapper's `open` boolean and adds `collapsed`. No new tokens.
 
 ### `verdictChip`
 
@@ -534,13 +546,13 @@ Added to the Figma set, Sep 2026.
 > IDLE: a 120 ring (`Illustration/1500`) round `microphone-01`, breathing at `motion.duration.breathing` with a soft glow and one ripple per breath. The ring is the button. The escapes sit `Space/1000` below it, the label `Space/1000` above.
 > LISTENING: tapping squeezes the middle like a press (`motion.duration.fast`) and swaps the microphone for "Tap when done". Sixty bars stand out of the ring and follow the voice, up to `Space/600` long. `trash-01` (`buttonIcon` Tertiary M) appears to the left.
 > TRANSCRIBING, JUDGING: the ring opens into an arc turning at `motion.duration.spin`, with three dots stepping on the same cycle. The trash stays through both waits; discarding returns to idle. THE 4-SECOND BEAT (`…Slow`): the arc becomes twelve dashes circling at `motion.duration.spin-slow`, and the label changes.
-> TRANSCRIPT: the ring's own line eases (`motion.duration.slow`, `motion.easing.standard`) out into the card that holds the words, read-only, under "Here's what Knowie heard", with send (`buttonIcon` Primary M `send-01`) inside it. The trash rides with the growing edge into the card's bottom-left corner. The card grows with its words. Sending eases it back into the ring, which opens straight into the judging arc.
+> TRANSCRIPT: the ring's own line eases (`motion.duration.slow`, `motion.easing.standard`) out into the card that holds the words, read-only, under "Here's what Knowie heard", with send (`buttonIcon` Primary M `send-01`) inside it. The trash rides with the growing edge into the card's bottom-left corner. The card grows with its words. Sending eases it back into the ring at `motion.duration.exit-slow`, which opens straight into the judging arc.
 > ERROR: past 10 seconds the line closes and goes `border/strong`, the middle offers `refresh-cw-01` and the label reads "Tap to send again". Tapping re-runs judging on the same take. Grey, not red: red reads as a wrong answer.
 > DON'T: show a check anywhere in this control. A check means correct, and sending is not judging.
 > DON'T: say "try again" for the error. That is the miss verdict's chip.
 > DON'T: put the transcript in `responseBubble` or `noteCard`. It lives in this control's card, and there is never one after judging, or an editable one.
 
-**Built in code, Sep 2026,** as `src/components/VoiceInput.tsx`, promoted from the voice turn's inline control once the design settled (the "option D" canvas). Three tokens were added for it: `Stroke/Bold` (4), `motion.duration.spin` (1400) and `motion.duration.spin-slow` (4000), both zero in reduced mode. **Every number is read off the element at mount**, so sizes and durations come from `build/css/tokens.css` and reduced motion reaches the drawing: `spin` reads 0, the frame loop stops and each state draws one still frame. The line, the bars, the ripple and the dashes are SVG paths redrawn per frame outside React. **The glow is a shape, not an effect** (see Never). The label copy lives in `LABEL` and the second lines in `HELPER` at the top of the component; the voice turn overrides the second line for hints, start over and didn't catch that. The voice level is mocked by `createSpeechLevel()` in `src/mock/speech.ts`; no audio is read.
+**Built in code, Sep 2026,** as `src/components/VoiceInput.tsx`, promoted from the voice turn's inline control once the design settled (the "option D" canvas). Three tokens were added for it: `Stroke/Bold` (4), `motion.duration.spin` (1400) and `motion.duration.spin-slow` (4000), both zero in reduced mode. `motion.duration.exit-slow` (300) followed for the card's collapse. **Every number is read off the element at mount**, so sizes and durations come from `build/css/tokens.css` and reduced motion reaches the drawing: `spin` reads 0, the frame loop stops and each state draws one still frame. The line, the bars, the ripple and the dashes are SVG paths redrawn per frame outside React. **The glow is a shape, not an effect** (see Never). The label copy lives in `LABEL` and the second lines in `HELPER` at the top of the component; the voice turn overrides the second line for hints, start over and didn't catch that. The voice level is mocked by `createSpeechLevel()` in `src/mock/speech.ts`; no audio is read.
 
 **Where the file and the build differ.** Figma's `recordingControl` is a filled white disc in idle, a gradient blob with `send-01` while recording and a still dashed ring while thinking; the build replaces all three with the one line, decided Sep 2026 because the blob's gradient and glow were off-brand for Knowunity's flat, one-accent style. The frames draw the label and the escapes `Space/600` from the ring; the build uses `Space/1000` so the glow and the bars clear the text. The frames have no transcript, slow-beat or error state. Send is `buttonIcon` Primary M (white), not the canvas's violet circle.
 

@@ -95,12 +95,12 @@
 /* The lip on a filled control is an inner shadow: there is a fill to darken. */
 .variantPrimary .pill,
 .variantSecondary .pill {
-  box-shadow: inset 0 var(--primitive-elevation-lip-sm) 0 0 var(--primitive-color-alpha-dark-15);
+  box-shadow: inset 0 var(--primitive-elevation-lip-sm) 0 0 var(--semantic-elevation-lip);
 }
 
 .sizeL.variantPrimary .pill,
 .sizeL.variantSecondary .pill {
-  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--primitive-color-alpha-dark-15);
+  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--semantic-elevation-lip);
 }
 
 .variantPrimary .pill {

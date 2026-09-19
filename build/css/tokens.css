@@ -259,6 +259,7 @@
   --semantic-mascot-pupils: #0a0a0a; /** Knowie's pupils. */
   --semantic-mascot-eyeoutline: #e5e5e5; /** The outline stroke giving Knowie's eyes and body depth. */
   --semantic-illustration-flame: #fd7344; /** The flame in streak illustrations; it is orange despite its former name. */
+  --semantic-elevation-lip: rgba(0, 0, 0, 0.14901960784313725); /** Colour of the lip's inner shadow on a filled control: the edge that reads as pressable and collapses on press. */
   --semantic-focus-width: 2px; /** Thickness of the keyboard focus ring. */
   --semantic-focus-offset: 2px; /** Gap between a control's edge and its focus ring. */
   --motion-duration-instant: 80ms; /** Press feedback and anything that must read as immediate. */
@@ -266,6 +267,7 @@
   --motion-duration-base: 250ms; /** Default for most interface motion. */
   --motion-duration-slow: 450ms; /** Large travel: sheets and full-screen transitions. */
   --motion-duration-exit: 170ms; /** Dismissal of anything that entered at base. */
+  --motion-duration-exit-slow: 300ms; /** Dismissal of anything that entered at slow: a third faster, like exit to base. */
   --motion-duration-breathing: 3500ms; /** Knowie's ambient idle loop; zero in reduced mode means do not run it. */
   --motion-duration-spin: 1400ms; /** One turn of a working indicator: voiceInput's processing arc, and the step cycle of its dots. Zero in reduced mode means do not run it. */
   --motion-duration-spin-slow: 4000ms; /** One turn of a long wait's second beat: voiceInput's dashes past 4 seconds. Slower than spin so the change of gear reads. Zero in reduced mode means do not run it. */
@@ -392,6 +394,7 @@
     --motion-duration-base: 1ms;
     --motion-duration-slow: 1ms;
     --motion-duration-exit: 1ms;
+    --motion-duration-exit-slow: 1ms;
     --motion-duration-breathing: 0ms;
     --motion-duration-spin: 0ms;
     --motion-duration-spin-slow: 0ms;

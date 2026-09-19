@@ -7,7 +7,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
-import { SummaryCard } from '@/components/SummaryCard';
+import { ExpandableSummaryCard } from '@/components/ExpandableSummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { Button } from '@/components/Button';
 import { NoteCard } from '@/components/NoteCard';
@@ -83,17 +83,15 @@ export function SectionSummary() {
                 the cards carry the count. */}
             <TextBlock headline="Here’s how it went" showCaption={false} />
 
+            {/* A first pass is a list to come back to, not a score: what went
+                well is a count, the misses are the list. */}
             <div className={styles.cards}>
               {cards.map(({ tone, rows: group }) => (
-                <SummaryCard
+                <ExpandableSummaryCard
                   key={tone}
                   tone={tone}
-                  showRow1={group.length >= 1}
-                  showRow2={group.length >= 2}
-                  showRow3={group.length >= 3}
-                  term1={group[0] ? nameOf(group[0]) : undefined}
-                  term2={group[1] ? nameOf(group[1]) : undefined}
-                  term3={group[2] ? nameOf(group[2]) : undefined}
+                  names={group.map(nameOf)}
+                  view={tone === 'NeedsPractice' ? 'open' : 'collapsed'}
                 />
               ))}
             </div>

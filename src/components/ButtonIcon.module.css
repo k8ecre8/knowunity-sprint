@@ -71,13 +71,13 @@
 .variantPrimary .pill,
 .variantSecondary .pill {
   padding-bottom: calc(var(--primitive-elevation-lip-sm) * -1);
-  box-shadow: inset 0 var(--primitive-elevation-lip-sm) 0 0 var(--primitive-color-alpha-dark-15);
+  box-shadow: inset 0 var(--primitive-elevation-lip-sm) 0 0 var(--semantic-elevation-lip);
 }
 
 .sizeL.variantPrimary .pill,
 .sizeL.variantSecondary .pill {
   padding-bottom: calc(var(--primitive-elevation-lip-lg) * -1);
-  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--primitive-color-alpha-dark-15);
+  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--semantic-elevation-lip);
 }
 
 .variantPrimary .pill {

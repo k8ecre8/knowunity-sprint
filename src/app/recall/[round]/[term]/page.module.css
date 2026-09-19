@@ -1,7 +1,7 @@
 /* Voice turn — every value is a token from build/css/tokens.css. Matches
    the "Q1 idle" family of frames: middleContentContent pads Space/400 top
    and bottom with a Space/400 gap; knowiePrompt overlaps the bubble onto
-   Knowie by Space/600; the stage fills the rest and centres voiceInput.
+   Knowie by Space/600; the stage fills the rest and anchors voiceInput to its bottom.
    Next question and practice sit in bottomContent, because the scaffold
    anchors the primary action there. */
 
@@ -26,14 +26,16 @@
   margin-top: var(--primitive-space-negative-600);
 }
 
-/* Fills the rest and centres voiceInput in it. The control carries its own
-   label, escapes, transcript card, send, discard and retry. */
+/* Fills the rest and anchors voiceInput to its bottom edge, so the ring and
+   the escapes hold one position whatever the bubble or the helper line does;
+   only the space above grows or shrinks. The control carries its own label,
+   escapes, transcript card, send, discard and retry. */
 .stage {
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   padding-block: var(--primitive-space-400);
 }
 

@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
-import { SummaryCard, type SummaryCardTone } from '@/components/SummaryCard';
+import { ExpandableSummaryCard } from '@/components/ExpandableSummaryCard';
 import { TextBlock } from '@/components/TextBlock';
 import { NoteCard } from '@/components/NoteCard';
 import { MascotSlot } from '@/components/MascotSlot';
@@ -22,7 +22,6 @@ import shared from './page.module.css';
 import styles from './review.module.css';
 
 const round = 'review';
-const ROW_LIMIT = 3;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /* Open 23, decided here: confidence is "same" when the position is the same;
@@ -53,29 +52,29 @@ const comparison: Record<Direction, Record<Direction, { headline: string; body: 
     up: { headline: 'You felt more confident.', body: 'Your answers back that up.' },
     same: {
       headline: 'You felt more confident.',
-      body: 'Your answers stayed about where they were. The feeling ran a little ahead of the evidence, so trust the cards above more than the feeling.',
+      body: 'Your answers stayed about where they were. The feeling ran a little ahead of the evidence, so trust the cards below more than the feeling.',
     },
     down: {
       headline: 'You felt more confident, but your answers went the other way.',
-      body: 'That’s overconfidence, and it’s common. The cards above are the honest picture, and the misses are where to spend tomorrow.',
+      body: 'That’s overconfidence, and it’s common. The cards below are the honest picture, and the misses are where to spend tomorrow.',
     },
   },
   same: {
     up: {
       headline: 'You felt about the same.',
-      body: 'Your answers got better than you think. That’s underconfidence, and the cards above are the evidence.',
+      body: 'Your answers got better than you think. That’s underconfidence, and the cards below are the evidence.',
       celebrate: true,
     },
     same: { headline: 'You felt about the same.', body: 'Your answers say the same. Your read on yourself is accurate.' },
     down: {
       headline: 'You felt about the same, but your answers slipped.',
-      body: 'That gap is worth knowing about. The misses above are the terms the feeling is skipping over.',
+      body: 'That gap is worth knowing about. The misses below are the terms the feeling is skipping over.',
     },
   },
   down: {
     up: {
       headline: 'You felt less confident, but your answers got better.',
-      body: 'That’s underconfidence. Look at the cards above: the evidence says you know more than you feel.',
+      body: 'That’s underconfidence. Look at the cards below: the evidence says you know more than you feel.',
       celebrate: true,
     },
     same: {
@@ -85,32 +84,10 @@ const comparison: Record<Direction, Record<Direction, { headline: string; body: 
     },
     down: {
       headline: 'You felt less confident, and your answers agree.',
-      body: 'Your read on yourself is accurate. The misses above are where to start.',
+      body: 'Your read on yourself is accurate. The misses below are where to start.',
     },
   },
 };
-
-/* One card whose row count the screen decides: everything when `open`, else
-   three rows and an overflow row that opens it. Opening changes only the view. */
-function Card({ tone, names, open }: { tone: SummaryCardTone; names: string[]; open: boolean }) {
-  const [expanded, setExpanded] = useState(false);
-  const showAll = open || expanded || names.length <= ROW_LIMIT;
-  if (showAll) return <SummaryCard tone={tone} terms={names} showOverflowRow={false} />;
-  return (
-    <SummaryCard
-      tone={tone}
-      showRow1
-      showRow2
-      showRow3
-      term1={names[0]}
-      term2={names[1]}
-      term3={names[2]}
-      showOverflowRow
-      overflowText={`${names.length - ROW_LIMIT} more`}
-      onOverflowPress={() => setExpanded(true)}
-    />
-  );
-}
 
 /* "How you felt": the before-plan and today ratings side by side. No component
    exists for it; built here as `confidenceReads`. See docs/component-gaps.md. */
@@ -243,11 +220,6 @@ export function ReviewSummary() {
           <div className={styles.content}>
             <section className={styles.group}>
               <TextBlock as="h1" headline="How it went" caption={caption} showCaption />
-              <div className={styles.cards}>
-                {good.length > 0 && <Card tone="Good" names={good.map(nameOf)} open={false} />}
-                {partial.length > 0 && <Card tone="Partial" names={partial.map(nameOf)} open />}
-                {practice.length > 0 && <Card tone="NeedsPractice" names={practice.map(nameOf)} open />}
-              </div>
             </section>
 
             <section className={styles.group}>
@@ -260,6 +232,20 @@ export function ReviewSummary() {
                   </div>
                 )}
                 <TextBlock size="S" as="h3" headline={verdict.headline} showCaption caption={verdict.body} />
+              </div>
+            </section>
+
+            {/* "How you felt" sits straight under the headline, so the
+                comparison is on screen on arrival whatever the counts; the
+                cards are the evidence under it. */}
+            <section className={styles.group} aria-label="Your answers">
+              <div className={styles.cards}>
+                {/* Counts for what went well, then three misses and "N more". */}
+                {good.length > 0 && <ExpandableSummaryCard tone="Good" names={good.map(nameOf)} view="collapsed" />}
+                {partial.length > 0 && <ExpandableSummaryCard tone="Partial" names={partial.map(nameOf)} view="collapsed" />}
+                {practice.length > 0 && (
+                  <ExpandableSummaryCard tone="NeedsPractice" names={practice.map(nameOf)} view="overflow" />
+                )}
               </div>
             </section>
 

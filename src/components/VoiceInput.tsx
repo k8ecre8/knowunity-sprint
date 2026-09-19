@@ -95,7 +95,7 @@ const DASHES = 12;
 type Tokens = {
   ring: number; bold: number; nudge: number; breath: number; barMax: number; ripple: number;
   inset: number; target: number; radius: number; trashGap: number;
-  instant: number; base: number; slow: number; fast: number; breathing: number; spin: number; spinSlow: number;
+  instant: number; base: number; slow: number; exitSlow: number; fast: number; breathing: number; spin: number; spinSlow: number;
 };
 function readTokens(el: HTMLElement): Tokens {
   const cs = getComputedStyle(el);
@@ -118,6 +118,7 @@ function readTokens(el: HTMLElement): Tokens {
     instant: ms('--motion-duration-instant'),
     base: ms('--motion-duration-base'),
     slow: ms('--motion-duration-slow'),
+    exitSlow: ms('--motion-duration-exit-slow'),
     fast: ms('--motion-duration-fast'),
     breathing: ms('--motion-duration-breathing'),
     spin: ms('--motion-duration-spin'),
@@ -233,7 +234,9 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
       // Card morph: a timed ease in and out from wherever it was.
       const mTo = look.card;
       const openDelay = mTo > L.mFrom ? T.fast : 0;
-      const mk = still ? 1 : clamp((t - L.changedAt - openDelay) / T.slow);
+      // Closing runs on exit-slow, a third faster than the opening.
+      const mDur = mTo > L.mFrom ? T.slow : T.exitSlow;
+      const mk = still ? 1 : clamp((t - L.changedAt - openDelay) / Math.max(1, mDur));
       L.m = L.mFrom + (mTo - L.mFrom) * inOut(mk);
       const m = L.m;
 
