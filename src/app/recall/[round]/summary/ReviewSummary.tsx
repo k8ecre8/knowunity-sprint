@@ -213,22 +213,27 @@ export function ReviewSummary() {
       middleContent={
         rows && !empty && (
           <div className={styles.content}>
+            {/* The claim leads, and everything under it is the evidence for it.
+                This is the one round allowed to say the student has learned
+                something (docs/sprint-context.md), and the over- or
+                underconfidence verdict is that claim, so it is the first thing
+                on the screen rather than the last line of its own block. The
+                reads sit under it as the proof, and the cards under those.
+                Reordered Sep 2026: the count caption used to head the screen two
+                sections above the cards it counts, and the verdict sat behind
+                the reads, so the one sentence naming overconfidence fell below
+                the fold. */}
             <section className={styles.group}>
-              <TextBlock as="h1" headline="How it went" caption={caption} showCaption />
-            </section>
-
-            <section className={styles.group}>
-              <TextBlock as="h2" headline="How you felt" />
+              <TextBlock as="h1" headline="How you felt" />
               <div className={styles.confidence}>
+                <TextBlock size="S" as="h2" headline={verdict.headline} showCaption caption={verdict.body} />
                 <ConfidenceReads before={beforeLabel} today={todayLabel} />
-                <TextBlock size="S" as="h3" headline={verdict.headline} showCaption caption={verdict.body} />
               </div>
             </section>
 
-            {/* "How you felt" sits straight under the headline, so the
-                comparison is on screen on arrival whatever the counts; the
-                cards are the evidence under it. */}
-            <section className={styles.group} aria-label="Your answers">
+            {/* The count now heads the cards it counts. */}
+            <section className={styles.group}>
+              <TextBlock as="h2" headline="How it went" caption={caption} showCaption />
               <div className={styles.cards}>
                 {/* Counts for what went well, then three misses and "N more". */}
                 {good.length > 0 && <ExpandableSummaryCard tone="Good" names={good.map(nameOf)} view="collapsed" />}

@@ -77,7 +77,7 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - The confidence comparison has nine copy versions: confidence up, same or down, crossed with performance up, same or down.
   - The copy reflects the change in the student's confidence (up, the same or down) and whether their answers back it up. It needn't use the word "confident".
   - Underconfidence gets the evidence. Knowie is not on this screen in any version (cut Sep 2026).
-- Order (Sep 2026): the "How it went" headline and caption, then "How you felt", then the cards, then the come-back note. The comparison sits above the cards so it is on screen on arrival whatever the counts; its copy points to the cards below.
+- Order (revised Sep 2026): "How you felt" leads — the over- or underconfidence verdict first, the before/today reads under it as the proof — then "How it went" with the count caption heading the cards it counts, then the come-back note. This is the one round allowed to claim the student has learned something, so the claim is the first thing on the screen and everything below it is evidence. The previous order put the count two sections above its own cards and the verdict behind the reads, so the sentence naming overconfidence fell below the fold.
 
 **Components**
 - `Scaffold`.
@@ -116,8 +116,9 @@ Easiest first. Screens that depend on the fewest gaps come first.
 **Route:** `/recall/review/confidence`
 
 **States**
-- Nothing selected, with Start the review disabled.
+- Nothing selected, with Start the review disabled. No thumb is drawn: a thumb resting at the left end would read as "not ready at all" already chosen.
 - One of five positions selected.
+- Dragging, while a finger or pointer is down on the bar.
 
 **Components**
 - `Scaffold`.
@@ -127,6 +128,8 @@ Easiest first. Screens that depend on the fewest gaps come first.
 - `Button`: Primary L, with `state="Disabled"` until a position is chosen.
 
 **Not in the library:** `answerOption`, the five-position slider control.
+
+**The slider behaves like a slider** (revised Sep 2026). Pressing anywhere on the bar moves the thumb there and the thumb then follows the finger until it lifts, snapping to the nearest of the five positions; pointer capture keeps a drag alive past the ends. Arrow keys step it, Home and End go to the ends, and an unanswered slider takes the middle position on the first key. It is one `role="slider"` with `aria-valuetext` carrying the words, not five radios — it was five invisible buttons over a progress bar, which looked like a slider and could not be dragged.
 
 **Actions**
 - Choose a position → stored in the session as the pre-review rating.
@@ -188,15 +191,15 @@ The input and the voice link sit under the bubble in every answering state, not 
 **Route:** `/recall/[round]/[term]`, in `src/app/recall/[round]/[term]/page.tsx`
 
 **States**
-- **Idle:** "Tap to answer", with the helper "Even a partial answer is a great start".
+- **Idle:** the `accent/brand/bold` ring filled with `interactive/primary`, carrying `microphone-01-solid` at `Icon/700` (56). The whole button breathes on one radius — ring, fill and glyph together. The label above reads "Tap to answer" **on the first term of a round's main pass only**, dropped on every term after it and on every practice pass. No second line; the encouragement "Even a partial answer is a great start" sits in the question bubble's first paragraph instead. Revised Sep 2026 after a tester read an earlier idle — an unfilled microphone inside a breathing outline — as already recording, and answered a full question into a control that had never started. The fill is what separates idle from listening; see `docs/design-system.md` → `voiceInput` → IDLE, HOW IT GOT HERE.
 - **Start over:** after a discard ("No harm done, go again").
 - **Didn't catch that:** a scripted unclear take.
-- **Recording:** "Listening", with "Tap when done" in the ring.
+- **Recording:** "Knowie’s listening", with "Tap when done" in the ring. Every label naming a state Knowie is acting in names him; the ones where the student acts do not. See `docs/design-system.md` → `voiceInput`.
 - **Transcribing:** about 1s.
 - **Transcript:** read-only, inside the control's card, with send and discard.
 - **Thinking.**
 - **Thinking, slow:** at 4s.
-- **Error:** past 10s, with retry ("That took too long. Tap to send again").
+- **Error:** past 10s, with retry ("Small glitch. Tap to send again").
 - **Verdict:** correct.
 - **Hint 1:** "Give it another try".
 - **Hint 2:** "Last try, two hints".
@@ -250,12 +253,12 @@ Every animated state has a reduced-motion form, where the helper label carries t
 
 **States**
 - The tray over the plan.
-- The mocked iOS mic prompt. It only appears if Start is the first mic use, but see Open on whether the prompt fires here or on the first tap of the control.
+- The mocked iOS mic prompt. It only appears if Talk to Knowie is the first mic use, but see Open on whether the prompt fires here or on the first tap of the control.
 
 **Components**
 - `Scaffold` with `showBottomSheetBackground`.
 - `MascotSlot` at `size="2XL"`.
-- `Button`: Primary L "Start" and Text L "I can't talk right now".
+- `Button`: Primary L "Talk to Knowie" and Text L "Type instead".
 - Behind the tray, the plan as on screen 9.
 
 **Not in the library**
@@ -264,9 +267,9 @@ Every animated state has a reduced-motion form, where the helper label carries t
 - The mocked iOS permission alert.
 
 **Actions**
-- Start → mic prompt (first time), then `/recall/section/1`.
+- Talk to Knowie → mic prompt (first time), then `/recall/section/1`.
   - Don't Allow → `/recall/section/mic-denied`.
-- I can't talk right now → `/recall/section/1/typed`.
+- Type instead → `/recall/section/1/typed`.
 - Dismiss the tray → `/plan`.
 
 ### 9. Exam plan home
@@ -485,7 +488,7 @@ Undecided, or a gap that blocks a screen. None of these is decided in this spec.
 
 **Components missing from the library** (reported, not built):
 1. **Push-to-talk control.** *Decided Sep 2026:* it is `voiceInput`, built in code as `src/components/VoiceInput.tsx`; its states are in `docs/design-system.md`. Figma's `recordingControl` still draws the earlier design.
-2. **Idle "Tap to answer" control.** *Decided Sep 2026:* part of 1. The ring is the button, 120 across.
+2. **Idle "Tap to answer" control.** *Words moved into the disc Sep 2026.* *Decided Sep 2026:* part of 1. The ring is the button, 120 across.
 3. **Transcript container.** *Decided Sep 2026:* the transcript sits in `voiceInput`'s own card, grown from the ring, with send and discard inside it; no `noteCard` or `buttonGroup`. There is still no Figma frame for the transcript step.
 4. **`bottomSheet`** for the intro tray and the leave confirm. Also Bottom-sheet App Bar.
 5. **`answerOption`** for the confidence check. *Labels decided Sep 2026,* lowest to highest: "So cooked", "Getting there", "Most of it", "Mostly solid", "Ready". Figma named three; "Getting there" and "Ready" and the order of the middle two were decided in code (`src/mock/terms.ts`). The control itself is still built inline.

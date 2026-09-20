@@ -58,11 +58,14 @@
   resize: none;
   overflow: hidden;
   outline: none;
-  font-family: var(--typeScale-input-s-bold-fontFamily);
-  font-weight: var(--typeScale-input-s-bold-fontWeight);
-  font-size: var(--typeScale-input-s-bold-fontSize);
-  line-height: var(--typeScale-input-s-bold-lineHeight);
-  letter-spacing: var(--typeScale-input-s-bold-letterSpacing);
+  /* Input/M, not Input/S: 16px is the smallest a field can be before iOS Safari zooms the
+     page on focus, which shifts a position:fixed layout out from under the visible viewport.
+     See design-system.md → Three things that will break the build if missed. */
+  font-family: var(--typeScale-input-m-bold-fontFamily);
+  font-weight: var(--typeScale-input-m-bold-fontWeight);
+  font-size: var(--typeScale-input-m-bold-fontSize);
+  line-height: var(--typeScale-input-m-bold-lineHeight);
+  letter-spacing: var(--typeScale-input-m-bold-letterSpacing);
   font-feature-settings: normal;
   color: var(--semantic-text-primary);
   caret-color: var(--semantic-background-inverse);
@@ -80,7 +83,7 @@
   inset-inline-start: var(--primitive-space-0);
   top: var(--primitive-space-0);
   width: var(--primitive-stroke-border);
-  height: var(--typeScale-input-s-bold-lineHeight);
+  height: var(--typeScale-input-m-bold-lineHeight);
   background-color: var(--semantic-background-inverse);
   pointer-events: none;
 }

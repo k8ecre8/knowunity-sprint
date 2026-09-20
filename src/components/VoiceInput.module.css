@@ -78,10 +78,6 @@
   stroke: var(--semantic-border-strong);
 }
 
-.ripple {
-  stroke-width: var(--primitive-stroke-heavy-border);
-}
-
 /* The middle. It is the button in idle, listening and error; the card takes
    over at the transcript step. */
 .core {
@@ -99,11 +95,28 @@
   background: none;
   color: var(--semantic-text-primary);
   cursor: pointer;
+  transition:
+    background-color var(--motion-duration-base) var(--motion-easing-standard),
+    color var(--motion-duration-base) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-base) var(--motion-easing-standard);
   transform: translate(-50%, -50%);
 }
 
 .core:disabled {
   cursor: default;
+}
+
+/* Idle's glyph sits on the fill, so it takes the fill's `on` colour. The fill itself is in the
+   svg below, not here: drawn at the ring's own radius, it and the line are one shape and breathe
+   together. The glyph scales by the same ratio, so the button swells whole. Revised Sep 2026. */
+.root[data-state='idle'] .core {
+  color: var(--semantic-interactive-onprimary);
+}
+
+/* The filled face of the idle button. Radius comes from the drawing, opacity from `disc`. */
+.disc {
+  fill: var(--semantic-interactive-primary);
+  stroke: none;
 }
 
 .item {
@@ -124,8 +137,12 @@
     transform var(--motion-duration-exit) var(--motion-easing-exit);
 }
 
+/* Space/800 rather than Space/600, Sep 2026: at 96 the two words sat either side of
+   the wrap point — "Tap when done" broke to two lines and "Tap to answer" did not, so
+   the same control read differently between idle and listening for no reason anyone
+   could name. At 88 both wrap, and two centred lines suit a circle. */
 .word {
-  max-width: calc(var(--primitive-illustration-1500) - var(--primitive-space-600));
+  max-width: calc(var(--primitive-illustration-1500) - var(--primitive-space-800));
   font-family: var(--typeScale-body-s-bold-fontFamily);
   font-weight: var(--typeScale-body-s-bold-fontWeight);
   font-size: var(--typeScale-body-s-bold-fontSize);

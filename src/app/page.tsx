@@ -44,7 +44,7 @@ const glyphs = {
 
 const quickActions: readonly { id: string; label: string; glyph: Glyph }[] = [
   { id: 'quiz', label: 'Quiz', glyph: glyphs.quiz },
-  { id: 'practice-test', label: 'Practice test', glyph: glyphs.practiceTest },
+  { id: 'practice-test', label: 'Practice Test', glyph: glyphs.practiceTest },
   { id: 'upload', label: 'Upload', glyph: glyphs.upload },
 ];
 

@@ -8,7 +8,7 @@
 
    Four states, from the simulated day in the session (`session.day`, moved
    on by the summaries, or seeded by `?day=`):
-   - Day 1: the Plate tectonics voice node is `next`.
+   - Day 1: the Plate Tectonics voice node is `next`.
    - Section done: that node is `done` (the section summary marks it).
    - Review day: every section node is done and the cumulative review is
      `next`, or `done` once the review summary has marked it.
@@ -75,31 +75,31 @@ function buildPaths(day: Day, session: Session, go: (href: string) => void): Pat
 
   return [
     {
-      section: 'Plate tectonics',
+      section: plateTectonics.name,
       steps: [
-        { id: 'pt-1', title: 'Plate tectonics 1', caption: '3 questions, ~5 mins', state: 'done', glyph: { icon: 'star-01' } },
+        { id: 'pt-1', title: `${plateTectonics.name} 1`, caption: '3 questions, ~5 mins', state: 'done', glyph: { icon: 'star-01' } },
         {
           id: 'pt-voice',
-          title: 'Explain it out loud',
+          title: 'Explain It Out Loud',
           caption: `${plateTectonics.terms.length} questions, ~5 mins`,
           state: sectionDone ? 'done' : 'next',
           glyph: { icon: 'microphone-01' },
           // A done node is inert: replaying a finished round would reorder the rounds after it.
           onPress: sectionDone ? undefined : () => go(`/plan/${SECTION_ID}/intro`),
         },
-        { id: 'pt-2', title: 'Plate tectonics 2', caption: '3 questions, ~5 mins', state: afterVoice, glyph: { icon: 'file-question-02' } },
-        { id: 'pt-3', title: 'Plate tectonics 3', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
+        { id: 'pt-2', title: `${plateTectonics.name} 2`, caption: '3 questions, ~5 mins', state: afterVoice, glyph: { icon: 'file-question-02' } },
+        { id: 'pt-3', title: `${plateTectonics.name} 3`, caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
       ],
     },
     {
-      section: 'Earthquakes and volcanoes',
+      section: 'Earthquakes and Volcanoes',
       steps: [
         { id: 'eq-1', title: 'Earthquakes 1', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
         { id: 'vo-1', title: 'Volcanoes 1', caption: '3 questions, ~5 mins', state: seeded, glyph: { icon: 'file-question-02' } },
       ],
     },
     {
-      phase: 'Comprehensive review',
+      phase: 'Comprehensive Review',
       steps: [
         {
           id: REVIEW_ID,
@@ -113,7 +113,7 @@ function buildPaths(day: Day, session: Session, go: (href: string) => void): Pat
               ? () => go(session.resume?.round === 'review' ? `/recall/review/${session.resume.term}` : '/recall/review/confidence')
               : undefined,
         },
-        { id: 'practice-test', title: 'Practice test', caption: '12 questions, ~12 min', state: reviewDone ? 'next' : 'todo', glyph: glyphs.clipboard },
+        { id: 'practice-test', title: 'Practice Test', caption: '12 questions, ~12 min', state: reviewDone ? 'next' : 'todo', glyph: glyphs.clipboard },
       ],
     },
   ];

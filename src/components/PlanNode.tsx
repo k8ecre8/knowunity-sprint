@@ -58,6 +58,16 @@ export function PlanNode({
           <span className={styles.gloss} />
         </span>
       )}
+      {/* next only: the ring draws itself round the node, rests, and goes again. `next` is a
+          position in a sequence, never a process (see design-system.md → planNode), so this
+          movement can only read as "start here". The static border underneath carries the
+          state on its own, so reduced motion loses nothing. `pathLength` makes the dash
+          geometry unitless, like the gloss polygon. */}
+      {state === 'next' && (
+        <svg className={styles.sweepSvg} viewBox="0 0 100 100" aria-hidden="true">
+          <circle className={styles.sweep} cx="50" cy="50" r="49" pathLength="100" />
+        </svg>
+      )}
       <IconSlot className={styles.icon} size={slotSize[size]} name={name ?? defaultGlyph[state]} />
     </span>
   );

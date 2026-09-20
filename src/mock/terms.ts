@@ -22,6 +22,8 @@ export type Term = {
   id: string;
   /** The label on summary cards. */
   name: string;
+  /** The topic this term belongs to, as the turn's frame line names it. Title case: it is a proper noun. */
+  section: string;
   prompt: string;
   /** Second wording, used by the exam-eve repeat. */
   promptB: string;
@@ -42,12 +44,13 @@ const revisedAt = '2026-09-16T09:00:00.000Z';
 
 export const plateTectonics: Section = {
   id: 'plate-tectonics',
-  name: 'Plate tectonics',
+  name: 'Plate Tectonics',
   terms: [
     {
       id: 'why-plates-move',
       name: 'Why plates move',
-      prompt: 'Explain to Knowie why tectonic plates move.',
+      section: 'Plate Tectonics',
+      prompt: 'Why do tectonic plates move?',
       promptB: 'What drives the movement of tectonic plates?',
       hints: [
         'Think about what is happening in the mantle underneath the plates.',
@@ -61,8 +64,9 @@ export const plateTectonics: Section = {
     {
       id: 'divergent-boundaries',
       name: 'Divergent boundaries',
-      prompt: 'Explain to Knowie what happens at a divergent boundary.',
-      promptB: 'Describe a divergent plate boundary and what it produces.',
+      section: 'Plate Tectonics',
+      prompt: 'What happens at a divergent boundary?',
+      promptB: 'What happens at a divergent boundary, and what does it build?',
       hints: [
         'Divergent means moving apart. What fills the gap when two plates separate?',
         'Magma rises into the gap and cools. What new feature does that build, and where do you find one?',
@@ -78,7 +82,8 @@ export const plateTectonics: Section = {
     {
       id: 'transform-boundaries',
       name: 'Transform boundaries',
-      prompt: 'Explain to Knowie what happens at a transform boundary.',
+      section: 'Plate Tectonics',
+      prompt: 'What happens at a transform boundary?',
       promptB: 'What is a transform boundary, and why does it cause earthquakes?',
       hints: [
         'No crust is made or destroyed at a transform boundary. So what are the plates doing?',
@@ -108,13 +113,14 @@ const eveRevisedAt = '2026-09-15T18:30:00.000Z';
 function eveTerm(
   id: string,
   name: string,
+  section: string,
   prompt: string,
   promptB: string,
   hints: [string, string],
   answer: string,
   script: ScriptStep[],
 ): Term {
-  return { id, name, prompt, promptB, hints, answer, script, lastSeenAt: eveRevisedAt };
+  return { id, name, section, prompt, promptB, hints, answer, script, lastSeenAt: eveRevisedAt };
 }
 
 const correct = (transcript: string): ScriptStep[] => [{ kind: 'correct', transcript }];
@@ -131,7 +137,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'how-volcanoes-form',
     'How volcanoes form',
-    'Explain to Knowie how a volcano forms.',
+    'Volcanoes',
+    'How does a volcano form?',
     'Where does the magma in a volcano come from, and how does it reach the surface?',
     ['Think about where crust is being destroyed. What happens to a plate that sinks?', 'The sinking plate melts. Where does that molten rock go?'],
     'At a subduction zone the sinking plate melts, the magma is less dense than the rock around it, so it rises through cracks and erupts.',
@@ -140,7 +147,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'fossil-dating',
     'Fossil dating',
-    'Explain to Knowie how fossils help date rock layers.',
+    'Rocks and Geologic Time',
+    'How do fossils help date rock layers?',
     'How can a fossil tell you the age of the rock it sits in?',
     ['Some species lived for only a short time. What does finding one tell you?', 'If a species lived for one short period, any rock holding it formed then.'],
     'Index fossils come from species that lived briefly and widely, so a layer holding one formed during that short period.',
@@ -151,8 +159,9 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'convergent-boundaries',
     'Convergent boundaries',
-    'Explain to Knowie what happens at a convergent boundary.',
-    'Describe a convergent plate boundary and what it produces.',
+    'Plate Tectonics',
+    'What happens at a convergent boundary?',
+    'What happens at a convergent boundary, and what does it build?',
     ['Convergent means moving together. What happens when two plates collide?', 'One plate is forced under the other, or they crumple upwards.'],
     'At a convergent boundary two plates move together: an oceanic plate subducts under the other, or two continental plates crumple into mountains.',
     correct('Two plates push together, so one goes under the other, or they crumple up into mountains.'),
@@ -160,7 +169,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'rock-layers',
     'Rock layers',
-    'Explain to Knowie what rock layers show.',
+    'Rocks and Geologic Time',
+    'What do rock layers show?',
     'What does the order of rock layers tell you about when they formed?',
     ['Layers build up over time. Which one was there first?', 'The lowest layer was laid down first, unless something has disturbed it.'],
     'Sedimentary layers build up over time, so the lowest is oldest and the top is youngest, unless folding or faulting has disturbed them.',
@@ -169,7 +179,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'subduction-zones',
     'Subduction zones',
-    'Explain to Knowie what a subduction zone is.',
+    'Plate Tectonics',
+    'What is a subduction zone?',
     'What happens to an oceanic plate at a subduction zone?',
     ['Oceanic crust is denser than continental crust. Which one sinks?', 'The denser oceanic plate sinks into the mantle. What features does that make?'],
     'At a subduction zone the denser oceanic plate sinks under the other plate into the mantle, forming a trench and, further in, volcanoes.',
@@ -178,7 +189,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'earthquake-waves',
     'Earthquake waves',
-    'Explain to Knowie the two kinds of earthquake wave.',
+    'Earthquakes',
+    'What are the two kinds of earthquake wave?',
     'What is the difference between P waves and S waves?',
     ['One kind arrives first. Which, and why?', 'P waves push and pull and travel through liquid. S waves shake sideways and cannot.'],
     'P waves are faster compression waves that pass through solids and liquids. S waves are slower, shake side to side and only pass through solids.',
@@ -187,7 +199,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'continental-drift-evidence',
     'Continental drift evidence',
-    'Explain to Knowie the evidence for continental drift.',
+    'Plate Tectonics',
+    'What is the evidence for continental drift?',
     'What evidence did Wegener use to argue the continents had moved?',
     ['Look at a map of the Atlantic. What do the coastlines suggest?', 'The coastlines fit, and the same fossils and rock types appear on both sides.'],
     'The coastlines of South America and Africa fit together, and matching fossils and rock formations are found on both sides of the ocean.',
@@ -196,7 +209,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'the-rock-cycle',
     'The rock cycle',
-    'Explain to Knowie the rock cycle.',
+    'Rocks and Geologic Time',
+    'What is the rock cycle?',
     'How does one type of rock turn into another over time?',
     ['There are three rock types. What turns one into the next?', 'Heat and pressure, melting and cooling, weathering and deposition each move rock along.'],
     'Igneous rock weathers into sediment that becomes sedimentary rock; heat and pressure make it metamorphic; melting and cooling make it igneous again.',
@@ -205,7 +219,8 @@ export const examEveTerms: Term[] = [
   eveTerm(
     'types-of-volcano',
     'Types of volcano',
-    'Explain to Knowie the difference between shield and composite volcanoes.',
+    'Volcanoes',
+    'What is the difference between shield and composite volcanoes?',
     'Why are some volcanoes wide and gentle while others are steep and explosive?',
     ['Think about how runny the lava is. What does runny lava do?', 'Runny lava spreads far and builds a wide dome. Thick lava traps gas and erupts violently.'],
     'Shield volcanoes have runny lava that flows far, so they are wide and gentle. Composite volcanoes have thick lava that traps gas, so they are steep and explosive.',

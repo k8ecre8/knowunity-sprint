@@ -12,7 +12,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Scaffold } from '@/components/Scaffold';
 import { TextBlock } from '@/components/TextBlock';
-import { NoteCard } from '@/components/NoteCard';
 import { ListItem } from '@/components/ListItem';
 import { BottomSheet } from '@/components/BottomSheet';
 import { Button } from '@/components/Button';
@@ -38,22 +37,18 @@ export default function TourPage() {
           <TextBlock
             headline="Prototype tours"
             showCaption
-            caption="Explain it to Knowie is a prototype. Nothing listens: every answer is scripted, so the same taps always give the same result. Each tour starts from a clean slate. When one ends, come back to this page for the next."
+            caption="Each tour clears the prototype and opens a screen. The day on each row is the day the app is simulating."
           />
-          <NoteCard tone="highlight" icon="clock-fast-forward" showTitle title="How time works">
-            The prototype acts out the week before a test: day 1, a review 3 days later, and the night before. Finishing
-            a round moves the app to the next day by itself, so the first three tours run on from each other.
-          </NoteCard>
           {tourGroups.map((group) => (
             <section key={group.heading} className={styles.group}>
-              <TextBlock as="h2" size="S" headline={group.heading} showCaption caption={group.caption} />
+              <TextBlock as="h2" size="S" headline={group.heading} />
               <ul className={styles.list}>
                 {group.tours.map((tour) => (
                   <li key={tour.id}>
                     <ListItem
                       variant="Outlined"
                       title={tour.title}
-                      subtitle={tour.subtitle}
+                      subtitle={`${tour.day} · ${tour.detail}`}
                       showImage={false}
                       showEmoji={false}
                       leadingIcon={tour.icon}
@@ -79,7 +74,7 @@ export default function TourPage() {
               onClose={() => setOpen(null)}
               middleSection={
                 <div className={styles.sheet}>
-                  <TextBlock headline={open.title} showCaption caption={open.about} />
+                  <TextBlock headline={open.title} showCaption caption={open.day} />
                   {/* tourSteps: no component; see docs/component-gaps.md. */}
                   <ol className={styles.steps}>
                     {open.steps.map((step, i) => (
@@ -89,17 +84,11 @@ export default function TourPage() {
                         </span>
                         <div className={styles.stepText}>
                           <p className={styles.action}>{step.action}</p>
-                          <p className={styles.result}>
-                            <span className={styles.resultLabel}>You’ll see: </span>
-                            {step.result}
-                          </p>
+                          {step.result && <p className={styles.result}>{step.result}</p>}
                         </div>
                       </li>
                     ))}
                   </ol>
-                  <NoteCard tone="outlined" icon="check-circle" showTitle title="You’re done when">
-                    {open.done}
-                  </NoteCard>
                 </div>
               }
             >

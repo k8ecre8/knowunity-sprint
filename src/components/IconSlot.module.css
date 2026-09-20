@@ -19,14 +19,20 @@
   height: 100%;
 }
 
-/* Figma renders a constant 2px stroke at every size on the ramp. An svg scaled
-   up from a 24-unit viewBox would scale its stroke with the box — 3.33px at
-   40px, 0.67px at 8px. non-scaling-stroke holds the package's own strokeWidth
-   at a constant device width instead, so one stroke weight carries across the
-   whole ramp and no number is written here. */
-.slot svg :is(path, circle, ellipse, line, polyline, polygon, rect) {
-  vector-effect: non-scaling-stroke;
-}
+/* The stroke scales with the glyph. There is deliberately no rule here, and that
+   is the whole decision — revised Sep 2026.
+
+   Every glyph is a 24-unit viewBox at the package's own strokeWidth of 2, so a
+   scaled svg draws 2px at 24 and moves either side of it: 3.33px at 40, 1.33px at
+   16. This file used to pin it to 2 device px at every size with
+   `vector-effect: non-scaling-stroke`, matching the Figma masters.
+
+   Holding 2px everywhere keeps the number the same and the stroke's share of the
+   box different, and the share is what a reader sees — an eighth of a 16px glyph
+   against a twentieth of a 40px one. Checked on screen: the 20px calendar and
+   target on the exam plan home read correctly at the scaled 1.67, while the 32px
+   plan nodes and the 40px mic read thin at a held 2. Letting every size scale is
+   what makes them agree. */
 
 /* --- size ------------------------------------------------------------- */
 /* Figma's `Size (IGNORE)` axis. Values are the Icon ramp, which numbers at
@@ -65,4 +71,11 @@
 .size500 {
   width: var(--primitive-icon-500);
   height: var(--primitive-icon-500);
+}
+
+/* Code-only, Sep 2026: there is no 700 on the Figma axis. Added for voiceInput's idle
+   button, where 40 in a 120 circle read as a small drawing floating in it. See Known gaps. */
+.size700 {
+  width: var(--primitive-icon-700);
+  height: var(--primitive-icon-700);
 }

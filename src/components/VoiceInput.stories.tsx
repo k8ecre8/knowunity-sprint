@@ -16,9 +16,9 @@ const description = `
 
 ### What each state means
 
-**The label sits above the ring,** with a quieter second line under it (defaults in \`HELPER\` in the component, overridable with \`helper\`), as the frames draw it. It is a live region, so a screen reader hears each state.
+**The label sits above the ring,** with a quieter second line under it (defaults in \`LABEL\` and \`HELPER\` in the component, overridable with \`label\` and \`helper\`; an empty string hides either and keeps its space). It is a live region, so a screen reader hears each state. Idle's line is an instruction, not a status — the voice turn shows "Tap to answer" on the first term of a round's main pass and passes \`label=""\` after that. Knowie is the subject of every state he is acting in; the states where the student has to act address the student instead.
 
-**idle.** A 120 ring (\`Illustration/1500\`) round the microphone, breathing at \`motion.duration.breathing\` with a soft glow and one ripple per breath. The ring is the button.
+**idle.** A 120 (\`Illustration/1500\`) solid \`interactive/primary\` fill inside the ring, carrying \`microphone-01-solid\` at \`Icon/700\` (56). The whole button breathes at \`motion.duration.breathing\`: the ring and the fill share a radius and the glyph scales by that ratio, so it swells as one shape. The instruction is in the label above. Revised twice in Sep 2026 — the words went into the disc and came back out, and the glyph went from the outlined \`microphone-01\` at 40 to a solid one at 56, which is what stopped it reading as weak.
 
 **listening.** Tapping squeezes the middle like a press and swaps the microphone for "Tap when done". Waveform bars stand out of the ring and follow the voice, up to \`Space/600\` long, inside the stage's \`Space/800\` inset so they never reach the label. The trash appears to the left.
 
@@ -94,8 +94,11 @@ export const Idle: Story = {
     ),
   },
   play: async ({ canvas, args }) => {
+    // The instruction is the label's job again, Sep 2026: the middle carries the solid glyph.
+    // Every state's middle is rendered at once and faded, so the others are in the DOM here.
     await expect(canvas.getByRole('status')).toHaveTextContent('Tap to answer');
-    await expect(canvas.getByText('Even a partial answer is a great start')).toBeVisible();
+    // Idle carries no second line: the encouragement moved into the question bubble, Sep 2026.
+    await expect(canvas.queryByText('Even a partial answer is a great start')).toBeNull();
     const ring = canvas.getByRole('button', { name: 'Start answering' });
     const box = ring.getBoundingClientRect();
     await expect(box.width).toBeGreaterThanOrEqual(44);
@@ -126,7 +129,7 @@ export const Listening: Story = {
     return <VoiceInput {...args} getLevel={getLevel} />;
   },
   play: async ({ canvas, args }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('Listening');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Knowie’s listening…');
     // Idle's escape keeps its space but is out of reach while listening.
     await expect(canvas.queryByRole('button', { name: 'I don’t know the answer' })).toBeNull();
     await userEvent.click(canvas.getByRole('button', { name: 'Discard and start over' }));
@@ -140,8 +143,8 @@ export const Transcribing: Story = {
   name: 'state=transcribing',
   args: { state: 'transcribing' },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('Writing down what you said');
-    await expect(canvas.getByRole('button', { name: 'Writing down what you said' })).toBeDisabled();
+    await expect(canvas.getByRole('status')).toHaveTextContent('Knowie’s writing down what you said…');
+    await expect(canvas.getByRole('button', { name: 'Knowie’s writing down what you said…' })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: 'Discard and start over' })).toBeEnabled();
   },
 };
@@ -150,7 +153,7 @@ export const TranscribingSlow: Story = {
   name: 'state=transcribingSlow',
   args: { state: 'transcribingSlow' },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('Still writing, nearly there');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Knowie’s still writing, nearly there…');
   },
 };
 
@@ -215,7 +218,7 @@ export const Judging: Story = {
   name: 'state=judging',
   args: { state: 'judging' },
   play: async ({ canvas, args }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('Knowie is reading your answer');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Knowie’s reading your answer…');
     // Discard works from the wait too, and returns to idle.
     await userEvent.click(canvas.getByRole('button', { name: 'Discard and start over' }));
     await expect(args.onDiscard).toHaveBeenCalledOnce();
@@ -227,7 +230,7 @@ export const JudgingSlow: Story = {
   name: 'state=judgingSlow',
   args: { state: 'judgingSlow' },
   play: async ({ canvas }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('Still reading, nearly there');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Knowie’s still reading, nearly there…');
   },
 };
 
@@ -235,7 +238,7 @@ export const ErrorState: Story = {
   name: 'state=error',
   args: { state: 'error' },
   play: async ({ canvas, args }) => {
-    await expect(canvas.getByRole('status')).toHaveTextContent('That took too long. Tap to send again');
+    await expect(canvas.getByRole('status')).toHaveTextContent('Small glitch. Tap to send again');
     await userEvent.click(canvas.getByRole('button', { name: 'Send again' }));
     await expect(args.onRetry).toHaveBeenCalledOnce();
   },
@@ -273,12 +276,12 @@ export const FullTurn: Story = {
   play: async ({ canvas }) => {
     const status = canvas.getByRole('status');
     await userEvent.click(canvas.getByRole('button', { name: 'Start answering' }));
-    await expect(status).toHaveTextContent('Listening');
+    await expect(status).toHaveTextContent('Knowie’s listening…');
     await userEvent.click(canvas.getByRole('button', { name: 'Stop recording' }));
-    await expect(status).toHaveTextContent('Writing down what you said');
+    await expect(status).toHaveTextContent('Knowie’s writing down what you said…');
     await waitFor(() => expect(status).toHaveTextContent('Check it, then send'), { timeout: 3000 });
     await userEvent.click(canvas.getByRole('button', { name: 'Send answer' }));
-    await expect(status).toHaveTextContent('Knowie is reading your answer');
+    await expect(status).toHaveTextContent('Knowie’s reading your answer…');
     await waitFor(() => expect(status).toHaveTextContent('Tap to answer'), { timeout: 3000 });
   },
 };

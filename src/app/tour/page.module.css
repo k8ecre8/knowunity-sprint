@@ -122,9 +122,3 @@
   line-height: var(--typeScale-body-s-regular-lineHeight);
   letter-spacing: var(--typeScale-body-s-regular-letterSpacing);
 }
-
-.resultLabel {
-  color: var(--semantic-text-primary);
-  font-family: var(--typeScale-body-s-bold-fontFamily);
-  font-weight: var(--typeScale-body-s-bold-fontWeight);
-}

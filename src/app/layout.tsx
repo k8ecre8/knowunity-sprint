@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Explain it to Knowie',
+  title: 'Explain It to Knowie',
   description: 'Voice active recall prototype for Knowunity.',
   appleWebApp: {
     capable: true,

@@ -60,6 +60,9 @@ export type Session = {
   micPermission: 'unasked' | 'granted' | 'denied';
   resume: Resume | null;
   practice: Practice | null;
+  /** The 1-based term this entry into a round landed on. The turn frame's full
+      version shows there, so a resumed round still gets it. */
+  entryTerm: number | null;
   /** Plan nodes marked done, by section id. */
   doneSections: string[];
   /** The pre-review confidence rating, one of five positions. */
@@ -80,6 +83,7 @@ export const emptySession: Session = {
   micPermission: 'unasked',
   resume: null,
   practice: null,
+  entryTerm: null,
   doneSections: [],
   preReviewRating: null,
   eveReady: false,
@@ -266,9 +270,11 @@ export function practiceFor(session: Session, round: Round): string[] | null {
  * stale and the round runs for real.
  */
 export function enterRound(round: Round): void {
-  updateSession((s) =>
-    s.practice?.round === round && s.resume?.round !== round ? { ...s, practice: null } : s,
-  );
+  updateSession((s) => {
+    const cleared =
+      s.practice?.round === round && s.resume?.round !== round ? { ...s, practice: null } : s;
+    return { ...cleared, entryTerm: currentTerm(cleared, round) };
+  });
 }
 
 /* --- seeding --------------------------------------------------------------- */

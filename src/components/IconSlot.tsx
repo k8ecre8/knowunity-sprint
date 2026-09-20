@@ -72,14 +72,19 @@ import {
   XClose,
   Zap,
 } from '@untitled-ui/icons-react';
+import MicrophoneSolid from './icons/MicrophoneSolid';
 import styles from './IconSlot.module.css';
 
 /**
  * Figma axis `Size (IGNORE)`. The name cannot survive as a prop, so it is
  * `size` here; the option values are Figma's unchanged. They are Icon ramp
  * steps, which number at 12.5x the pixel value: 100 is 8px, 500 is 40px.
+ *
+ * `700` (56px) is code-only and has no variant on the Figma axis, added Sep 2026 for
+ * `voiceInput`'s idle button: the ramp stopped at 40, a third of that 120 control, and the
+ * glyph read as a small drawing floating in it. See design-system.md → Known gaps.
  */
-export type IconSlotSize = '100' | '150' | '200' | '250' | '300' | '400' | '500';
+export type IconSlotSize = '100' | '150' | '200' | '250' | '300' | '400' | '500' | '700';
 
 /**
  * The 69 glyphs offered on the Figma slot's instance-swap property, plus three
@@ -95,10 +100,16 @@ export type IconSlotSize = '100' | '150' | '200' | '250' | '300' | '400' | '500'
  * places at once, for the screens that were showing placeholders: `globe-01`,
  * `target-04`, `book-open-02`, `clipboard-check`, `thumbs-up`, `lock-01`,
  * `trophy-02`, `list`, `graduation-hat-02` and `upload-cloud-02`. The code
- * list is 72.
+ * list is 73.
+ *
+ * One glyph is not from the package at all: `microphone-01-solid` is drawn locally, because
+ * Untitled UI's free tier is line-only and the outlined microphone read weak on `voiceInput`'s
+ * filled idle button. See `./icons/README.md` and design-system.md → Known gaps.
  */
 export const icons = {
   'arrow-left': ArrowLeft,
+  // Local, not from the package: see ./icons/README.md.
+  'microphone-01-solid': MicrophoneSolid,
   'arrow-narrow-down': ArrowNarrowDown,
   'arrow-narrow-down-left': ArrowNarrowDownLeft,
   'arrow-narrow-down-right': ArrowNarrowDownRight,

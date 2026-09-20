@@ -4,10 +4,10 @@
    Figma, Exam Section 1 - Claude (Core Flow): "Section intro tray". No frame
    exists for the mocked iOS mic prompt; that is `permissionAlert`.
 
-   The tray rises over the plan. Start asks for the mic the first time
+   The tray rises over the plan. Talk to Knowie asks for the mic the first time
    (docs/sprint-context.md → Input mode), then opens the section round at the
-   term the student is on, so a round left on hint 2 resumes there. "I can't
-   talk right now" and a denied mic both go to the typed route, never back to
+   term the student is on, so a round left on hint 2 resumes there. "Type
+   instead" and a denied mic both go to the typed route, never back to
    the plan. Dismissing the tray goes to /plan. */
 
 import { use, useEffect, useState } from "react";
@@ -30,7 +30,7 @@ import styles from "./page.module.css";
 
 /* The three rows under the headline, as the frame draws them. */
 const rows: { icon: IconName; text: string }[] = [
-  { icon: "microphone-01", text: "Explain concepts in your own words." },
+  { icon: "microphone-01", text: "Tap the mic, then answer in your own words." },
   {
     icon: "thumbs-up",
     text: "It’s okay to pause, stumble, or even start over.",
@@ -117,13 +117,13 @@ function IntroTray() {
               onClick={dismiss}
             />
             <BottomSheet
-              headline="Explain it to Knowie"
+              headline="Explain It to Knowie"
               showAppBar
               onClose={dismiss}
               middleSection={
                 <div className={styles.intro}>
                   <MascotSlot size="2XL" name="excited" label="Knowie, excited" />
-                  <TextBlock as="h1" headline="Explain it to Knowie" />
+                  <TextBlock as="h1" headline="Explain It to Knowie" />
                   <ul className={styles.rows}>
                     {rows.map((row) => (
                       <li key={row.icon} className={styles.row}>
@@ -138,10 +138,10 @@ function IntroTray() {
               }
             >
               <Button fullWidth variant="Primary" size="L" onClick={start}>
-                Start
+                Talk to Knowie
               </Button>
               <Button fullWidth variant="Text" size="L" onClick={cantTalk}>
-                I can’t talk right now
+                Type instead
               </Button>
             </BottomSheet>
           </div>

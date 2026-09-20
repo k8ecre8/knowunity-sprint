@@ -35,7 +35,7 @@ function TextStyles() {
                 overflowWrap: 'anywhere',
               }}
             >
-              Explain it to Knowie
+              Explain It to Knowie
             </p>
             <TokenDetails
               name={token.name}

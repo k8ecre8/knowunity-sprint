@@ -44,8 +44,8 @@
 
 /* Three rows, Space/300 apart: iconSlot 300 then Body M Regular in
    text/primary (the frame draws Body S; stepped up for legibility, and Body
-   M's 24 line height matches the 24 icon), Space/300 between them,
-   top-aligned so a wrapped line hangs under the text, not the icon. */
+   M's 24 line height matches the 24 icon), Space/300 between them, the icon
+   centred against the whole text block so a wrapped row stays balanced. */
 .rows {
   display: flex;
   flex-direction: column;
@@ -58,7 +58,7 @@
 
 .row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--primitive-space-300);
   color: var(--semantic-text-primary);
 }

@@ -38,14 +38,19 @@
   color: var(--semantic-text-primary);
 }
 
-/* answerOption — not in the library, built inline. The bar the frame draws
-   is a 17-tall track; here it is Control/400 (the thin progress bar
-   thickness) behind a row of five targets at Control/1200, since the bar
-   itself is far below the 44 minimum. */
+/* answerOption — not in the library, built inline; see docs/component-gaps.md. A real slider
+   since Sep 2026: the bar is pressed and dragged, not a row of invisible buttons. The frame
+   draws a 17-tall track; here it is Control/400 (the thin progress bar thickness) inside a
+   Control/1200 row, because the bar itself is far below the 44 minimum and the row is the
+   tap target. */
 .slider {
   position: relative;
   width: 100%;
   height: var(--primitive-control-1200);
+  cursor: pointer;
+  /* The finger drags the thumb, not the page. */
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Track: background/surface, Radius/Full, centred vertically in the row. */
@@ -59,40 +64,64 @@
   background-color: var(--semantic-background-surface);
 }
 
-/* Fill: interactive/primary, as far as the chosen position. It moves at
-   motion.duration.base; reduced mode collapses the duration in tokens.css,
-   and the label above carries the state either way. */
+/* The five positions, drawn before anything is chosen. An empty bar says nothing about how
+   many answers there are or that it can be dragged; the ticks say both, without parking a
+   thumb on one and anchoring the answer. They sit at the same places the thumb lands, so it
+   comes to rest on one rather than near it. Added Sep 2026. */
+.tick {
+  position: absolute;
+  top: calc((var(--primitive-control-400) - var(--primitive-space-150)) / 2);
+  left: calc(var(--primitive-control-800) / 2 + (100% - var(--primitive-control-800)) * var(--i) / 4);
+  width: var(--primitive-space-150);
+  height: var(--primitive-space-150);
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-border-strong);
+  transform: translateX(-50%);
+}
+
+/* Fill: interactive/primary, as far as the chosen position. */
 .fill {
-  width: var(--fill);
+  width: calc(var(--at) * 100%);
   height: 100%;
   border-radius: var(--primitive-radius-full);
   background-color: var(--semantic-interactive-primary);
-  transition: width var(--motion-duration-base) var(--motion-easing-standard);
 }
 
-.options {
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 100%;
+/* The thumb: a Control/800 circle centred on the position, inset by half its own width at each
+   end so it stays inside the track rather than hanging off it. It carries the lip every filled
+   control in the system carries, and loses it under the finger — press is geometry, not colour
+   (design-system.md → How things behave). */
+.thumb {
+  position: absolute;
+  top: calc((var(--primitive-control-1200) - var(--primitive-control-800)) / 2);
+  left: calc(var(--primitive-control-800) / 2 + (100% - var(--primitive-control-800)) * var(--at));
+  width: var(--primitive-control-800);
+  height: var(--primitive-control-800);
+  border-radius: var(--primitive-radius-full);
+  background-color: var(--semantic-interactive-primary);
+  box-shadow: inset 0 var(--primitive-elevation-lip-lg) 0 0 var(--semantic-elevation-lip);
+  transform: translateX(-50%);
 }
 
-/* Five equal targets across the bar, each the row's full height and a fifth
-   of its width (over 44 at 390). No fill of their own: the track shows. */
-.option {
-  flex: 1;
-  min-width: var(--primitive-space-0);
-  height: 100%;
-  padding: var(--primitive-space-0);
-  border: none;
-  background: none;
-  appearance: none;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+/* Both move together at motion.duration.base, and stop moving while a finger is on them: a
+   transition during a drag makes the thumb lag the finger. Reduced mode collapses the duration
+   in tokens.css, and the label above the bar carries the answer either way. */
+.fill,
+.thumb {
+  transition:
+    width var(--motion-duration-base) var(--motion-easing-standard),
+    left var(--motion-duration-base) var(--motion-easing-standard),
+    box-shadow var(--motion-duration-instant) var(--motion-easing-standard);
 }
 
-/* No lip and no press geometry of its own: the fill moving to the tapped
-   position is the press feedback. */
+.slider[data-dragging] .fill,
+.slider[data-dragging] .thumb {
+  transition: none;
+}
+
+.slider[data-dragging] .thumb {
+  box-shadow: none;
+}
 
 .actions {
   display: flex;

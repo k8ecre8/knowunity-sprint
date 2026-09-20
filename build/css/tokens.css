@@ -103,6 +103,7 @@
   --primitive-icon-300: 24px;
   --primitive-icon-400: 32px;
   --primitive-icon-500: 40px;
+  --primitive-icon-700: 56px; /** The glyph inside voiceInput's 120 idle button. Added Sep 2026: the ramp stopped at 40, which is a third of that control and read as a small drawing floating in it. Numbers at 12.5x the pixel value like the rest of the Icon group — read the group before the number. */
   --primitive-illustration-500: 40px;
   --primitive-illustration-600: 48px;
   --primitive-illustration-800: 64px;
@@ -144,6 +145,7 @@
   --primitive-font-size-6xl: 103px;
   --primitive-font-size-root: 16px;
   --primitive-font-size-inter-sm: 14px; /** Inter at the size Chat Input draws its field text. On Inter's own step, not Greed's: Greed has nothing at 14. */
+  --primitive-font-size-inter-md: 16px; /** Inter at 16px: the smallest a text field can be before iOS Safari zooms the page on focus. Added Sep 2026 for Input/M. */
   --primitive-font-lineheight-2xs: 12px;
   --primitive-font-lineheight-xs: 16px;
   --primitive-font-lineheight-sm: 20px;
@@ -155,6 +157,7 @@
   --primitive-font-lineheight-4xl: 76px;
   --primitive-font-lineheight-5xl: 104px;
   --primitive-font-lineheight-inter-sm: 17px; /** Inter's auto line height at 14px, as Figma renders it: one line of Chat Input is 17 tall and six lines are 102. */
+  --primitive-font-lineheight-inter-md: 19px; /** Inter's auto line height at 16px, on the same 1.21 ratio Figma renders at 14 (17). */
   --primitive-font-tracking-tight: -0.01em;
   --primitive-font-tracking-none: 0em;
   --primitive-font-tracking-loose: 0.01em;
@@ -385,6 +388,11 @@
   --typeScale-input-s-bold-fontSize: 14px; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
   --typeScale-input-s-bold-lineHeight: 17px; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
   --typeScale-input-s-bold-letterSpacing: 0em; /** Text typed into an editable field, and its placeholder. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-m-bold-fontFamily: 'Inter Variable'; /** Text typed into an editable field, at the smallest size iOS Safari will not zoom on focus. Use this for any field the student types into; Input/S Bold is for a field that is drawn but never focused. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-m-bold-fontWeight: 600; /** Text typed into an editable field, at the smallest size iOS Safari will not zoom on focus. Use this for any field the student types into; Input/S Bold is for a field that is drawn but never focused. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-m-bold-fontSize: 16px; /** Text typed into an editable field, at the smallest size iOS Safari will not zoom on focus. Use this for any field the student types into; Input/S Bold is for a field that is drawn but never focused. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-m-bold-lineHeight: 19px; /** Text typed into an editable field, at the smallest size iOS Safari will not zoom on focus. Use this for any field the student types into; Input/S Bold is for a field that is drawn but never focused. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
+  --typeScale-input-m-bold-letterSpacing: 0em; /** Text typed into an editable field, at the smallest size iOS Safari will not zoom on focus. Use this for any field the student types into; Input/S Bold is for a field that is drawn but never focused. Inter, not Greed: set font-feature-settings to normal wherever it is used, or the Greed features on :root change Inter's glyphs. */
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -24,7 +24,7 @@ const description = `
 
 **\`Size (IGNORE)\` became \`size\`,** because the Figma name is not a valid identifier. The option values are Figma's, unchanged. The DON'T resolves cleanly in code: a prop *is* the parent driving the size, which is exactly what the description asks for.
 
-**The instance-swap property became \`name\`,** a union of 72 glyph names: the 69 on the Figma slot plus three code-only additions, defaulting to \`check\`. All 72 resolve to an export in \`@untitled-ui/icons-react\`, so the Figma glyph and the built glyph are the same drawing. (\`plus\` was added for summaryCard's overflow row, and \`dots-vertical\` and \`share-02\` for appBar. Those three are still missing from the Figma list of 69: the \`plus\` its masters use is an unpublished orphan that cannot be put on the swap list, so parity waits on published copies of all three being imported.) A glyph outside that list is a gap to report, not something to source elsewhere — which is why there is no \`children\` escape hatch.
+**The instance-swap property became \`name\`,** a union of 73 glyph names: the 69 on the Figma slot, three code-only additions, and one drawn locally, defaulting to \`check\`. Seventy-two resolve to an export in \`@untitled-ui/icons-react\`, so the Figma glyph and the built glyph are the same drawing. The exception is \`microphone-01-solid\`, which has no Figma counterpart: Untitled UI's free tier is line-only and voiceInput's filled idle button needed a solid glyph (see \`./icons/README.md\`). (\`plus\` was added for summaryCard's overflow row, and \`dots-vertical\` and \`share-02\` for appBar. Those three are still missing from the Figma list of 69: the \`plus\` its masters use is an unpublished orphan that cannot be put on the swap list, so parity waits on published copies of all three being imported.) A glyph outside that list is a gap to report, not something to source elsewhere — which is why there is no \`children\` escape hatch.
 
 **The stroke is a constant 2px at every size.** Figma renders 2px at six of its seven sizes; the 32px variant renders 2.667 because its inner icon is bound to \`Icon/300\` and scaled up. That is a bug in the master, not a decision, so it is deliberately not reproduced. \`vector-effect: non-scaling-stroke\` holds the package's own stroke width steady across the ramp.
 
@@ -147,8 +147,9 @@ export const AllGlyphs: Story = {
     </ul>
   ),
   play: async ({ canvas }) => {
-    // The catalogue is the swap list plus the three code-only glyphs: 72.
-    await expect(iconNames).toHaveLength(72);
+    // The swap list's 69, plus three code-only glyphs from the package, plus one drawn
+    // locally (`microphone-01-solid`, Sep 2026 — see ./icons/README.md): 73.
+    await expect(iconNames).toHaveLength(73);
     await expect(canvas.getByText('microphone-01')).toBeVisible();
     // The ten added Sep 2026 to clear the screens' placeholders.
     for (const name of [

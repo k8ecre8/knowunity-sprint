@@ -22,7 +22,8 @@ import { ResponseBubble } from '@/components/ResponseBubble';
 import { ChatInput } from '@/components/ChatInput';
 import { Button } from '@/components/Button';
 import { BottomSheet } from '@/components/BottomSheet';
-import { termsForRound, plateTectonics, type Round, type ScriptStep, type Term } from '@/mock/terms';
+import { termsForRound, type Round, type ScriptStep, type Term } from '@/mock/terms';
+import { turnFrame } from '@/copy/turnFrame';
 import { practiceFor, recordOutcome, roundTerms, updateSession, useSession, type Outcome } from '@/mock/session';
 import styles from './page.module.css';
 
@@ -49,13 +50,18 @@ type Chip = 'Correct' | 'Partial' | 'Incorrect' | null;
 
 /* Copy for the states no frame draws (Open 19, decided here). The helper
    line under Knowie carries the state, so reduced motion loses nothing.
-   Idle at the prompt has no helper: SPEC's typed idle is the prompt alone. */
+   Idle at the prompt has no helper: SPEC's typed idle is the prompt alone.
+
+   The wait says what the voice turn's wait says, word for word, Sep 2026: this is the same
+   moment in the loop, so it should not be "Thinking…" here and "Knowie's reading your answer…"
+   there. Knowie is the subject wherever Knowie is acting, and the ellipsis is what carries the
+   wait when motion is reduced. See docs/design-system.md → `voiceInput`. */
 const helper = {
   hint1: 'Give it another try',
   hint2: 'Last try, two hints',
-  thinking: 'Thinking…',
-  slow: 'Still thinking, nearly there',
-  error: 'That took too long. Nothing was lost.',
+  thinking: 'Knowie’s reading your answer…',
+  slow: 'Knowie’s still reading, nearly there…',
+  error: 'Small glitch. Nothing was lost.',
 } as const;
 
 const attemptLine: Record<Rung, string | null> = {
@@ -113,6 +119,7 @@ function TypedTurn({ round, term }: { round: Round; term: number }) {
       terms={roundTerms(session, round)}
       practice={practiceFor(session, round)}
       startRung={startRung}
+      entryTerm={session.entryTerm}
       micPermission={session.micPermission}
     />
   );
@@ -124,6 +131,7 @@ function Turn({
   terms,
   practice,
   startRung,
+  entryTerm,
   micPermission,
 }: {
   round: Round;
@@ -133,6 +141,8 @@ function Turn({
   /** The missed terms, on a practice pass. A practice pass writes no rows. */
   practice: string[] | null;
   startRung: Rung;
+  /** The term this entry landed on; the full frame shows there. */
+  entryTerm: number | null;
   micPermission: 'unasked' | 'granted' | 'denied';
 }) {
   const router = useRouter();
@@ -294,12 +304,8 @@ function Turn({
 
   const progress = practice ? practice.indexOf(current.id) : term - 1;
   const prompt = round === 'eve' ? current.promptB : current.prompt;
-  const intro =
-    round === 'section'
-      ? `Let’s see what you remember from ${plateTectonics.name}. In your own words:`
-      : round === 'eve'
-        ? 'Last look before tomorrow. In your own words:'
-        : 'Let’s see what stuck. In your own words:';
+  // A practice pass is a re-run, so it never takes the full frame.
+  const intro = turnFrame(round, current, !practice && term === entryTerm);
 
   let bubble: { body: string; body2?: string; showVerdict: boolean; verdictTone?: Exclude<Chip, null> };
   if (phase === 'verdict') {
@@ -429,10 +435,12 @@ function Turn({
       bottomContent={
         phase === 'error' ? (
           /* The error takes the input's place, so nothing can be typed that
-             Send would ignore; Retry is the one action, in reach. */
+             Send would ignore; sending again is the one action, in reach. The
+             typed answer is unmounted with the input, so the line says nothing
+             was lost and the button says what still exists to send. */
           <div className={styles.actions} inert={sheetOpen}>
             <Button fullWidth variant="Primary" size="L" onClick={retry}>
-              Retry
+              Send again
             </Button>
           </div>
         ) : !answering ? (

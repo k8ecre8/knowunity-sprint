@@ -113,6 +113,63 @@
   color: var(--semantic-accent-green-onsubtle);
 }
 
+/* The invitation on `next`: the ring draws round once, then rests for the remainder of the
+   breathing cycle. Drawing-then-resting is what separates an invitation from a process; a
+   line that never rests would read as work in progress. Nothing on the plan is ever in
+   progress, so there is no live state here for this to be confused with — see
+   design-system.md → How things behave → A resting state must not borrow a live state's cue.
+   The draw is motion.duration.slow of the motion.duration.breathing loop (450 of 3500, so
+   13%); the rest of the cycle is the rest. */
+.sweepSvg {
+  position: absolute;
+  inset: var(--primitive-space-0);
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.sweep {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--primitive-stroke-heavy-border);
+  stroke-linecap: round;
+  /* Start at the top and go clockwise, like a clock hand rather than a spinner. */
+  transform: rotate(-90deg);
+  transform-origin: center;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: planNodeSweep var(--motion-duration-breathing) var(--motion-easing-standard) infinite;
+}
+
+@keyframes planNodeSweep {
+  0% {
+    stroke-dashoffset: 100;
+    opacity: 1;
+  }
+  13% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  30% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: no sweep at all. The border ring already says `next`, so the meaning never
+   rested on the animation. */
+@media (prefers-reduced-motion: reduce) {
+  .sweep {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* --- state: todo ------------------------------------------------------ */
 /* surface fill, icon in text/tertiary. Ignores tone on purpose, so the eye
    goes to done and next — no tone class is applied for this state. */

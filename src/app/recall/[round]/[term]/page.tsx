@@ -25,7 +25,8 @@ import { Button } from '@/components/Button';
 import { VoiceInput, type VoiceInputState } from '@/components/VoiceInput';
 import { BottomSheet } from '@/components/BottomSheet';
 import { PermissionAlert } from '@/components/PermissionAlert';
-import { termsForRound, plateTectonics, type Round, type ScriptStep, type Term } from '@/mock/terms';
+import { termsForRound, type Round, type ScriptStep, type Term } from '@/mock/terms';
+import { turnFrame } from '@/copy/turnFrame';
 import { practiceFor, recordOutcome, roundTerms, updateSession, useSession, type Outcome } from '@/mock/session';
 import { createSpeechLevel } from '@/mock/speech';
 import styles from './page.module.css';
@@ -61,6 +62,7 @@ type Phase =
   | 'thinking-slow'
   | 'error'
   | 'verdict'
+  | 'sayback-idle'
   | 'sayback-recording'
   | 'sayback-done';
 
@@ -75,6 +77,9 @@ const controlState: Record<Phase, VoiceInputState | null> = {
   unclear: 'idle',
   prompt: 'idle',
   recording: 'listening',
+  // Say it back rests in idle first, added Sep 2026: "Practice in my own words" used to drop
+  // straight into listening, which takes the start away from the student. Hard constraint.
+  'sayback-idle': 'idle',
   'sayback-recording': 'listening',
   transcribing: 'transcribing',
   transcript: 'transcript',
@@ -124,6 +129,7 @@ function VoiceTurn({ round, term }: { round: Round; term: number }) {
       terms={roundTerms(session, round)}
       practice={practiceFor(session, round)}
       startRung={startRung}
+      entryTerm={session.entryTerm}
       micPermission={session.micPermission}
     />
   );
@@ -135,6 +141,7 @@ function Turn({
   terms,
   practice,
   startRung,
+  entryTerm,
   micPermission,
 }: {
   round: Round;
@@ -144,6 +151,8 @@ function Turn({
   /** The missed terms, on a practice pass. A practice pass writes no rows. */
   practice: string[] | null;
   startRung: Rung;
+  /** The term this entry landed on; the full frame shows there. */
+  entryTerm: number | null;
   micPermission: 'unasked' | 'granted' | 'denied';
 }) {
   const router = useRouter();
@@ -242,6 +251,11 @@ function Turn({
 
   /** Tap the control. What it does depends on the state it is in. */
   const tapControl = () => {
+    if (phase === 'sayback-idle') {
+      // Permission is already settled by the time say it back is offered; nothing is recorded.
+      setPhase('sayback-recording');
+      return;
+    }
     if (phase === 'idle' || phase === 'start-over' || phase === 'unclear') {
       // The mocked iOS prompt comes first on the first mic use in the app.
       if (micPermission === 'unasked') setPhase('prompt');
@@ -291,7 +305,7 @@ function Turn({
     clearTimers();
     setTake(null);
     // From say it back, Discard returns to the answer.
-    setPhase(phase === 'sayback-recording' ? 'idle' : 'start-over');
+    setPhase(phase === 'sayback-recording' || phase === 'sayback-idle' ? 'idle' : 'start-over');
   };
 
   const send = () => {
@@ -366,12 +380,8 @@ function Turn({
 
   const progress = practice ? practice.indexOf(current.id) : term - 1;
   const prompt = round === 'eve' ? current.promptB : current.prompt;
-  const intro =
-    round === 'section'
-      ? `Let’s see what you remember from ${plateTectonics.name}. In your own words:`
-      : round === 'eve'
-        ? 'Last look before tomorrow. In your own words:'
-        : 'Let’s see what stuck. In your own words:';
+  // A practice pass is a re-run, so it never takes the full frame.
+  const intro = turnFrame(round, current, !practice && term === entryTerm);
 
   let bubble: { body: string; body2?: string; showVerdict: boolean; verdictTone?: Exclude<Chip, null> };
   if (phase === 'verdict') {
@@ -381,7 +391,7 @@ function Turn({
       body: 'That’s the whole idea, in the right order.',
       body2: current.answer,
     };
-  } else if (phase === 'sayback-recording') {
+  } else if (phase === 'sayback-idle' || phase === 'sayback-recording') {
     bubble = {
       showVerdict: false,
       body: 'Your turn. Say it back however it comes out. This one is just practice.',
@@ -438,7 +448,7 @@ function Turn({
         <Button fullWidth variant="Primary" size="L" onClick={nextQuestion}>
           Next question
         </Button>
-        <Button fullWidth variant="Text" size="L" onClick={() => setPhase('sayback-recording')}>
+        <Button fullWidth variant="Text" size="L" onClick={() => setPhase('sayback-idle')}>
           Practice in my own words
         </Button>
       </>
@@ -481,6 +491,10 @@ function Turn({
             <div className={styles.stage}>
               <VoiceInput
                 state={controlState[phase]}
+                /* Idle's status line is orientation, not a per-turn status: it shows on the first
+                   term of a round's main pass and is dropped after. A practice pass never shows it
+                   — the student has already answered these. Decided Sep 2026. */
+                label={controlState[phase] === 'idle' && !(term === 1 && !practice) ? '' : undefined}
                 helper={restingPhase ? restingHelper(phase, rung) : undefined}
                 transcript={take?.transcript}
                 getLevel={getLevel}

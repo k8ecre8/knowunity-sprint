@@ -109,29 +109,29 @@ export const LongStrings: Story = {
 export const IntroTray: Story = {
   name: 'middleSection + showAppBar',
   args: {
-    headline: 'Explain it to Knowie',
+    headline: 'Explain It to Knowie',
     showCaption: false,
     showAppBar: true,
     onClose: fn(),
     middleSection: (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--primitive-space-400)' }}>
         <MascotSlot size="2XL" name="standby" />
-        <TextBlock as="h1" headline="Explain it to Knowie" />
+        <TextBlock as="h1" headline="Explain It to Knowie" />
       </div>
     ),
     children: (
       <>
         <Button fullWidth variant="Primary" size="L">
-          Start
+          Talk to Knowie
         </Button>
         <Button fullWidth variant="Text" size="L">
-          I can’t talk right now
+          Type instead
         </Button>
       </>
     ),
   },
   play: async ({ canvas, args }) => {
-    await expect(canvas.getByRole('dialog', { name: 'Explain it to Knowie' })).toBeVisible();
+    await expect(canvas.getByRole('dialog', { name: 'Explain It to Knowie' })).toBeVisible();
     await userEvent.click(canvas.getByRole('button', { name: 'Close' }));
     await expect(args.onClose).toHaveBeenCalledOnce();
   },

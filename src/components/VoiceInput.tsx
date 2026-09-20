@@ -22,6 +22,12 @@ export type VoiceInputState =
 export type VoiceInputProps = {
   state: VoiceInputState;
   /**
+   * Overrides the status line above the ring for this state. Leave it out to use the default in
+   * `LABEL` below; pass an empty string to hide it. The voice turn hides idle's line after the
+   * first term of a round, where it has stopped being orientation and become noise. Sentence case.
+   */
+  label?: string;
+  /**
    * Overrides the second, quieter line under the label for this state. Leave it out to use
    * the default in `HELPER` below; pass an empty string to hide it. Sentence case.
    */
@@ -52,48 +58,85 @@ export type VoiceInputProps = {
   className?: string;
 };
 
+/**
+ * The status line above the control, per state.
+ *
+ * **Knowie is the subject wherever Knowie is the one doing something**, revised Sep 2026. The
+ * concept is that the student explains it to Knowie, which only holds if he is present while
+ * they are talking — so he listens, he writes down what they said and he reads their answer,
+ * rather than the app reporting on itself in the third person. The set was uneven before: two
+ * states named him, three did not, and one state named him and then dropped him in its own slow
+ * variant.
+ *
+ * **The exception is a state where the student has to act.** Idle, the transcript step and the
+ * error are instructions, not status, so they address the student and leave Knowie out of it.
+ * That is the same split the set already had at "Check it, then send".
+ *
+ * **The Knowie lines end in an ellipsis and the instructions do not**, which is the same split
+ * again in punctuation: something is running and the student is waiting on it, against something
+ * that is waiting on the student. With motion reduced the label is all that carries the wait, so
+ * the ellipsis is doing real work rather than decorating.
+ *
+ * The screen may pass `label=""` to drop the line; the voice turn does that for idle after the
+ * first term of a round, where it has stopped being orientation.
+ */
 const LABEL: Record<VoiceInputState, string> = {
   idle: 'Tap to answer',
-  listening: 'Listening',
-  transcribing: 'Writing down what you said',
-  transcribingSlow: 'Still writing, nearly there',
+  listening: 'Knowie’s listening…',
+  transcribing: 'Knowie’s writing down what you said…',
+  transcribingSlow: 'Knowie’s still writing, nearly there…',
   transcript: 'Check it, then send',
-  judging: 'Knowie is reading your answer',
-  judgingSlow: 'Still reading, nearly there',
-  error: 'That took too long. Tap to send again',
+  judging: 'Knowie’s reading your answer…',
+  judgingSlow: 'Knowie’s still reading, nearly there…',
+  error: 'Small glitch. Tap to send again',
 };
 
 /**
  * The second, quieter line under the label, per state. Edit the copy here; a state with no
- * entry shows no second line.
+ * entry shows no second line. Idle had one until Sep 2026 ("Even a partial answer is a great
+ * start"); a tester never read it, so it moved into the question bubble, which is read with
+ * the question. The screen still overrides this line for hints, start over and didn't catch that.
  */
-const HELPER: Partial<Record<VoiceInputState, string>> = {
-  idle: 'Even a partial answer is a great start',
-};
+const HELPER: Partial<Record<VoiceInputState, string>> = {};
 
 /** What each state asks of the drawing. Every part eases toward these. */
-type Look = { gain: number; len: number; breathe: number; glow: number; ripple: number; spin: 'none' | 'spin'; dash: number; trash: number; card: number };
+type Look = { gain: number; len: number; line: number; disc: number; glow: number; spin: 'none' | 'spin'; dash: number; trash: number; card: number };
+/**
+ * `line` is the accent outline, `disc` the solid fill it encloses in idle.
+ *
+ * Idle is a filled button carrying `microphone-01`, inside the same ring every other state
+ * carries, with a glow well under listening's. The whole button breathes as one: the ring and
+ * the fill share a radius, and the glyph scales by that same ratio, so the outline never pulls
+ * away from what it encloses.
+ *
+ * A tester once read an earlier idle — a breathing outline round a bare microphone, no fill —
+ * as already recording, lifted the phone to his mouth and answered into a control that had
+ * never started. What separates the two now is the fill: idle is a solid button that invites a
+ * press, listening is an open ring with sixty bars moving in it. Tapping drops the fill, raises
+ * the bars and swaps the glyph for "Tap when done" — three changes at once.
+ * See design-system.md → How things behave → A resting state must not borrow a live state's cue.
+ */
 const LOOK: Record<VoiceInputState, Look> = {
-  idle: { gain: 0, len: 1, breathe: 1, glow: 1, ripple: 1, spin: 'none', dash: 0, trash: 0, card: 0 },
-  listening: { gain: 1, len: 1, breathe: 0, glow: 0.5, ripple: 0, spin: 'none', dash: 0, trash: 1, card: 0 },
-  transcribing: { gain: 0, len: 0.8, breathe: 0, glow: 0.35, ripple: 0, spin: 'spin', dash: 0, trash: 1, card: 0 },
-  transcribingSlow: { gain: 0, len: 0.8, breathe: 0, glow: 0.5, ripple: 0, spin: 'spin', dash: 1, trash: 1, card: 0 },
-  transcript: { gain: 0, len: 1, breathe: 0, glow: 0.3, ripple: 0, spin: 'none', dash: 0, trash: 1, card: 1 },
-  judging: { gain: 0, len: 0.8, breathe: 0, glow: 0.35, ripple: 0, spin: 'spin', dash: 0, trash: 1, card: 0 },
-  judgingSlow: { gain: 0, len: 0.8, breathe: 0, glow: 0.5, ripple: 0, spin: 'spin', dash: 1, trash: 1, card: 0 },
-  error: { gain: 0, len: 1, breathe: 0, glow: 0.2, ripple: 0, spin: 'none', dash: 0, trash: 1, card: 0 },
+  idle: { gain: 0, len: 1, line: 1, disc: 1, glow: 0.18, spin: 'none', dash: 0, trash: 0, card: 0 },
+  listening: { gain: 1, len: 1, line: 1, disc: 0, glow: 0.5, spin: 'none', dash: 0, trash: 1, card: 0 },
+  transcribing: { gain: 0, len: 0.8, line: 1, disc: 0, glow: 0.35, spin: 'spin', dash: 0, trash: 1, card: 0 },
+  transcribingSlow: { gain: 0, len: 0.8, line: 1, disc: 0, glow: 0.5, spin: 'spin', dash: 1, trash: 1, card: 0 },
+  transcript: { gain: 0, len: 1, line: 1, disc: 0, glow: 0.3, spin: 'none', dash: 0, trash: 1, card: 1 },
+  judging: { gain: 0, len: 0.8, line: 1, disc: 0, glow: 0.35, spin: 'spin', dash: 0, trash: 1, card: 0 },
+  judgingSlow: { gain: 0, len: 0.8, line: 1, disc: 0, glow: 0.5, spin: 'spin', dash: 1, trash: 1, card: 0 },
+  error: { gain: 0, len: 1, line: 1, disc: 0, glow: 0.2, spin: 'none', dash: 0, trash: 1, card: 0 },
 };
 
 /** The eased values the drawing reads each frame. */
-type Params = { gain: number; len: number; breathe: number; glow: number; ripple: number; dash: number; trash: number; card: number; spinRate: number };
-const EASED: (keyof Params)[] = ['gain', 'len', 'breathe', 'glow', 'ripple', 'dash', 'trash', 'card', 'spinRate'];
+type Params = { gain: number; len: number; line: number; disc: number; glow: number; dash: number; trash: number; card: number; spinRate: number };
+const EASED: (keyof Params)[] = ['gain', 'len', 'line', 'disc', 'glow', 'dash', 'trash', 'card', 'spinRate'];
 
 const BARS = 60;
 const DASHES = 12;
 
 /** Token values read off the rendered element, so the drawing never holds a number of its own. */
 type Tokens = {
-  ring: number; bold: number; nudge: number; breath: number; barMax: number; ripple: number;
+  ring: number; bold: number; nudge: number; breath: number; barMax: number;
   inset: number; target: number; radius: number; trashGap: number;
   instant: number; base: number; slow: number; exitSlow: number; fast: number; breathing: number; spin: number; spinSlow: number;
 };
@@ -108,9 +151,9 @@ function readTokens(el: HTMLElement): Tokens {
     ring: px('--primitive-illustration-1500') / 2,
     bold: px('--primitive-stroke-bold'),
     nudge: px('--primitive-space-100'),
-    breath: px('--primitive-space-050'),
+    // Space/100 since Sep 2026: at Space/050 the idle breath was too small to read as movement.
+    breath: px('--primitive-space-100'),
     barMax: px('--primitive-space-600'),
-    ripple: px('--primitive-space-800'),
     inset: px('--primitive-space-300'),
     target: px('--primitive-control-1200') / 2,
     radius: px('--primitive-radius-600'),
@@ -127,7 +170,6 @@ function readTokens(el: HTMLElement): Tokens {
 }
 
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
-const out3 = (v: number) => 1 - (1 - v) ** 3;
 const inOut = (v: number) => (v < 0.5 ? 4 * v * v * v : 1 - (-2 * v + 2) ** 3 / 2);
 const f2 = (v: number) => v.toFixed(2);
 
@@ -135,13 +177,13 @@ const f2 = (v: number) => v.toFixed(2);
  * `voiceInput`: the push-to-talk control and its helper label as one unit.
  * One `accent/brand/bold` line carries every state; the middle says what to do.
  */
-export function VoiceInput({ state, helper, idleActions, transcript = '', getLevel, onStart, onStop, onSend, onDiscard, onRetry, className }: VoiceInputProps) {
+export function VoiceInput({ state, label, helper, idleActions, transcript = '', getLevel, onStart, onStop, onSend, onDiscard, onRetry, className }: VoiceInputProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const discRef = useRef<SVGCircleElement>(null);
   const lineRef = useRef<SVGPathElement>(null);
   const dashRef = useRef<SVGPathElement>(null);
   const barsRef = useRef<SVGPathElement>(null);
-  const rippleRef = useRef<SVGPathElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const coreRef = useRef<HTMLButtonElement>(null);
   const sendIconRef = useRef<HTMLSpanElement>(null);
@@ -243,7 +285,10 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
       const cx = L.w / 2, cy = L.h / 2;
       const breath = still || !T.breathing ? 0 : 0.5 - 0.5 * Math.cos((2 * Math.PI * t) / T.breathing);
       const swell = T.nudge * Math.sin(Math.PI * since(L.sendAt, T.slow));
-      const R = T.ring + T.breath * p.breathe * breath + swell;
+      // Idle breathes on the outer edge: the ring and the fill under it share this radius,
+      // so they grow and settle as one shape. The glyph in the middle is a separate element and
+      // holds still — the button's edge moves, not its contents.
+      const R = T.ring + T.breath * p.disc * breath + swell;
 
       // One outline for every state: a rounded rectangle that is exactly the circle when m is 0,
       // walked by distance from the top centre, so an arc, a closing gap and the card are one line.
@@ -274,8 +319,15 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
         d += (i ? ' L' : 'M') + f2(cx + pt[0]) + ' ' + f2(cy + pt[1]);
       }
       if (full) d += ' Z';
+      if (discRef.current) {
+        discRef.current.setAttribute('cx', f2(cx));
+        discRef.current.setAttribute('cy', f2(cy));
+        // Inset by half the stroke so the fill meets the ring's inner edge rather than under-running it.
+        discRef.current.setAttribute('r', f2(Math.max(0, R - T.bold / 2)));
+        discRef.current.style.setProperty('opacity', p.disc.toFixed(3));
+      }
       lineRef.current?.setAttribute('d', d);
-      lineRef.current?.style.setProperty('opacity', (1 - p.dash).toFixed(3));
+      lineRef.current?.style.setProperty('opacity', ((1 - p.dash) * p.line).toFixed(3));
 
       // Past 4 seconds: the arc becomes circling dashes.
       if (dashRef.current) {
@@ -285,7 +337,7 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
         dashRef.current.style.setProperty('stroke-dasharray', `${f2(step * 0.45)} ${f2(step * 0.55)}`);
         dashRef.current.style.setProperty('transform', `rotate(${L.dashAngle.toFixed(1)}deg)`);
         dashRef.current.style.setProperty('transform-origin', `${f2(cx)}px ${f2(cy)}px`);
-        dashRef.current.style.setProperty('opacity', p.dash.toFixed(3));
+        dashRef.current.style.setProperty('opacity', (p.dash * p.line).toFixed(3));
       }
 
       // Listening: bars stand straight out of the ring, each following the voice with its own wobble.
@@ -300,26 +352,20 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
         bars += `M${f2(cx + Math.cos(th) * r0)} ${f2(cy + Math.sin(th) * r0)} L${f2(cx + Math.cos(th) * r1)} ${f2(cy + Math.sin(th) * r1)} `;
       }
       barsRef.current?.setAttribute('d', bars);
-      barsRef.current?.style.setProperty('opacity', p.gain.toFixed(3));
-
-      // Idle: one ripple per breath.
-      if (rippleRef.current) {
-        const rk = still || !T.breathing ? 1 : clamp(((t % T.breathing) / T.breathing) / 0.7);
-        const rr = T.ring + T.ripple * out3(rk);
-        rippleRef.current.setAttribute('d', `M${f2(cx - rr)} ${f2(cy)} A${f2(rr)} ${f2(rr)} 0 1 0 ${f2(cx + rr)} ${f2(cy)} A${f2(rr)} ${f2(rr)} 0 1 0 ${f2(cx - rr)} ${f2(cy)} Z`);
-        rippleRef.current.style.setProperty('opacity', (0.7 * p.ripple * (1 - rk)).toFixed(3));
-      }
+      barsRef.current?.style.setProperty('opacity', (p.gain * p.line).toFixed(3));
 
       if (glowRef.current) {
-        const g = Math.min(1, p.glow * (1 - 0.5 * p.breathe * (1 - breath)) + a * 0.4);
-        glowRef.current.style.setProperty('opacity', g.toFixed(3));
-        // Breathes and swells up to its full size, never past it.
-        const gs = Math.min(1, 0.8 + 0.2 * breath * p.breathe + a * 0.2 + 0.1 * (1 - p.breathe));
-        glowRef.current.style.setProperty('transform', `translate(-50%, -50%) scale(${gs.toFixed(3)})`);
+        glowRef.current.style.setProperty('opacity', Math.min(1, p.glow + a * 0.4).toFixed(3));
+        // Swells with the voice up to its full size, never past it.
+        glowRef.current.style.setProperty('transform', `translate(-50%, -50%) scale(${Math.min(1, 0.9 + a * 0.2).toFixed(3)})`);
       }
 
       const press = 0.06 * Math.sin(Math.PI * since(L.pressAt, T.fast));
-      coreRef.current?.style.setProperty('transform', `translate(-50%, -50%) scale(${(1 - press).toFixed(3)})`);
+      // The middle breathes with the edge. `R` grows the ring and the fill under it by the breath
+      // step; the same growth as a ratio scales the glyph, so the whole button swells in
+      // proportion rather than the outline pulling away from what it encloses.
+      const disc = 1 + (T.ring ? (T.breath * breath * p.disc) / T.ring : 0);
+      coreRef.current?.style.setProperty('transform', `translate(-50%, -50%) scale(${((1 - press) * disc).toFixed(3)})`);
       sendIconRef.current?.style.setProperty('opacity', L.state === 'judging' ? (1 - since(L.sendAt, T.slow)).toFixed(3) : '0');
 
       // The trash rides from beside the ring into the card's bottom-left corner as the card grows.
@@ -356,8 +402,9 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
   return (
     <div ref={rootRef} className={[styles.root, className].filter(Boolean).join(' ')} data-state={state}>
       <div className={styles.labels}>
+        {/* Always rendered, so the ring stays put when a state's line is dropped. */}
         <p className={styles.label} role="status">
-          {LABEL[state]}
+          {label ?? LABEL[state]}
         </p>
         {/* Always rendered, so the ring stays put when a state has no second line. */}
         <p className={styles.helper} aria-hidden={!(helper ?? HELPER[state]) || undefined}>
@@ -375,7 +422,9 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
       >
         <div ref={glowRef} className={styles.glow} aria-hidden="true" />
         <svg className={styles.svg} aria-hidden="true">
-          <path ref={rippleRef} className={`${styles.line} ${styles.ripple}`} />
+          {/* Idle's fill. In the drawing rather than on the button so it takes the ring's own
+              radius: the edge and the line breathe as one, and the glyph inside does not move. */}
+          <circle ref={discRef} className={styles.disc} />
           <path ref={barsRef} className={styles.line} />
           <path ref={lineRef} className={styles.line} />
           <path ref={dashRef} className={styles.line} />
@@ -391,7 +440,9 @@ export function VoiceInput({ state, helper, idleActions, transcript = '', getLev
           onClick={coreAction}
         >
           <span className={styles.item} data-on={state === 'idle'}>
-            <IconSlot size="500" name="microphone-01" />
+            {/* Icon/700 and the solid glyph, Sep 2026: at 40 in a 120 button the outlined
+                microphone read as a small thin drawing floating in the fill. */}
+            <IconSlot size="700" name="microphone-01-solid" />
           </span>
           <span className={`${styles.item} ${styles.word}`} data-on={state === 'listening'} aria-hidden="true">
             Tap when done
