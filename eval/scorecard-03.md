@@ -1,0 +1,139 @@
+# Scorecard 03
+
+Screens: voice turn, section summary, review summary, mic denied. Graded 2026-09-20 at 390px, dark mode.
+
+Run notes
+- Commit `fbfe6a1`. Working tree not clean: `.mcp.json` was modified before the run and I did not touch it. `build/css/tokens.css` unchanged.
+- All four critics ran, each in its own context. Each prompt held "Grade the prototype", a one-line scope naming these four screens, and (system and craft only) the command results. No critic saw another critic's output or any state-render result.
+- The scope line departs from the grade-prototype skill, which says to add nothing. It carries no opinion or hint.
+- Coverage was uneven. **critic-system never rendered the review summary and only saw the section summary with 3 rows.** **critic-craft could not observe the press lip or the wait beats.** **critic-ux walked no discard, typed, leave/resume or keyboard-up paths.** The scores below are on what each critic saw and are capped accordingly. Nothing was passed between critics to fill the gaps, because that would break blind grading.
+
+## Total
+
+**6.7 / 10.** (7×3 + 7×3 + 6×3 + 7×3 + 6×2 + 7×1) ÷ 15 = 100 ÷ 15.
+
+No hard gate failed. Gate 4 is **unverified** for most pairs, so the total is not clean of that (see Gates).
+
+Critic-ambition: **6**. Reported separately, not in the total.
+
+Lowest High-weight dimension: **Craft, 6**.
+
+## Per-dimension table
+
+| Dimension | Critic | Score | Weight | Weighted |
+|---|---|---|---|---|
+| System fidelity | critic-system | 7 | 3 | 21 |
+| Coherence | critic-ux | 7 | 3 | 21 |
+| Craft | critic-craft | 6 | 3 | 18 |
+| UX judgment | critic-ux | 7 | 3 | 21 |
+| Accessibility | critic-craft | 6 | 2 | 12 |
+| Structure | critic-system | 7 | 1 | 7 |
+| **Total** | | | 15 | **100 → 6.7** |
+
+Against scorecard 02 (7.3): Craft 7→6, Accessibility 7→6, UX judgment 8→7, Structure 8→7. System fidelity and Coherence held at 7. Part of the drop is thinner critic coverage, not a regression; the critics do not say which.
+
+## Hard gates
+
+| Gate | Critic | Result |
+|---|---|---|
+| 1 Contrast | critic-craft | **Pass on what was measured, not exhaustive.** Section chips about 9:1; review header yellow high, red about 6.7:1; `text/secondary` on surface about 7:1. Voice turn "Tap to answer" helper on page background **not measured**. |
+| 2 Touch targets | critic-craft | **Pass on what was measured.** Ring 128×128; "I don't know the answer" 190×48; "Type instead" 117×48; close, streak, discard, send 48×48; denied buttons 358×56; summary buttons 358×56; accordion row 350×56. |
+| 3 No raw hex | critic-system | **Pass.** `check-tokens` exit 0. Its own grep of `src/app/` and `src/components/*.module.css` found no hex, `rgba()`, var fallbacks or loose px in code. |
+| 4 States that must differ | critic-craft | **Unverified.** Rendered and different: listening vs idle, listening vs transcribing vs transcript, reduced-motion listening vs idle, section summary categories. Not rendered: idle / start over / didn't catch that, judging and slow beats, listening vs say-it-back, error vs idle, hint 1/2/answer, review summary same-day vs gap and the confidence versions, Button and ButtonIcon Default/Pressed/Disabled. Focus pair inconclusive (Tab landed on the Next dev portal); recorded as the known WCAG 2.2 gap. |
+
+## Findings
+
+Ordered by weight. Each critic's evidence is quoted as given. Where two critics disagree, both are shown.
+
+### Craft and accessibility (critic-craft)
+
+1. **Transcribing carries the "finished" label.** Voice turn, transcribing (`.playwright-mcp/page-2026-09-20T21-50-18-614Z.png`) and transcript (`…21-50-24-734Z.png`). While the dots and spinner arc show transcribing, the status label and the button's accessible name already read "Check it, then send". A reduced-motion run also read "Check it, then send". This breaks the gate 4 transcribing pair and principle 1: the wait is announced as a finished transcript, and with motion reduced the label is the only carrier. Fix: set the label and the disabled button's `aria-label` from the transcribing state until the transcript card mounts.
+   - **Contradicted by the state render.** The pre-critic render agent recorded the transcribing label as "Knowie's writing down what you said…". Two runs, two labels. Needs a re-check before anyone acts on it; possibly a timing capture (the label changing while the critic took the shot).
+2. **The control zone moves 24px between states.** The status label sits at y=432 in idle and listening, then y=408 in the transcript state (`getBoundingClientRect`). That is the 4 anchor's "spacing changes state to state for no reason". Fix: anchor the label to one position and let the transcript card grow downward, or log the shift in `component-gaps.md`. Not a state render finding.
+3. **No explicit live region.** The `VoiceInput` `role=status` has `aria-live` null and relies on implicit behaviour. Fix: add `aria-live="polite"`. Soft spot.
+4. **No focus state anywhere.** Known WCAG 2.2 gap, reported, not double-counted. Focus pair inconclusive in test.
+5. **About 130px of empty space** between the last card and the pinned buttons on the section summary (`…21-52-54-325Z.png`). Large relative to three short rows. Whether it is deliberate is not a call the numbers can settle. Not an issue in the state render (which found the section summary does not clip at 844).
+6. Pressed-state geometry, exit vs entrance timings and the judging-wait beats were not observed. Only a 0.08s transition on ButtonIcon and 0s on the Next question wrapper were seen.
+
+### System fidelity and structure (critic-system)
+
+7. **Icon check not completed.** On the rendered mic-denied and summary notes, mic-off and refresh-cw icons are drawn in the purple accent. Not confirmed whether that is the leading-icon accent exception (`…21-48-59-583Z.png`). If the icon carries its own token instead of inheriting, change it to inherit. Cost: System fidelity capped at 7.
+8. **Semantic token trace in the rendered DOM not done**, so the 8 bar is unavailable. Only confirmed `--primitive-space-*` in `:root`.
+9. **Section summary bottom edge.** "Try the ones you missed" at y 772–828 on an 844 frame. +40% strings and twelve rows were **not run**, so this is unconfirmed. `scrollWidth` = 390 on mic denied and section summary; `viewport-fit=cover` present; `font-feature-settings` at `:root` is `"lnum","pnum","ss02","ss03","ss06","ss07"`.
+10. **Inline custom properties** `--at` and `--i` on the confidence slider (`src/app/recall/review/confidence/page.tsx:148,155`). Outside the four screens. Check for a `component-gaps.md` line.
+
+### UX judgment and coherence (critic-ux)
+
+11. **Review summary buries the work left.** At 390×844 the Needs practice card is largely behind the pinned buttons, so the student sees none of the hinted or practice terms on arrival (`j-review-summary.png`). "Try the ones you missed" sits over a clipped card. Fix: keep the come-back note above the cards, or shorten "How you felt". **Corroborated by the state render**, which found the review summary clips at 844 in most versions and the section summary does not.
+12. **Say-it-back idle looks like a scored turn.** It is identical to a normal idle and still offers "I don't know the answer" and "Type instead", though the turn is practice-only (`h-sayback-idle.png`). Fix: hide both escapes in `idleActions` for say-it-back.
+13. **"Missed" covers `needed-a-hint` terms.** "Try the ones you missed" and "One more try at the misses" act on hinted terms too, and the eve headline counts them as "terms to look at tonight". That blurs the three outcome names. Fix: name the group, e.g. "Practise the ones that needed help", or limit the pass to `needs-practice`.
+14. **The mic prompt fires cold on the review.** When the review is reached through Plan there is no tray, so the OS prompt fires on the first tap of the control with no primer (principle 3). Fix: have "Start the review" trigger the same primer when the mic choice is unset.
+15. **"Tap to answer" on every review term.** The critic's step log read "Tap to answer" on every term, against the spec's first term only.
+    - **Contradicted by the state render**, which recorded it on term 1 of section, review and eve and not on later terms. Show both; unresolved.
+16. **Eve summary findings, out of the four scoped screens.** Continue/Finish primary-secondary swap between summaries, and the "N of 12" count drawn in mint success tone on the sentence that leads with the work left. Kept because the critic reported them. They affect Coherence, which is scored across the three summaries.
+17. Data checks pass: section rows 1/1/1 match the summary; review 8/1/1 match "8 of 10"; eve 8/3/1 match "4 terms to look at". Recount from `sessionStorage` holds on what was walked.
+
+### State render, before the critics (not graded, flags only)
+
+125 PNGs at 390×844 dark, in the session scratchpad under `states/png/`, with `REPORT.md` and contact sheets. No unreachable states, no console errors except the intended 404s. Nothing was fixed.
+
+- **Mic denied is the same in every round.** First denial 0.00% differing across section, review and eve; again 0.00% across rounds and both entry points. First vs again is 8.66%, text-only (headline and caption change; mascot, note and buttons identical). The copy never names the round.
+- **Idle / start over / didn't catch that are near-identical.** Idle→start over 0.71%, idle→unclear 0.68%: one helper line each ("No harm done, go again", "Didn't catch that. No hint used"). This is the gate 4 pair with the "helper line must differ" rule. It differs, by one line.
+- **Motion-reduced transcribing and thinking rings look the same.** Transcribing→thinking 1.52% with motion, 1.65% reduced. They are told apart by the helper label only. Thinking→thinking slow 1.67% / 2.01%; slow→error 5.84% reduced.
+- **Say-it-back recording vs normal recording is 5.57%**, bubble copy only; label and ring the same. (critic-ambition and critic-ux make related points about say-it-back and round sameness.)
+- **The "Try again" chip disappears while judging** on hint 2 (thinking, slow, error show the hint 2 text with no chip).
+- **Error vs error-reduced 0.00%** (no motion, expected). Idle vs idle-reduced 1.08% (ring frame only).
+- **Nine confidence versions are all distinct**, but several pairs differ by only 1.6–5% (headline, body, "Today" chip, counts). Closest: down/same vs down/down 2.56% at 844, 1.59% tall.
+- **Days-later vs same-day is distinct** (40.4%).
+- **A third mixed variant exists.** Section rows dated today plus review rows dated now render "3 of 7 correct without help, 3 days after you last revised… still fresh from today". A "3 days" claim over a count that mixes fresh and settled rows. Reachable only by seeded data; whether a tester can reach it is not established. critic-ambition met the same muddle ("0 of 9" then "still fresh from today" for one term).
+- **Review summary clips at 844.** Needs practice and the come-back note sit behind the pinned buttons in most versions.
+- **Review summary with all 10 correct hides "Try the ones you missed"**, Continue moves into the bottom slot.
+- **Six routes show the stock Next 404:** `/recall/foo/1`, `/recall/foo/summary`, `/recall/bogus/mic-denied`, `/recall/section/99`, `/recall/section/0`, `/recall/section/abc`.
+- **Not captured:** leave sheet on hint 2 or on resume, discard from thinking, reduced motion for the review and eve idles.
+- Dev badge overlaps the pinned buttons in every shot; not an app element.
+
+### Ambition (critic-ambition), kept separate
+
+See the section below.
+
+## Critic blind spots
+
+- **critic-system:** the summaries redirect unless valid `knowie.session` rows are seeded, so its seeded run never exercised the review summary, same-day vs gap, or the twelve-row case. It found no structural defect there and did not test for one.
+- **critic-craft:** whether the press sinks by the full lip and whether the wait beats fire at 4s and 10s. The mock resolved too fast and its `:active` simulation failed. It saw each state at one moment, so it would not see flicker between transcribing and transcript.
+- **critic-ux:** the eve and review paths were driven by a loop that always taps the control and Send, so it saw mostly `correct-without-help`. Never seen: same-day "still fresh", confidence up with performance down (overconfidence), underconfidence, all-correct eve. The "overconfidence is named where the student lands" criterion is **not verified**. Discard, unclear and typed branches were skipped, so dead ends there are not ruled out.
+- **critic-ambition:** did not walk the section round with a mixed set of outcomes, so the collapsed cards may look stronger with several terms. Skipped the 4s and 10s states, so waiting-state ambition is unassessed. Its review summary was the worst case (0 of 9), not a middle case.
+
+Across the panel, none of the four critics saw the overconfidence claim on the review summary, and none walked the 4s/10s beats end to end. Those are the two things the concept leans on most.
+
+## Reconciliation notes
+
+- Scores are as the critics gave them. Nothing was raised, softened or merged.
+- **Two contradictions between the critics and the state render** (findings 1 and 15). Both concern label text at a moment in time. Neither can be settled from the reports.
+- The critics agree the review summary is where the work is: critic-ux (work left below the fold), critic-ambition (claim buried in a dense stack) and the state render (clips at 844) all point at the same screen, from separate contexts.
+- The critics also converge on the second pass not looking different from the first: critic-ambition says the review turn is pixel-identical to the section turn and the loop is framed identically, and critic-ux scored Coherence 7 partly on framing. The state render confirms mic denied does not vary by round.
+
+## Ambition (critic-ambition), not in the total
+
+**6.** Risks taken, none fully landing.
+
+- **Risks that lift it above 5:** the review summary leads with the over- or underconfidence verdict, then the before/today reads, then the cards (`…22-05-35-316Z.png`); collapsed Good and Partial cards on the section summary; the transcript step and filled idle ring vs outlined listening ring. The last is called interaction hygiene that does not carry "done vs learned".
+- **What it settles for:**
+  1. The review turn is the same screen as the section turn, and the progress bar does not move on a correct answer (`…21-56-13-979Z.png`). "One loop in two places, framed differently" is framed identically.
+  2. The section summary is a list plus a footnote: "done whatever the outcome" is only in copy (`…21-56-23-386Z.png`).
+  3. The review summary delivers the claim as four stacked blocks of reading; before/today are two static boxes with an arrow.
+  4. Mic denied is an apology and a task, with a standing mascot (`…21-56-35-944Z.png`).
+  5. The confidence check has no memory of the earlier rating (outside the four screens).
+- **Stronger patterns, all from the library:**
+  1. Section summary: `NoteCard tone="highlight" icon="calendar"` naming the terms the review will ask again, with `ExpandableSummaryCard` open/collapsed. Stories: `components-notecard--highlight-icon`, `--outlined-icon`. The critic rendered the note stories.
+  2. Review summary: the count and gap in one short line above the cards, and the same-day term in its own single-term `ExpandableSummaryCard` (`--collapsed-one`, `--overflow`; not rendered).
+  3. Voice turn: `ProgressIndicator variant="Coral"` in the review round vs Primary in the section round (not rendered; needs a decision on whether Coral is already the needs-practice tone).
+- **Out of reach:** a `ConfidenceCompare` gauge (no component; SPEC Open 7), a round-varying mascot pose (limited to `standby` and `thinking`; SPEC Open 20), and a "How you felt" component.
+
+## Command results (run once, before the critics)
+
+- `node scripts/check-tokens.mjs`: exit 0. "No raw hex colours found."
+- `node scripts/check-mascot-labels.mjs`: exit 0. "Every MascotSlot is labelled or marked decorative."
+- `npm run lint`: exit 0. No output.
+- `npm run build`: exit 0. Compiled, TypeScript clean, 7 static pages, 10 routes.
+- `npm run tokens`: exit 0. `build/css/tokens.css` had no uncommitted changes before, and `git diff --stat` shows none after.
+- `npx vitest run --project=storybook`: exit 0. 29 files, 229 tests passed. No a11y todo or violation lines.
