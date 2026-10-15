@@ -121,6 +121,8 @@
   --primitive-control-1500: 60px; /** Height of a compact list row: listItem Filled Compact and Outlined Compact. Fixed, with clipping, so a subtitle does not fit. */
   --primitive-control-1800: 72px; /** Height of a full list row: listItem Filled and Outlined. Fixed, with clipping. */
   --primitive-size-status-bar: 48px; /** Height of the scaffold's Panel Header, which holds the iOS status bar. Not a control height: Control/1200 is also 48 but means a tap target, so this is its own step. Added Sep 2026. */
+  --primitive-size-device-width: 390px; /** Width of the iPhone 13 frame the scaffold is built at. Used by the /preview page to size its phone frame on desktop; app screens follow the real viewport, not this. Added Oct 2026. */
+  --primitive-size-device-height: 844px; /** Height of the iPhone 13 frame the scaffold is built at. Used by the /preview page; app screens follow 100dvh, not this. Added Oct 2026. */
   --primitive-elevation-lip-sm: -2px;
   --primitive-elevation-lip-lg: -4px;
   --primitive-elevation-lip-outlined-sm: 2px; /** The lip on an outlined control at sizes S and M, built as a heavier bottom border because there is no fill to darken. Positive because it is a border weight, not an offset. Roughly half elevation.lip.sm and tuned by eye: a solid stroke at border/strong reads far heavier than a 15% inner shadow, so matching the numbers would over-weight it. */

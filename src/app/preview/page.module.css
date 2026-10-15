@@ -1,0 +1,23 @@
+/* Desktop preview frame. A light surround on purpose, so the dark app reads
+   as a device: logged in docs/component-gaps.md as a departure from dark only. */
+.page {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--primitive-space-400);
+  background-color: var(--primitive-color-neutral-200);
+}
+
+/* Size/Device is the iPhone 13 frame. content-box keeps the iframe's viewport
+   at exactly 390×844; the bezel sits outside it. */
+.phone {
+  box-sizing: content-box;
+  flex-shrink: 0;
+  width: var(--primitive-size-device-width);
+  height: var(--primitive-size-device-height);
+  border: var(--primitive-space-200) solid var(--primitive-color-neutral-950);
+  border-radius: var(--primitive-radius-900);
+  background-color: var(--semantic-background-page);
+}
